@@ -36,6 +36,9 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  body.embedded .header { display: none; }
+  body.embedded .layout { padding-top: 0; }
+
   /* ── HEADER ── */
   .header {
     position: fixed;
@@ -641,6 +644,11 @@
 </div>
 
 <script>
+// Detect embedded mode
+if (new URLSearchParams(window.location.search).get('embedded') === '1') {
+  document.body.classList.add('embedded');
+}
+
 // ── KNOWLEDGE BASE ──
 const SYSTEM_PROMPT = `You are Sage, Natural Hounds' AI nutrition advisor. Natural Hounds is a premium human-grade dog food company based on Long Island, NY with 3 locations: Port Jefferson (full kitchen), Babylon (full kitchen), and Huntington (satellite location). You are helpful, warm, knowledgeable, and confident — but never pushy or salesy. You sound like a trusted expert, not a chatbot. You are premium and clean in your communication. Never use excessive emojis. You may occasionally use one relevant emoji only when it feels natural.
 
