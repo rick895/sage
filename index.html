@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Nutrition Guidance — Natural Hounds</title>
 <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -438,6 +438,7 @@
   /* ── INPUT AREA ── */
   .input-area {
     padding: 20px 48px 28px;
+    padding-bottom: max(28px, calc(28px + env(safe-area-inset-bottom)));
     border-top: 1px solid var(--border);
     background: var(--white);
   }
@@ -533,7 +534,7 @@
   @media (max-width: 768px) {
     .sidebar { display: none; }
     .messages { padding: 24px 20px; }
-    .input-area { padding: 16px 20px 24px; }
+    .input-area { padding: 16px 20px 24px; padding-bottom: max(24px, calc(24px + env(safe-area-inset-bottom))); }
   }
 
   .stream-cursor {
@@ -2000,3 +2001,4 @@ function clearPromo() {
 </script>
 </body>
 </html>
+
