@@ -221,6 +221,7 @@
     flex-direction: column;
     min-width: 0;
     background: var(--cream);
+    position: relative;
   }
 
   .messages {
@@ -236,6 +237,29 @@
   .messages::-webkit-scrollbar { width: 4px; }
   .messages::-webkit-scrollbar-track { background: transparent; }
   .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── SCROLL TO BOTTOM BUTTON ── */
+  .scroll-btn {
+    position: absolute;
+    bottom: 110px;
+    right: 20px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--blue-dark);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 12px rgba(83,100,121,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
+  .scroll-btn.visible { opacity: 1; pointer-events: all; }
+  .scroll-btn svg { width: 16px; height: 16px; fill: white; }
 
   /* ── MESSAGE BUBBLES ── */
   .message {
@@ -502,6 +526,14 @@
     color: var(--light);
     margin-top: 10px;
     letter-spacing: 0.03em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 480px) {
+    .input-hint { font-size: 10px; letter-spacing: 0; }
+    .send-btn { width: 40px; height: 40px; border-radius: 10px; }
   }
 
   /* ── ADMIN BANNER ── */
@@ -631,6 +663,9 @@
   <!-- CHAT -->
   <div class="chat-area">
     <div class="messages" id="messages"></div>
+    <button class="scroll-btn" id="scrollBtn" onclick="scrollToBottom()" title="Scroll to bottom">
+      <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </button>
     <div class="input-area">
       <div class="input-wrap">
         <textarea id="userInput" placeholder="Ask about your dog's nutrition, feeding amounts, or our recipes..." rows="1"></textarea>
@@ -786,6 +821,8 @@ IMPORTANT FEEDING NOTES:
 - BULK PRICING — WHAT TO SAY IF ASKED: We have unpublished bulk pricing for larger orders. Never quote specific savings amounts or bulk prices — those are handled by the owner case by case. If someone asks who qualifies or what the deal is, you can hint it generally involves buying around 90lbs at a time, but always end with: "Best to call and ask for the owner — 631-760-7850 — they'll walk you through what's available." Never rule anyone out, never give dollar amounts.
 
 WEIGHT MANAGEMENT: Whenever someone mentions their dog needs to lose or gain weight, ALWAYS ask about treat intake — most people overlook this. Treats add up significantly and are often the hidden reason a dog isn't losing weight despite eating the right food amount. Factor treat calories into the overall picture and suggest reducing treat portions or switching to lower-calorie treat options if weight loss is the goal.
+
+WEIGHT LOSS FEEDING AMOUNTS: If a dog needs to lose weight, base the feeding recommendation on the dog's TARGET weight, not their current weight. For example, if a dog weighs 50lbs but should be 30lbs, look up the feeding amount for a 30lb dog and recommend that. Always acknowledge this may feel like a big jump and suggest they can gradually reduce over 1-2 weeks rather than cutting immediately. Frame it like: "To get [dog's name] down to [target weight], you'd want to work toward feeding them what a [target weight]lb dog would eat — that's about X oz per day. You don't have to cut to that overnight; you can ease down to it over a week or two, but that's the target amount to aim for."
 
 === MONTHLY COST CALCULATION ===
 CRITICAL — follow these steps exactly every time, do not shortcut:
@@ -1942,7 +1979,44 @@ function hideTyping() {
 function scrollToBottom() {
   const container = document.getElementById('messages');
   container.scrollTop = container.scrollHeight;
+  document.getElementById('scrollBtn').classList.remove('visible');
 }
+
+// Show scroll-to-bottom button when user scrolls up
+document.getElementById('messages').addEventListener('scroll', () => {
+  const container = document.getElementById('messages');
+  const btn = document.getElementById('scrollBtn');
+  const distFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+  btn.classList.toggle('visible', distFromBottom > 120);
+});
+
+// Scroll to bottom when keyboard opens on mobile
+window.visualViewport && window.visualViewport.addEventListener('resize', () => {
+  scrollToBottom();
+});
+
+// ── PRODUCT CONTEXT (from ?product= URL param) ──
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const product = params.get('product');
+  if (!product) return;
+  const productMap = {
+    'original': 'the Original Recipe (turkey)',
+    'turkey':   'the Original Recipe (turkey)',
+    'beef':     'the Beef Recipe',
+    'pork':     'the Pork Recipe',
+    'lamb':     'the Lamb Recipe',
+  };
+  const productName = productMap[product.toLowerCase()];
+  if (!productName) return;
+  // Inject a silent system note into conversation history
+  conversationHistory.push({
+    role: 'user',
+    content: `[Context: The customer came to chat from the product page for ${productName}. Greet them warmly and acknowledge you can see they were looking at that recipe. Ask what questions they have about it or their dog.]`
+  });
+  // Trigger an opening message from Sage
+  setTimeout(() => { getBotResponse(); }, 600);
+})();
 
 // ── ADMIN (accessed via URL param ?admin=1) ──
 if (new URLSearchParams(window.location.search).get('admin') === '1') {
