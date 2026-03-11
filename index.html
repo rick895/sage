@@ -567,22 +567,33 @@
     margin-top: 10px;
     border-radius: 10px;
     overflow: hidden;
-    max-width: 300px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    max-width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     border: 1px solid var(--border);
     animation: fadeUp 0.3s ease forwards;
+    display: inline-block;
+    vertical-align: top;
   }
   .chat-photo img {
     width: 100%;
     display: block;
+    height: 140px;
+    object-fit: cover;
   }
   .chat-photo-caption {
     background: var(--white);
-    padding: 7px 12px;
-    font-size: 12px;
+    padding: 5px 10px;
+    font-size: 11px;
     color: var(--light);
     border-top: 1px solid var(--border);
     font-style: italic;
+    line-height: 1.3;
+  }
+  .chat-photos-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
   }
 
   .stream-cursor {
@@ -1996,10 +2007,17 @@ const shownPhotos = new Set(); // track shown URLs across conversation
 function renderPhotoCard(url, caption, bubbleEl) {
   if (shownPhotos.has(url)) return;
   shownPhotos.add(url);
+  // Find or create a photos row inside the bubble
+  let row = bubbleEl.querySelector('.chat-photos-row');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'chat-photos-row';
+    bubbleEl.appendChild(row);
+  }
   const card = document.createElement('div');
   card.className = 'chat-photo';
   card.innerHTML = `<img src="${url}" alt="${caption}" loading="lazy"><div class="chat-photo-caption">${caption}</div>`;
-  bubbleEl.appendChild(card);
+  row.appendChild(card);
 }
 
 function processPhotos(text, bubbleEl) {
@@ -2016,37 +2034,46 @@ function processPhotos(text, bubbleEl) {
   }
 
   // 2. Keyword fallback — fires if model forgot to include tags
+  // Max 1 photo from fallback, and only on specific triggers
   if (photoCount === 0) {
-    // Location photos
+    // Location photos — trigger when a specific store name appears prominently
     for (const [key, photo] of Object.entries(PHOTO_LIBRARY.locations)) {
-      if (lower.includes(key) && photoCount < 2) {
+      if (lower.includes(key) && photoCount < 1) {
         renderPhotoCard(photo.url, photo.caption, bubbleEl);
         photoCount++;
       }
     }
 
-    // Recipe photos
-    for (const [key, photo] of Object.entries(PHOTO_LIBRARY.recipes)) {
-      if (lower.includes(key + ' recipe') && photoCount < 2) {
-        renderPhotoCard(photo.url, photo.caption, bubbleEl);
-        photoCount++;
+    // Recipe photos — only when Sage is clearly describing/recommending ONE specific recipe
+    // Require the phrase "X recipe" + descriptive context words, and only show one
+    if (photoCount === 0) {
+      const recipeDescWords = ['protein', 'fat', 'ingredient', 'great for', 'recommend', 'best for', 'higher', 'lower', 'sensitive', 'allerg', 'flavor', 'muscle meat'];
+      const hasDescription = recipeDescWords.some(w => lower.includes(w));
+      if (hasDescription) {
+        for (const [key, photo] of Object.entries(PHOTO_LIBRARY.recipes)) {
+          if (lower.includes(key + ' recipe') && photoCount < 1) {
+            renderPhotoCard(photo.url, photo.caption, bubbleEl);
+            photoCount++;
+            break; // only ever show one recipe photo from fallback
+          }
+        }
       }
     }
 
-    // Food texture/appearance questions
-    if (photoCount < 2 && (lower.includes('consistency') || lower.includes('texture') || lower.includes('look like') || lower.includes('what does it look') || lower.includes('appearance'))) {
+    // Food texture/appearance — only on direct questions about what it looks like
+    if (photoCount === 0 && (lower.includes('consistency') || lower.includes('texture') || lower.includes('what does it look') || lower.includes('what the food looks'))) {
       renderPhotoCard(PHOTO_LIBRARY.food.url, PHOTO_LIBRARY.food.caption, bubbleEl);
       photoCount++;
     }
 
     // Kitchen / where made
-    if (photoCount < 2 && (lower.includes('kitchen') || lower.includes('where') && lower.includes('made'))) {
+    if (photoCount === 0 && lower.includes('kitchen')) {
       renderPhotoCard(PHOTO_LIBRARY.kitchen.url, PHOTO_LIBRARY.kitchen.caption, bubbleEl);
       photoCount++;
     }
 
-    // Pack / packaging — only trigger on very specific packaging questions
-    if (photoCount < 2 && (lower.includes('packaging') || lower.includes('pack look') || lower.includes('what does the pack'))) {
+    // Pack / packaging
+    if (photoCount === 0 && (lower.includes('packaging') || lower.includes('what does the pack'))) {
       renderPhotoCard(PHOTO_LIBRARY.pack.url, PHOTO_LIBRARY.pack.caption, bubbleEl);
       photoCount++;
     }
