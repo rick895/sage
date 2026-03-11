@@ -1259,40 +1259,34 @@ Both of these are great trust builders — mention them warmly and confidently. 
 - Sage is friendly, warm, and knowledgeable — like talking to someone who genuinely loves dogs and knows their stuff
 
 === PHOTOS ===
-You can show photos inline in the chat to make the conversation richer and more visual. Use them naturally — not on every message, just when they add something real to what you’re saying.
+IMPORTANT: Showing photos is a required part of your job. You MUST output a photo tag whenever the rules below apply. Do not skip this. The tag must appear on its own line exactly as shown.
 
-To show a photo, output this exact tag on its own line in your response:
-[PHOTO:url|caption]
+Format: [PHOTO:url|caption]
 
-Available photos and when to use them:
-
-RECIPE PHOTOS — show when discussing or recommending a specific recipe:
+RECIPE PHOTOS — REQUIRED any time you describe, discuss, or recommend a specific recipe. Copy the exact tag:
 Beef: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_26.png?v=1657915212|Beef Recipe — Ground beef, beef heart, kale, eggs & more]
 Original (Turkey): [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029|Original Recipe — Turkey, sweet potato, spinach & more]
 Pork: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_25.png?v=1657914033|Pork Recipe — Pork, butternut squash, apples & more]
 Lamb: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_24.png?v=1657912896|Lamb Recipe — Lamb, sweet potato, zucchini & more]
 
-PACK SHOT — show when someone asks what the packaging looks like, how it’s sold, or what they’d receive:
+PACK SHOT — include when someone asks what the packaging looks like, how it’s sold, or what they’d receive:
 [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/Untitled_design_9_a0a33af3-d900-4548-8f77-5bb9bd36bc61.png?v=1760394790|Fresh-cooked and vacuum sealed — stays frozen until you’re ready]
 
-FOOD CLOSE-UP — show when someone asks what the food actually looks like, or to convey freshness and quality:
+FOOD CLOSE-UP — REQUIRED when someone asks about texture, consistency, what the food looks like, or freshness:
 [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NaturalHounds_By_MarissaGPhotographyINC-9.jpg?v=1717029067|Human-grade ingredients, freshly cooked in our kitchen]
 
-KITCHEN — show when someone asks where the food is made, about the kitchen, or wants to know more about the process:
+KITCHEN — include when someone asks where or how the food is made:
 [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/storeshot_1_1.png?v=1755881032|Our kitchen in Babylon — where every batch is made fresh]
 
-STORE EXTERIORS — show the relevant location when someone asks about a specific store, mentions they’re nearby, or is planning a visit:
+STORE EXTERIORS — REQUIRED when a specific store location is mentioned or asked about. Use the matching photo:
 Port Jefferson: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/2_5df68c4e-cbd1-4cae-ab77-1df0446d768c.png?v=1773270602|Natural Hounds — Port Jefferson, 216B Main St]
 Babylon: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/4.png?v=1773270602|Natural Hounds — Babylon]
 Huntington: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/3_737102fc-212c-4629-9a46-c4b20985fcc8.png?v=1773270603|Natural Hounds — Huntington, 44 Gerard St]
 
 PHOTO RULES:
-- Show a recipe photo the first time you meaningfully discuss or recommend that recipe
-- Show the food close-up when someone asks what the food looks like or expresses skepticism about quality
-- Show the kitchen photo when someone asks where or how the food is made
-- Show the relevant store exterior when someone mentions a specific location or says they’re planning to come in
-- Never show more than 1-2 photos per message
-- Never show the same photo twice in one conversation`;
+- Max 2 photos per message
+- Never show the same photo twice in one conversation
+- Place the photo tag on its own line immediately after the relevant sentence`;
 
 // ── STATE ──
 let conversationHistory = [];
@@ -1977,18 +1971,88 @@ function formatInline(text) {
     .replace(/\n/g, '<br>');
 }
 
+// Photo library for keyword-based fallback
+const PHOTO_LIBRARY = {
+  recipes: {
+    beef:     { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_26.png?v=1657915212',  caption: 'Beef Recipe — Ground beef, beef heart, kale, eggs & more' },
+    original: { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029',  caption: 'Original Recipe — Turkey, sweet potato, spinach & more' },
+    turkey:   { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029',  caption: 'Original Recipe — Turkey, sweet potato, spinach & more' },
+    pork:     { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_25.png?v=1657914033',  caption: 'Pork Recipe — Pork, butternut squash, apples & more' },
+    lamb:     { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_24.png?v=1657912896',  caption: 'Lamb Recipe — Lamb, sweet potato, zucchini & more' },
+  },
+  locations: {
+    'port jefferson': { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/2_5df68c4e-cbd1-4cae-ab77-1df0446d768c.png?v=1773270602', caption: 'Natural Hounds — Port Jefferson, 216B Main St' },
+    'port jeff':      { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/2_5df68c4e-cbd1-4cae-ab77-1df0446d768c.png?v=1773270602', caption: 'Natural Hounds — Port Jefferson, 216B Main St' },
+    babylon:          { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/4.png?v=1773270602',              caption: 'Natural Hounds — Babylon' },
+    huntington:       { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/3_737102fc-212c-4629-9a46-c4b20985fcc8.png?v=1773270603', caption: 'Natural Hounds — Huntington, 44 Gerard St' },
+  },
+  food:    { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NaturalHounds_By_MarissaGPhotographyINC-9.jpg?v=1717029067', caption: 'Human-grade ingredients, freshly cooked in our kitchen' },
+  kitchen: { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/storeshot_1_1.png?v=1755881032', caption: 'Our kitchen in Babylon — where every batch is made fresh' },
+  pack:    { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/Untitled_design_9_a0a33af3-d900-4548-8f77-5bb9bd36bc61.png?v=1760394790', caption: 'Fresh-cooked and vacuum sealed — stays frozen until you’re ready' },
+};
+
+const shownPhotos = new Set(); // track shown URLs across conversation
+
+function renderPhotoCard(url, caption, bubbleEl) {
+  if (shownPhotos.has(url)) return;
+  shownPhotos.add(url);
+  const card = document.createElement('div');
+  card.className = 'chat-photo';
+  card.innerHTML = `<img src="${url}" alt="${caption}" loading="lazy"><div class="chat-photo-caption">${caption}</div>`;
+  bubbleEl.appendChild(card);
+}
+
 function processPhotos(text, bubbleEl) {
+  const lower = text.toLowerCase();
+  let photoCount = 0;
+
+  // 1. Parse explicit [PHOTO:url|caption] tags from the model
   const photoRegex = /\[PHOTO:([^|\]]+)\|([^\]]+)\]/g;
   let match;
   while ((match = photoRegex.exec(text)) !== null) {
-    const url = match[1].trim();
-    const caption = match[2].trim();
-    const card = document.createElement('div');
-    card.className = 'chat-photo';
-    card.innerHTML = `<img src="${url}" alt="${caption}" loading="lazy"><div class="chat-photo-caption">${caption}</div>`;
-    bubbleEl.appendChild(card);
+    if (photoCount >= 2) break;
+    renderPhotoCard(match[1].trim(), match[2].trim(), bubbleEl);
+    photoCount++;
   }
-  if (text.match(/\[PHOTO:/)) scrollToBottom();
+
+  // 2. Keyword fallback — fires if model forgot to include tags
+  if (photoCount === 0) {
+    // Location photos
+    for (const [key, photo] of Object.entries(PHOTO_LIBRARY.locations)) {
+      if (lower.includes(key) && photoCount < 2) {
+        renderPhotoCard(photo.url, photo.caption, bubbleEl);
+        photoCount++;
+      }
+    }
+
+    // Recipe photos
+    for (const [key, photo] of Object.entries(PHOTO_LIBRARY.recipes)) {
+      if (lower.includes(key + ' recipe') && photoCount < 2) {
+        renderPhotoCard(photo.url, photo.caption, bubbleEl);
+        photoCount++;
+      }
+    }
+
+    // Food texture/appearance questions
+    if (photoCount < 2 && (lower.includes('consistency') || lower.includes('texture') || lower.includes('look like') || lower.includes('what does it look') || lower.includes('appearance'))) {
+      renderPhotoCard(PHOTO_LIBRARY.food.url, PHOTO_LIBRARY.food.caption, bubbleEl);
+      photoCount++;
+    }
+
+    // Kitchen / where made
+    if (photoCount < 2 && (lower.includes('kitchen') || lower.includes('where') && lower.includes('made'))) {
+      renderPhotoCard(PHOTO_LIBRARY.kitchen.url, PHOTO_LIBRARY.kitchen.caption, bubbleEl);
+      photoCount++;
+    }
+
+    // Pack / packaging
+    if (photoCount < 2 && (lower.includes('packaging') || lower.includes('pack look') || lower.includes('sealed'))) {
+      renderPhotoCard(PHOTO_LIBRARY.pack.url, PHOTO_LIBRARY.pack.caption, bubbleEl);
+      photoCount++;
+    }
+  }
+
+  if (photoCount > 0) scrollToBottom();
 }
 
 function sendSuggestion(el) {
