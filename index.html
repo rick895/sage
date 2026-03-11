@@ -562,6 +562,29 @@
   .scroll-btn.visible { display: flex; }
   .scroll-btn svg { width: 16px; height: 16px; fill: white; }
 
+  /* ── PHOTO CARDS ── */
+  .chat-photo {
+    margin-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 300px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    border: 1px solid var(--border);
+    animation: fadeUp 0.3s ease forwards;
+  }
+  .chat-photo img {
+    width: 100%;
+    display: block;
+  }
+  .chat-photo-caption {
+    background: var(--white);
+    padding: 7px 12px;
+    font-size: 12px;
+    color: var(--light);
+    border-top: 1px solid var(--border);
+    font-style: italic;
+  }
+
   .stream-cursor {
     display: inline-block;
     width: 2px;
@@ -1233,7 +1256,43 @@ Both of these are great trust builders — mention them warmly and confidently. 
 - Never speak negatively about competitors
 - Never promise exact medical outcomes — always say consult your vet for medical concerns
 - Never make the transition sound scary — it's almost always smooth
-- Sage is friendly, warm, and knowledgeable — like talking to someone who genuinely loves dogs and knows their stuff`;
+- Sage is friendly, warm, and knowledgeable — like talking to someone who genuinely loves dogs and knows their stuff
+
+=== PHOTOS ===
+You can show photos inline in the chat to make the conversation richer and more visual. Use them naturally — not on every message, just when they add something real to what you’re saying.
+
+To show a photo, output this exact tag on its own line in your response:
+[PHOTO:url|caption]
+
+Available photos and when to use them:
+
+RECIPE PHOTOS — show when discussing or recommending a specific recipe:
+Beef: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_26.png?v=1657915212|Beef Recipe — Ground beef, beef heart, kale, eggs & more]
+Original (Turkey): [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029|Original Recipe — Turkey, sweet potato, spinach & more]
+Pork: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_25.png?v=1657914033|Pork Recipe — Pork, butternut squash, apples & more]
+Lamb: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_24.png?v=1657912896|Lamb Recipe — Lamb, sweet potato, zucchini & more]
+
+PACK SHOT — show when someone asks what the packaging looks like, how it’s sold, or what they’d receive:
+[PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/Untitled_design_9_a0a33af3-d900-4548-8f77-5bb9bd36bc61.png?v=1760394790|Fresh-cooked and vacuum sealed — stays frozen until you’re ready]
+
+FOOD CLOSE-UP — show when someone asks what the food actually looks like, or to convey freshness and quality:
+[PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NaturalHounds_By_MarissaGPhotographyINC-9.jpg?v=1717029067|Human-grade ingredients, freshly cooked in our kitchen]
+
+KITCHEN — show when someone asks where the food is made, about the kitchen, or wants to know more about the process:
+[PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/storeshot_1_1.png?v=1755881032|Our kitchen in Babylon — where every batch is made fresh]
+
+STORE EXTERIORS — show the relevant location when someone asks about a specific store, mentions they’re nearby, or is planning a visit:
+Port Jefferson: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/2_5df68c4e-cbd1-4cae-ab77-1df0446d768c.png?v=1773270602|Natural Hounds — Port Jefferson, 216B Main St]
+Babylon: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/4.png?v=1773270602|Natural Hounds — Babylon]
+Huntington: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/3_737102fc-212c-4629-9a46-c4b20985fcc8.png?v=1773270603|Natural Hounds — Huntington, 44 Gerard St]
+
+PHOTO RULES:
+- Show a recipe photo the first time you meaningfully discuss or recommend that recipe
+- Show the food close-up when someone asks what the food looks like or expresses skepticism about quality
+- Show the kitchen photo when someone asks where or how the food is made
+- Show the relevant store exterior when someone mentions a specific location or says they’re planning to come in
+- Never show more than 1-2 photos per message
+- Never show the same photo twice in one conversation`;
 
 // ── STATE ──
 let conversationHistory = [];
@@ -1845,9 +1904,10 @@ async function sendMessage() {
         textEl.innerHTML = formatInline(fullText.replace(/CART_ITEMS:[\s\S]*?CART_END/g, '').trim());
         cursorEl.remove();
         scrollToBottom();
-        // Process cart after streaming completes
+        // Process cart and photos after streaming completes
         const bubble = msg.querySelector('.bubble');
         processCart(fullText, bubble);
+        processPhotos(fullText, bubble);
         detectAndSendSummary(fullText);
       }
     }
@@ -1906,13 +1966,29 @@ async function processCart(text, bubbleEl) {
 }
 
 function formatInline(text) {
+  // Strip photo tags before rendering text
   return text
+    .replace(/\[PHOTO:[^\]]+\]/g, '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\n\n/g, '<br><br>')
     .replace(/\n/g, '<br>');
+}
+
+function processPhotos(text, bubbleEl) {
+  const photoRegex = /\[PHOTO:([^|\]]+)\|([^\]]+)\]/g;
+  let match;
+  while ((match = photoRegex.exec(text)) !== null) {
+    const url = match[1].trim();
+    const caption = match[2].trim();
+    const card = document.createElement('div');
+    card.className = 'chat-photo';
+    card.innerHTML = `<img src="${url}" alt="${caption}" loading="lazy"><div class="chat-photo-caption">${caption}</div>`;
+    bubbleEl.appendChild(card);
+  }
+  if (text.match(/\[PHOTO:/)) scrollToBottom();
 }
 
 function sendSuggestion(el) {
@@ -1934,6 +2010,7 @@ function appendMessage(role, text) {
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.innerHTML = formatMessage(text);
+  if (role === 'sage') processPhotos(text, bubble);
 
   msg.appendChild(avatar);
   msg.appendChild(bubble);
@@ -1942,8 +2019,9 @@ function appendMessage(role, text) {
 }
 
 function formatMessage(text) {
-  // Convert markdown-like formatting
+  // Convert markdown-like formatting, strip photo tags
   let html = text
+    .replace(/\[PHOTO:[^\]]+\]/g, '')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br>');
