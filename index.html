@@ -1270,7 +1270,7 @@ Pork: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitledd
 Lamb: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_24.png?v=1657912896|Lamb Recipe — Lamb, sweet potato, zucchini & more]
 
 PACK SHOT — include when someone asks what the packaging looks like, how it’s sold, or what they’d receive:
-[PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/Untitled_design_9_a0a33af3-d900-4548-8f77-5bb9bd36bc61.png?v=1760394790|Fresh-cooked and vacuum sealed — stays frozen until you’re ready]
+[PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/Facebook_Ad_Creatives_1080_x_1080_px_1.png?v=1773271631|Fresh-cooked and vacuum sealed — stays frozen until you’re ready]
 
 FOOD CLOSE-UP — REQUIRED when someone asks about texture, consistency, what the food looks like, or freshness:
 [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NaturalHounds_By_MarissaGPhotographyINC-9.jpg?v=1717029067|Human-grade ingredients, freshly cooked in our kitchen]
@@ -1988,7 +1988,7 @@ const PHOTO_LIBRARY = {
   },
   food:    { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NaturalHounds_By_MarissaGPhotographyINC-9.jpg?v=1717029067', caption: 'Human-grade ingredients, freshly cooked in our kitchen' },
   kitchen: { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/storeshot_1_1.png?v=1755881032', caption: 'Our kitchen in Babylon — where every batch is made fresh' },
-  pack:    { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/Untitled_design_9_a0a33af3-d900-4548-8f77-5bb9bd36bc61.png?v=1760394790', caption: 'Fresh-cooked and vacuum sealed — stays frozen until you’re ready' },
+  pack:    { url: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/files/Facebook_Ad_Creatives_1080_x_1080_px_1.png?v=1773271631', caption: 'Fresh-cooked and vacuum sealed — stays frozen until you’re ready' },
 };
 
 const shownPhotos = new Set(); // track shown URLs across conversation
@@ -2045,8 +2045,8 @@ function processPhotos(text, bubbleEl) {
       photoCount++;
     }
 
-    // Pack / packaging
-    if (photoCount < 2 && (lower.includes('packaging') || lower.includes('pack look') || lower.includes('sealed'))) {
+    // Pack / packaging — only trigger on very specific packaging questions
+    if (photoCount < 2 && (lower.includes('packaging') || lower.includes('pack look') || lower.includes('what does the pack'))) {
       renderPhotoCard(PHOTO_LIBRARY.pack.url, PHOTO_LIBRARY.pack.caption, bubbleEl);
       photoCount++;
     }
