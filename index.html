@@ -534,8 +534,33 @@
   @media (max-width: 768px) {
     .sidebar { display: none; }
     .messages { padding: 24px 20px; }
-    .input-area { padding: 16px 20px 24px; }
+    .input-area {
+      padding: 16px 20px;
+      padding-bottom: max(24px, calc(16px + env(safe-area-inset-bottom)));
+    }
   }
+
+  /* ── SCROLL TO BOTTOM BUTTON ── */
+  .scroll-btn {
+    position: absolute;
+    bottom: 100px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blue-dark);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    z-index: 10;
+    transition: opacity 0.2s;
+  }
+  .scroll-btn.visible { display: flex; }
+  .scroll-btn svg { width: 16px; height: 16px; fill: white; }
 
   .stream-cursor {
     display: inline-block;
@@ -629,8 +654,11 @@
   </aside>
 
   <!-- CHAT -->
-  <div class="chat-area">
+  <div class="chat-area" style="position:relative;">
     <div class="messages" id="messages"></div>
+    <button class="scroll-btn" id="scrollBtn" onclick="scrollToBottom()" title="Scroll to bottom">
+      <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </button>
     <div class="input-area">
       <div class="input-wrap">
         <textarea id="userInput" placeholder="Ask about your dog's nutrition, feeding amounts, or our recipes..." rows="1"></textarea>
@@ -1943,6 +1971,42 @@ function scrollToBottom() {
   const container = document.getElementById('messages');
   container.scrollTop = container.scrollHeight;
 }
+
+// ── iOS KEYBOARD: scroll to bottom when keyboard opens/resizes ──
+// When the virtual keyboard appears, visualViewport shrinks.
+// We scroll so the last message stays visible above the input.
+if (window.visualViewport) {
+  let lastVH = window.visualViewport.height;
+
+  window.visualViewport.addEventListener('resize', () => {
+    const currentVH = window.visualViewport.height;
+    lastVH = currentVH;
+    // Small delay lets the browser finish repositioning before we scroll
+    setTimeout(() => {
+      scrollToBottom();
+      // Scroll page offset so input stays anchored at visual bottom
+      const offsetY = window.visualViewport.offsetTop;
+      if (offsetY > 0) window.scrollTo(0, offsetY);
+    }, 50);
+  });
+
+  // On focus, scroll to bottom after keyboard animation finishes
+  document.getElementById('userInput').addEventListener('focus', () => {
+    setTimeout(scrollToBottom, 300);
+  });
+}
+
+// ── SCROLL-TO-BOTTOM BUTTON ──
+(function() {
+  const messages = document.getElementById('messages');
+  const btn = document.getElementById('scrollBtn');
+  if (!messages || !btn) return;
+
+  messages.addEventListener('scroll', () => {
+    const distFromBottom = messages.scrollHeight - messages.scrollTop - messages.clientHeight;
+    btn.classList.toggle('visible', distFromBottom > 120);
+  });
+})();
 
 // ── ADMIN (accessed via URL param ?admin=1) ──
 if (new URLSearchParams(window.location.search).get('admin') === '1') {
