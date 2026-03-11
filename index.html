@@ -1274,7 +1274,7 @@ IMPORTANT: Showing photos is a required part of your job. You MUST output a phot
 
 Format: [PHOTO:url|caption]
 
-RECIPE PHOTOS — REQUIRED any time you describe, discuss, or recommend a specific recipe. Copy the exact tag:
+RECIPE PHOTOS — Only show when you are presenting multiple recipes as options to someone who hasn’t chosen yet. Do NOT show a recipe photo when someone has already picked a recipe and you’re just discussing details or pricing:
 Beef: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_26.png?v=1657915212|Beef Recipe — Ground beef, beef heart, kale, eggs & more]
 Original (Turkey): [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029|Original Recipe — Turkey, sweet potato, spinach & more]
 Pork: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_25.png?v=1657914033|Pork Recipe — Pork, butternut squash, apples & more]
@@ -2044,17 +2044,20 @@ function processPhotos(text, bubbleEl) {
       }
     }
 
-    // Recipe photos — only when Sage is clearly describing/recommending ONE specific recipe
-    // Require the phrase "X recipe" + descriptive context words, and only show one
+    // Recipe photos — only when Sage is presenting multiple recipes as options to someone who hasn't chosen yet
+    // Look for signals that Sage is introducing/comparing recipes, not just mentioning one by name
     if (photoCount === 0) {
-      const recipeDescWords = ['protein', 'fat', 'ingredient', 'great for', 'recommend', 'best for', 'higher', 'lower', 'sensitive', 'allerg', 'flavor', 'muscle meat'];
-      const hasDescription = recipeDescWords.some(w => lower.includes(w));
-      if (hasDescription) {
+      const recipeNames = ['beef recipe', 'original recipe', 'pork recipe', 'lamb recipe', 'turkey recipe'];
+      const mentionedCount = recipeNames.filter(r => lower.includes(r)).length;
+      const presentingSignals = ['which recipe', 'few options', 'four recipes', 'our recipes', 'here are', 'to choose from', 'starting point', 'most popular'];
+      const isPresenting = mentionedCount >= 2 || presentingSignals.some(s => lower.includes(s));
+      if (isPresenting) {
+        // Show the first recipe mentioned
         for (const [key, photo] of Object.entries(PHOTO_LIBRARY.recipes)) {
           if (lower.includes(key + ' recipe') && photoCount < 1) {
             renderPhotoCard(photo.url, photo.caption, bubbleEl);
             photoCount++;
-            break; // only ever show one recipe photo from fallback
+            break;
           }
         }
       }
