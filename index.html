@@ -563,21 +563,25 @@
   .scroll-btn svg { width: 16px; height: 16px; fill: white; }
 
   /* ── PHOTO CARDS ── */
-  .chat-photo {
+  .chat-photos-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 10px;
+  }
+  .chat-photo {
     border-radius: 10px;
     overflow: hidden;
-    max-width: 200px;
+    width: 180px;
+    flex-shrink: 0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     border: 1px solid var(--border);
     animation: fadeUp 0.3s ease forwards;
-    display: inline-block;
-    vertical-align: top;
   }
   .chat-photo img {
-    width: 100%;
+    width: 180px;
+    height: 130px;
     display: block;
-    height: 140px;
     object-fit: cover;
   }
   .chat-photo-caption {
@@ -588,12 +592,8 @@
     border-top: 1px solid var(--border);
     font-style: italic;
     line-height: 1.3;
-  }
-  .chat-photos-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    width: 180px;
+    box-sizing: border-box;
   }
 
   .stream-cursor {
@@ -1295,7 +1295,7 @@ Babylon: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/4.png?v=1
 Huntington: [PHOTO:https://cdn.shopify.com/s/files/1/0270/6777/7113/files/3_737102fc-212c-4629-9a46-c4b20985fcc8.png?v=1773270603|Natural Hounds — Huntington, 44 Gerard St]
 
 PHOTO RULES:
-- Max 2 photos per message
+- Max 1 photo per message — never show two at once
 - Never show the same photo twice in one conversation
 - Place the photo tag on its own line immediately after the relevant sentence`;
 
@@ -2028,7 +2028,7 @@ function processPhotos(text, bubbleEl) {
   const photoRegex = /\[PHOTO:([^|\]]+)\|([^\]]+)\]/g;
   let match;
   while ((match = photoRegex.exec(text)) !== null) {
-    if (photoCount >= 2) break;
+    if (photoCount >= 1) break; // max 1 photo per message
     renderPhotoCard(match[1].trim(), match[2].trim(), bubbleEl);
     photoCount++;
   }
