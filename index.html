@@ -1781,8 +1781,10 @@ function detectAndSendSummary(sageResponse) {
 }
 
 // ── CHAT LOGGING ──
-const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwC7qC0Bt9u-2Qt1GTiTG6tgjqDuwPtFIhkkDXaa1nLv3vGtwjw1SgV7jRUAsst63Fn/exec";
+const WEB3FORMS_KEY = "684e3a10-684c-4040-990e-f2d718fb1c0f";
 let cartWasBuilt = false;
+let customerEmail = '';
+let customerDogName = '';
 
 function formatTranscript() {
   return conversationHistory
@@ -1794,55 +1796,52 @@ function formatTranscript() {
     .join('\n\n');
 }
 
-let customerEmail = '';
-let customerDogName = '';
-
 async function logConversation() {
   if (conversationHistory.length < 2) return;
   try {
     const transcript = formatTranscript();
-    await fetch(WEBHOOK_URL, {
+    const dogLabel = customerDogName ? ' (' + customerDogName + ')' : '';
+    const cartLabel = cartWasBuilt ? ' ✓ Cart Built' : '';
+    const emailLabel = customerEmail ? ' | ' + customerEmail : '';
+
+    await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        type: 'log',
-        transcript: transcript,
-        cartBuilt: cartWasBuilt,
-        customerEmail: customerEmail,
-        dogName: customerDogName
+        access_key: WEB3FORMS_KEY,
+        subject: 'Sage Transcript' + dogLabel + cartLabel + emailLabel,
+        from_name: 'Sage — Natural Hounds',
+        message: transcript
       })
     });
   } catch(e) {
-    console.log('Logging failed silently:', e);
+    console.log('Transcript logging failed silently:', e);
   }
 }
 
 async function sendCustomerSummary(email, dogName, summary) {
   try {
-    console.log('Sending summary email to:', email, '| Dog:', dogName);
-    console.log('Summary:', summary);
-    const response = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'customer_email',
-        customerEmail: email,
-        dogName: dogName,
-        summary: summary
-      })
-    });
-    console.log('Webhook response type:', response.type);
     customerEmail = email;
     customerDogName = dogName;
-    console.log('Summary sent successfully to:', email);
+    // Send summary to the customer (via store email as sender)
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: 'Your Natural Hounds nutrition summary for ' + (dogName || 'your dog'),
+        from_name: 'Sage — Natural Hounds',
+        replyto: email,
+        message: summary
+      })
+    });
+    console.log('Summary sent for:', email);
   } catch(e) {
-    console.error('Email send failed:', e);
+    console.error('Summary email failed:', e);
   }
 }
 
-// Log when user leaves the page
+// Log full transcript when user leaves the page
 window.addEventListener('beforeunload', () => {
   logConversation();
 });
