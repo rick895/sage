@@ -834,6 +834,8 @@ Weight | Normal oz | Lazy oz | Active oz
 100-110lbs (use 110lbs): 27.4 / 22.8 / 30.2
 110-120lbs (use 120lbs): 29.3 / 24.3 / 32.2
 
+ORIGINAL RECIPE COST NOTE: Because Original Recipe requires more oz per day (lower calorie density means the dog needs more volume to meet their energy needs), the monthly cost estimate comes out higher than Beef or Pork for the same dog. Whenever someone selects Original Recipe and you give them a monthly cost estimate, always proactively mention this — for example: "Just so you know, the Original Recipe requires a bit more food per day since it's our lowest-calorie recipe, so the monthly cost is slightly higher than it would be for Beef or Pork. If cost is a factor, mixing in Beef or Pork a few days a week would bring that number down — and dogs love the variety." Never let someone walk away thinking Natural Hounds is just expensive when the real reason is the recipe choice. Always frame it as helpful context, not a sales push.
+
 CRITICAL CHART RULE: Always match the recipe to the correct chart. IMPORTANT: Beef Recipe and Lamb Recipe have IDENTICAL calorie density and use the EXACT SAME feeding chart — they will always produce the same oz/day recommendation for the same dog. Never give different amounts for Beef vs Lamb.
 - Original Recipe → use ORIGINAL RECIPE chart
 - Pork Recipe → use PORK RECIPE chart
@@ -1842,8 +1844,22 @@ async function sendCustomerSummary(email, dogName, summary) {
 }
 
 // Log full transcript when user leaves the page
+// sendBeacon is used because async fetch() gets cancelled on page close
 window.addEventListener('beforeunload', () => {
-  logConversation();
+  if (conversationHistory.length < 2) return;
+  try {
+    const transcript = formatTranscript();
+    const dogLabel = customerDogName ? ' (' + customerDogName + ')' : '';
+    const cartLabel = cartWasBuilt ? ' ✓ Cart Built' : '';
+    const emailLabel = customerEmail ? ' | ' + customerEmail : '';
+    const payload = JSON.stringify({
+      access_key: WEB3FORMS_KEY,
+      subject: 'Sage Transcript' + dogLabel + cartLabel + emailLabel,
+      from_name: 'Sage — Natural Hounds',
+      message: transcript
+    });
+    navigator.sendBeacon('https://api.web3forms.com/submit', new Blob([payload], { type: 'application/json' }));
+  } catch(e) {}
 });
 
 // SEND MESSAGE
