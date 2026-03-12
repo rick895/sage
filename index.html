@@ -1845,22 +1845,52 @@ async function sendCustomerSummary(email, dogName, summary) {
   }
 }
 
-// Log full transcript when user leaves the page
-// sendBeacon is used because async fetch() gets cancelled on page close
-window.addEventListener('beforeunload', () => {
-  if (conversationHistory.length < 2) return;
+// ── TRANSCRIPT SENDING ──
+let transcriptSent = false;
+let inactivityTimer = null;
+
+function buildTranscriptPayload() {
+  const transcript = formatTranscript();
+  const dogLabel = customerDogName ? ' (' + customerDogName + ')' : '';
+  const cartLabel = cartWasBuilt ? ' ✓ Cart Built' : '';
+  const emailLabel = customerEmail ? ' | ' + customerEmail : '';
+  return JSON.stringify({
+    access_key: WEB3FORMS_KEY,
+    subject: 'Sage Transcript' + dogLabel + cartLabel + emailLabel,
+    from_name: 'Sage — Natural Hounds',
+    message: transcript
+  });
+}
+
+function sendTranscript() {
+  if (transcriptSent || conversationHistory.length < 2) return;
+  transcriptSent = true;
   try {
-    const transcript = formatTranscript();
-    const dogLabel = customerDogName ? ' (' + customerDogName + ')' : '';
-    const cartLabel = cartWasBuilt ? ' ✓ Cart Built' : '';
-    const emailLabel = customerEmail ? ' | ' + customerEmail : '';
-    const payload = JSON.stringify({
-      access_key: WEB3FORMS_KEY,
-      subject: 'Sage Transcript' + dogLabel + cartLabel + emailLabel,
-      from_name: 'Sage — Natural Hounds',
-      message: transcript
-    });
-    navigator.sendBeacon('https://api.web3forms.com/submit', new Blob([payload], { type: 'application/json' }));
+    const payload = buildTranscriptPayload();
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload
+    }).catch(() => {});
+  } catch(e) {}
+}
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(sendTranscript, 2 * 60 * 1000); // 2 min inactivity
+}
+
+// Send when user switches away (most reliable on mobile)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') sendTranscript();
+});
+
+// Fallback: sendBeacon on page close
+window.addEventListener('beforeunload', () => {
+  if (transcriptSent || conversationHistory.length < 2) return;
+  try {
+    navigator.sendBeacon('https://api.web3forms.com/submit',
+      new Blob([buildTranscriptPayload()], { type: 'application/json' }));
   } catch(e) {}
 });
 
@@ -1875,6 +1905,7 @@ async function sendMessage() {
   input.style.height = 'auto';
 
   appendMessage('user', text);
+  resetInactivityTimer(); // reset 2-min transcript timer on each message
   // Try to inject hardcoded feeding calculation
   const calcInjection = tryInjectCalc(text, conversationHistory);
   const finalText = calcInjection ? text + '\n\n' + calcInjection : text;
