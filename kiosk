@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sage">
+<title>Sage — Natural Hounds</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #9fd1ff;
+    --blue-dark: #3d5166;
+    --blue-mid: #c5e4ff;
+    --white: #FFFFFF;
+    --black: #0e1520;
+    --mid: #536479;
+    --light: #a8bccf;
+    --border: #d4e5f2;
+    --cream: #f0f7ff;
+    --accent: #536479;
+    --shadow: 0 2px 24px rgba(83,100,121,0.12);
+    --bubble-user: #3d5166;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    background: var(--black);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  /* ── FULL SCREEN LAYOUT ── */
+  .kiosk-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background: var(--cream);
+    position: relative;
+  }
+
+  /* ── HEADER ── */
+  .kiosk-header {
+    background: var(--black);
+    padding: 0 36px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(159,209,255,0.12);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-logo {
+    width: 40px;
+    height: 40px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-logo svg {
+    width: 22px;
+    height: 22px;
+    fill: var(--black);
+  }
+
+  .header-name {
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .header-sage {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sage-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(159,209,255,0.1);
+    border: 1px solid rgba(159,209,255,0.2);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--blue);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  .sage-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--blue);
+    border-radius: 50%;
+    animation: pulse 2.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── RESET BUTTON ── */
+  .reset-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: rgba(255,255,255,0.45);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .reset-btn:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+
+  /* ── MAIN BODY ── */
+  .kiosk-body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* ── QUICK ACTIONS PANEL ── */
+  .quick-panel {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--blue-dark);
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(159,209,255,0.1);
+  }
+
+  .quick-panel-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(159,209,255,0.45);
+  }
+
+  .quick-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .quick-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(159,209,255,0.18);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    cursor: pointer;
+    transition: all 0.18s;
+    line-height: 1.4;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    text-align: left;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .quick-btn:active {
+    background: rgba(159,209,255,0.2);
+    border-color: var(--blue);
+    transform: scale(0.98);
+  }
+
+  .quick-btn .q-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .panel-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* In-store callout */
+  .instore-card {
+    background: rgba(159,209,255,0.08);
+    border: 1px solid rgba(159,209,255,0.2);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .instore-card h4 {
+    font-family: 'League Spartan', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  .instore-card p {
+    font-size: 12px;
+    color: rgba(159,209,255,0.7);
+    line-height: 1.6;
+  }
+
+  .instore-card .price-tag {
+    display: inline-block;
+    background: var(--blue);
+    color: var(--black);
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 6px;
+    padding: 3px 8px;
+    margin-top: 8px;
+  }
+
+  /* Staff callout */
+  .staff-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: rgba(159,209,255,0.6);
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* ── CHAT AREA ── */
+  .chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--cream);
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 44px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── BUBBLES ── */
+  .message {
+    display: flex;
+    gap: 14px;
+    max-width: 800px;
+    animation: fadeUp 0.25s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .avatar.sage-avatar {
+    background: var(--black);
+    color: var(--blue);
+    font-family: 'League Spartan', sans-serif;
+    font-size: 15px;
+  }
+
+  .avatar.user-avatar {
+    background: var(--border);
+    color: var(--mid);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .bubble {
+    padding: 16px 20px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.65;
+    font-weight: 300;
+    max-width: 640px;
+  }
+
+  .message.sage .bubble {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-top-left-radius: 4px;
+    color: var(--black);
+    box-shadow: var(--shadow);
+  }
+
+  .message.user .bubble {
+    background: var(--bubble-user);
+    color: var(--white);
+    border-top-right-radius: 4px;
+    font-weight: 400;
+  }
+
+  .bubble strong { font-weight: 600; }
+
+  /* ── TYPING ── */
+  .typing {
+    display: flex;
+    gap: 14px;
+    max-width: 800px;
+    animation: fadeUp 0.25s ease forwards;
+  }
+
+  .typing-dots {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+    padding: 18px 22px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    box-shadow: var(--shadow);
+  }
+
+  .typing-dots span {
+    width: 7px;
+    height: 7px;
+    background: var(--light);
+    border-radius: 50%;
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+  }
+
+  .stream-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--mid);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 0.7s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ── INPUT AREA ── */
+  .input-area {
+    padding: 16px 44px 24px;
+    border-top: 1px solid var(--border);
+    background: var(--white);
+    flex-shrink: 0;
+  }
+
+  .input-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 18px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--blue-dark);
+    box-shadow: 0 0 0 3px rgba(83,100,121,0.08);
+  }
+
+  #userInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--black);
+    resize: none;
+    line-height: 1.5;
+    max-height: 100px;
+    min-height: 24px;
+  }
+
+  #userInput::placeholder { color: var(--light); }
+
+  .send-btn {
+    width: 42px;
+    height: 42px;
+    background: var(--black);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .send-btn:hover { background: var(--blue-dark); }
+  .send-btn:active { transform: scale(0.93); }
+  .send-btn svg { width: 18px; height: 18px; fill: white; }
+
+  .input-hint {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--light);
+    margin-top: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── CHECKOUT BTN ── */
+  .checkout-btn {
+    display: block;
+    margin-top: 14px;
+    padding: 13px 20px;
+    background: var(--black);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .checkout-btn:hover { background: var(--blue-dark); }
+
+  /* ── RESET COUNTDOWN OVERLAY ── */
+  .reset-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(14,21,32,0.85); z-index: 999;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .reset-overlay.visible { display: flex; animation: fadeIn 0.3s ease forwards; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .reset-card {
+    background: var(--white); border-radius: 20px;
+    padding: 44px 52px; text-align: center; width: 400px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+  }
+  .reset-card h2 { font-family: 'League Spartan', sans-serif; font-size: 22px; font-weight: 700; color: var(--black); margin-bottom: 10px; }
+  .reset-card p { font-size: 14px; color: var(--mid); line-height: 1.6; margin-bottom: 20px; }
+  .reset-countdown { font-family: 'League Spartan', sans-serif; font-size: 64px; font-weight: 800; color: var(--blue-dark); margin-bottom: 28px; line-height: 1; }
+  .reset-card-btns { display: flex; gap: 12px; }
+  .btn-stay { flex: 1; padding: 15px; background: var(--black); color: white; border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .btn-stay:active { background: var(--blue-dark); transform: scale(0.97); }
+  .btn-reset-now { flex: 1; padding: 15px; background: transparent; color: var(--mid); border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 400; cursor: pointer; }
+  .btn-reset-now:active { background: var(--border); }
+</style>
+</head>
+<body onmousedown="resetInactivityTimer()" ontouchstart="resetInactivityTimer()" onkeydown="resetInactivityTimer()">
+
+<!-- RESET OVERLAY -->
+<div class="reset-overlay" id="resetOverlay">
+  <div class="reset-card">
+    <h2>Still there?</h2>
+    <p>Starting over in</p>
+    <div class="reset-countdown" id="countdownNum">30</div>
+    <div class="reset-card-btns">
+      <button class="btn-stay" onclick="cancelReset()">I'm still here</button>
+      <button class="btn-reset-now" onclick="doReset()">Start over</button>
+    </div>
+  </div>
+</div>
+
+<div class="kiosk-wrap">
+
+  <!-- HEADER -->
+  <header class="kiosk-header">
+    <div class="header-brand">
+      <div class="header-logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.5 10.5c0-1.5.8-2.8 2-3.5C7 5.5 8.2 5 9.5 5c2 0 3.8 1 4.8 2.6.5-.1 1-.1 1.5-.1 2.5 0 4.5 1.8 4.7 4.2.8.5 1.5 1.4 1.5 2.3 0 1.7-1.7 3-3.7 3H6C3.8 17 2 15.6 2 13.8c0-1.4 1-2.6 2.5-3.1V10.5z"/>
+        </svg>
+      </div>
+      <span class="header-name">Natural Hounds</span>
+    </div>
+    <div class="header-sage">
+      <div class="sage-badge">
+        <div class="sage-dot"></div>
+        Sage · Nutrition Advisor
+      </div>
+    </div>
+    <button class="reset-btn" onclick="resetConversation()">New Chat</button>
+  </header>
+
+  <!-- BODY -->
+  <div class="kiosk-body">
+
+    <!-- QUICK PANEL -->
+    <aside class="quick-panel">
+      <div>
+        <div class="quick-panel-title" style="margin-bottom:14px;">Ask Sage</div>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="sendQuick('Which recipe is right for my dog?')">
+            <span class="q-icon">🍖</span> Which recipe is right for my dog?
+          </button>
+          <button class="quick-btn" onclick="sendQuick('How much should I feed my dog?')">
+            <span class="q-icon">⚖️</span> How much should I feed?
+          </button>
+          <button class="quick-btn" onclick="sendQuick('What makes Natural Hounds different from kibble?')">
+            <span class="q-icon">✨</span> How is this different from kibble?
+          </button>
+          <button class="quick-btn" onclick="sendQuick('My dog has a sensitive stomach — what do you recommend?')">
+            <span class="q-icon">🐾</span> My dog has a sensitive stomach
+          </button>
+          <button class="quick-btn" onclick="sendQuick('How do I transition my dog to a new food?')">
+            <span class="q-icon">🔄</span> How do I switch foods?
+          </button>
+          <button class="quick-btn" onclick="sendQuick('What are the prices and box sizes?')">
+            <span class="q-icon">💰</span> What are the prices?
+          </button>
+          <button class="quick-btn" onclick="sendQuick('My dog is a picky eater — will they eat this?')">
+            <span class="q-icon">😅</span> My dog is a picky eater
+          </button>
+          <button class="quick-btn" onclick="sendQuick('Is this like The Farmer\'s Dog?')">
+            <span class="q-icon">🔍</span> Is this like The Farmer's Dog?
+          </button>
+          <button class="quick-btn" onclick="sendQuick('I use Farmer\'s Dog now — how does Natural Hounds compare?')">
+            <span class="q-icon">⚖️</span> I use Farmer's Dog — how does this compare?
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-divider"></div>
+
+      <div class="instore-card">
+        <h4>Try It Today</h4>
+        <p>Grab a 1lb pack right from the freezer behind me. Most dogs love it from day one.</p>
+        <span class="price-tag">$12.99 — 1lb pack</span>
+      </div>
+
+      <div class="staff-card">
+        Questions? Our team is right here — just ask!<br><br>
+        📞 631-760-7850
+      </div>
+    </aside>
+
+    <!-- CHAT -->
+    <div class="chat-area">
+      <div class="messages" id="messages"></div>
+      <div class="input-area">
+        <div class="input-wrap">
+          <textarea id="userInput" placeholder="Ask me anything about your dog's nutrition..." rows="1"></textarea>
+          <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+          </button>
+        </div>
+        <div class="input-hint">Sage is an AI advisor. For medical concerns, always consult your veterinarian.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──
+// Replace with your Anthropic API key
+const ANTHROPIC_API_KEY = 'YOUR_API_KEY_HERE';
+
+// ── KIOSK SYSTEM PROMPT ──
+const SYSTEM_PROMPT = `You are Sage, Natural Hounds' AI nutrition advisor — currently operating as an in-store kiosk. You are a physical touchscreen kiosk standing directly in front of the Natural Hounds freezer in one of our store locations. The food the customer is asking about is literally right behind you in the freezer.
+
+KIOSK CONTEXT — CRITICAL:
+- You are IN the store. Never tell someone to "visit a location" or "stop by." They are already here.
+- The freezer is right behind you. Say things like "the freezer right behind me," "grab one off the shelf here," or "you can pick it up right now."
+- For anything that requires staff help — custom orders, bulk pricing, account questions — say "just grab one of our team members right here in the store."
+- No cart building. No online checkout. No delivery instructions. The customer is standing in the store — the action is grab it from the freezer, or talk to a team member.
+- Do NOT mention ordering online or delivery as primary options. Those exist, but in this context the customer is HERE. Focus on what they can do RIGHT NOW.
+- When closing a conversation, always point to: (1) grab a pack from the freezer right here, or (2) talk to a staff member if they need something specific.
+
+RESPONSE STYLE — KIOSK RULES:
+- Keep responses SHORT and PUNCHY. People are standing up in a store aisle. No essays.
+- Get to the point in the first sentence. Answer fast, then offer the next step.
+- Max 3–4 short paragraphs. Prefer 1–2.
+- No email collection. No asking for emails or sending summaries.
+- No "visit our website" or "check out our online store" as primary directions.
+
+BRAND VOICE: Premium, clean, minimal. Honest and transparent. Confident but not boastful. Never pushy or salesy. Like talking to someone who genuinely loves dogs and knows their stuff.
+
+Never use excessive emojis. One max, only if it feels natural.
+
+=== WHAT NATURAL HOUNDS IS ===
+Natural Hounds makes human-grade, freshly cooked dog food. The easiest way to describe it: "home-cooked food for your dog, just done professionally." Every recipe meets AAFCO standards for complete and balanced adult dog nutrition. The food is lightly cooked (cooked through at low temperatures to preserve maximum nutrition). Very similar to raw food but without the risks of handling raw meat. Composition: 80% muscle meat, 10% organ meat, 10% vegetable matter.
+
+=== THE 4 RECIPES ===
+ORIGINAL RECIPE (Turkey-based):
+Ingredients: Turkey, Sweet Potato, Turkey Liver, Turkey Heart, Pumpkin, Brown Rice, Green Beans, Carrots, Eggs, Coconut Oil, Flax Seed Oil, Natural Hounds Supplement Blend
+NOTE: Always say "ground turkey" not "turkey breast."
+Guaranteed Analysis: Crude Protein 7.02% (min.), Crude Fat 5.58% (min.), Crude Fiber 0.45% (max.), Moisture 77.3% (max.)
+Best for: sensitive stomachs, pancreatitis (very low fat at 5.58%), first-timers.
+
+BEEF RECIPE:
+Ingredients: Ground Beef, Beef Heart, Sweet Potato, Beef Liver, Eggs, Kale, Spinach, Flaxseed Oil, Chia Seeds, Natural Hounds Supplement Blend
+Guaranteed Analysis: Crude Protein 12.8% (min.), Crude Fat 10.4% (min.), Crude Fiber 1.16% (max.), Moisture 70.8% (max.)
+Customer favorite. Great for active dogs.
+
+PORK RECIPE:
+Ingredients: Ground Pork, Sweet Potato, Pumpkin, Pork Liver, Pork Heart, Broccoli, Kale, Eggs, Natural Hounds Supplement Blend
+Guaranteed Analysis: Crude Protein 14.1% (min.), Crude Fat 14.1% (min.), Crude Fiber 0.20% (max.), Moisture 67.3% (max.)
+Highest fat recipe — great for very active dogs or dogs that need to gain weight.
+
+LAMB RECIPE:
+Ingredients: Ground Lamb, Cauliflower, Carrots, Lamb Liver, Lamb Heart, Eggs, Blueberries, Spinach, Flaxseed Oil, Natural Hounds Supplement Blend
+Guaranteed Analysis: Crude Protein 16.1% (min.), Crude Fat 10.9% (min.), Crude Fiber 0.20% (max.), Moisture 69.7% (max.)
+Highest protein. Best for allergies or sensitivities. More expensive because lamb is a pricier protein — not better or worse nutritionally, just different.
+
+NUTRITIONAL QUICK REFERENCE:
+- Lowest fat: Original Recipe (5.58%) — best for pancreatitis, sensitive digestion
+- Highest fat: Pork Recipe (14.1%) — best for very active or underweight dogs
+- Highest protein: Lamb Recipe (16.1%)
+- Highest fiber: Beef Recipe (1.16%)
+- Most novel/hypoallergenic: Lamb Recipe
+
+=== IN-STORE PRICING ===
+INDIVIDUAL PACKS (in the freezer right here):
+- 1lb pack: $12.99 (Original/Beef/Pork) | $18.99 (Lamb)
+- 2lb pack: $18.99 (Original/Beef/Pork) | $28.99 (Lamb)
+
+BOX PRICING (best value — available in-store or online):
+- 5lbs: $52.99 = $10.59/lb
+- 10lbs: $74.99 = $7.49/lb
+- 20lbs: $109.99 = $5.49/lb
+- 30lbs+: $4.83/lb
+
+Lamb box pricing (premium protein):
+- 5lbs: $72.99 | 10lbs: $99.99 | 20lbs: $173.99 | 30lbs+: $259.99
+
+PRICING CONTEXT: At $4.83/lb, the 30lb rate is actually less than plain ground beef at the grocery store — and this is a complete, balanced meal with organ meat, vegetables, and vitamins already in it.
+
+WHY NATURAL HOUNDS IS PRICED BETTER THAN COMPETITORS:
+1. We make our own product and sell it directly. No middleman markup.
+2. Online fresh food brands bake massive shipping costs into their price. No shipping here — you're buying local.
+
+=== FEEDING CHARTS ===
+ORIGINAL RECIPE chart (cal/oz: 48):
+Weight | Normal oz | Lazy oz | Active oz
+5lbs: 3.8/3.2/4.2 | 10lbs: 6.4/5.3/7.1 | 15lbs: 8.7/7.2/9.6 | 20lbs: 10.8/8.9/11.9 | 30lbs: 14.6/12.1/16.1 | 40lbs: 18.1/15.0/19.9 | 50lbs: 21.4/17.8/23.6 | 60lbs: 24.6/20.4/27.0 | 70lbs: 27.6/22.9/30.3 | 80lbs: 30.5/25.3/33.5 | 90lbs: 33.3/27.6/36.6 | 100lbs: 36.0/29.9/39.6 | 110lbs: 38.7/32.1/42.6 | 120lbs: 41.3/34.3/45.5 | 130lbs: 43.9/36.4/48.3 | 140lbs: 46.4/38.5/51.0 | 150lbs: 48.9/40.5/53.7
+
+PORK RECIPE chart:
+5lbs: 2.2/1.8/2.4 | 10lbs: 3.6/3.0/4.0 | 15lbs: 4.9/4.1/5.4 | 20lbs: 6.1/5.1/6.7 | 30lbs: 8.3/6.9/9.1 | 40lbs: 10.3/8.5/11.3 | 50lbs: 12.2/10.1/13.4 | 60lbs: 13.9/11.6/15.3 | 70lbs: 15.6/13.0/17.2 | 80lbs: 17.3/14.3/19.0 | 90lbs: 18.9/15.7/20.8 | 100lbs: 20.4/17.0/22.5
+
+BEEF & LAMB RECIPE chart (identical for both):
+5lbs: 2.7/2.2/3.0 | 10lbs: 4.5/3.8/5.0 | 15lbs: 6.2/5.1/6.8 | 20lbs: 7.6/6.3/8.4 | 30lbs: 10.3/8.6/11.4 | 40lbs: 12.8/10.7/14.1 | 50lbs: 15.2/12.6/16.7 | 60lbs: 17.4/14.4/19.1 | 70lbs: 19.5/16.2/21.5 | 80lbs: 21.6/17.9/23.8 | 90lbs: 23.6/19.6/25.9 | 100lbs: 25.5/21.2/28.1 | 110lbs: 27.4/22.8/30.2 | 120lbs: 29.3/24.3/32.2
+
+These amounts are for feeding Natural Hounds as the ONLY food. Recommendations run slightly high — monitor weight for 1–2 weeks and adjust down a few oz if needed.
+
+=== MONTHLY COST CALCULATION ===
+CRITICAL: When a [FEEDING CALC] block is injected into the conversation, you MUST use those exact dollar figures. Do NOT recalculate. Do NOT use box total prices ($52.99, $74.99, $109.99, $145, $259.99) as monthly costs — those are box prices, not monthly costs.
+
+The injected calc will give you:
+- Daily oz
+- Monthly lbs needed
+- Monthly cost at 30lb rate (ALWAYS lead with this number)
+
+ALWAYS present the 30lb rate first as the headline. Only mention smaller tiers if the customer specifically asks. Never present $180 or any 10lb-rate figure as the main number — that is always the worst value option.
+
+Example of correct response for 40lb beef dog:
+"For a 40lb dog on Beef Recipe, that's about 12.8 oz/day — roughly $116/month at our best rate."
+NOT: "$180/month" (that's the 10lb rate, not the best rate)
+
+=== PICKY EATERS ===
+A huge portion of Natural Hounds customers came specifically because their dog was a picky eater. Fresh, human-grade food is simply more appealing — dogs can smell and taste the difference immediately. "Honestly, picky eaters are some of our best customers — they go crazy for this food because it actually smells and tastes like real food." Point them to grab a 1lb pack from the freezer right here — zero risk.
+
+=== TRANSITION GUIDE ===
+KIOSK CONTEXT — keep this simple and low pressure. Someone grabbing a trial pack does NOT need a detailed breakdown. They need to feel confident, not overwhelmed.
+
+FOR TRIAL PACK CUSTOMERS (the most common kiosk scenario):
+Keep it simple: "Thaw it in the fridge overnight, then just mix a little in with whatever you're currently feeding and see how he likes it. Don't stress about exact amounts — just let him try it and see how you both feel about it. When you come back for more, we can dial in the exact feeding amounts then."
+
+That's it. Do NOT list out the 7-day schedule unprompted. Do NOT give specific oz amounts unless they ask. The goal is to remove all friction and get them to try it.
+
+ONLY give the detailed 7-day breakdown if they specifically ask how to transition or ask for exact steps:
+- Days 1–2: 25% Natural Hounds, 75% current food
+- Days 3–4: 50/50
+- Days 5–6: 75% Natural Hounds, 25% current food
+- Day 7+: 100% Natural Hounds
+
+SWITCHING BETWEEN NATURAL HOUNDS RECIPES — no transition needed. Already on NHD? Swap freely between any of the 4 recipes with no gradual transition.
+
+=== SENSITIVE STOMACH ===
+Original Recipe — contains brown rice and pumpkin, excellent for digestion.
+
+=== PANCREATITIS ===
+Original Recipe is the best starting point — very low fat at 5.58%. Dogs are designed to digest fat well; pancreatitis typically develops from long-term pancreatic stress, not fat alone. Fresh cooked food is easier to digest than heavily processed food. Always suggest working with their vet.
+
+=== ALLERGIES ===
+We can remove ingredients from any recipe — just grab a team member right here or call 631-760-7850.
+Chicken allergy ≠ turkey allergy — they're different proteins. Always mention this.
+Eggs appear in all 4 recipes. Poultry (turkey) in Original Recipe only. Both are common allergens worth flagging.
+
+=== KIDNEY DISEASE ===
+Quality matters more than just lowering protein. Fresh digestible protein creates less metabolic waste than heavily processed protein. Whole ingredients, gentle cooking, naturally hydrating. Start with Original Recipe. Always encourage working with their vet.
+
+=== STORAGE ===
+Freezer (sealed): over 1 year. Fridge (sealed): 2 weeks. Fridge (opened): 4–5 days.
+Thawing: Best overnight in the fridge. In a hurry: submerge in warm water, microwave briefly, or leave on counter an hour.
+Packs are frozen solid — totally fine in your car for a normal errand run.
+
+=== BOX PACKAGING ===
+- 5lb: 5x 1lb sealed trays | 10lb: 5x 2lb sealed trays | 20lb: 10x 2lb sealed trays | 30lb: 15x 2lb sealed trays
+Food arrives frozen in sealed trays.
+
+=== TREATS & CHEWS IN STORE ===
+Top sellers: Chicken Jerky 16oz, Beef Jerky 16oz, Bully Sticks 12in Braided, Himalayan Yak Chew Large, Biscuits 16oz.
+Customers can sample jerkies and biscuits in-store for free — just ask a team member.
+
+=== VS FARMER'S DOG / DELIVERY BRANDS ===
+"Think of Natural Hounds as a local version of Farmer's Dog — same concept, but:
+- Higher meat content: 80% muscle + 10% organ meat. Most national brands use less.
+- Less expensive: No shipping baked in. You're buying local — what you see is what you pay.
+- Fresher: The food in that freezer was made in our kitchen — either right here in this building, or at one of our other Long Island locations. Not shipped from a warehouse across the country.
+- More flexible: No subscription, no commitment. Grab a 1lb pack to try, or go straight to a box. You're in control."
+
+FRESHER LINE GUIDANCE — use context to make this land:
+- If the customer is in Babylon or Port Jefferson: "That food was literally made in the kitchen right here — you can see it from where you're standing."
+- If context is unclear or Huntington: "Made fresh at our Long Island kitchens and brought right here — not shipped frozen from across the country."
+Never say "a few miles from here" — it undersells Babylon and Port Jeff where it's made on-site.
+
+=== LOCATIONS ===
+BABYLON (Full Kitchen — food made here): 73 W Main St, Babylon, NY 11702
+PORT JEFFERSON (Full Kitchen — food made here): 216B Main St, Port Jefferson, NY 11777
+HUNTINGTON (Satellite): 44 Gerard St, Huntington, NY 11743
+Hours: Tues–Sat 10am–6pm | Sun 10am–3pm | Closed Monday
+Phone: 631-760-7850
+Delivery: Every Tuesday and Friday, all over Long Island. Also ships out of state.
+
+=== IMPORTANT RULES ===
+- You are a KIOSK in the store. The food is right here. Always close with: grab it from the freezer right behind me, or talk to one of our team members.
+- Never push online ordering as the primary path for in-store customers.
+- Never collect emails.
+- Never build Shopify carts.
+- Keep responses short — people are standing up.
+- Never use the word "cheaper" — say "less expensive" or "better value."
+- Never speak negatively about competitors.
+- Never promise medical outcomes — always say consult your vet.
+- Never make the transition sound scary.
+- For bulk pricing inquiries (large orders, multiple dogs): "Best to ask one of our team members right here — they'll walk you through our bulk options."
+- Off-topic questions: "That's outside what I'm trained on, but happy to help with anything about your pup's nutrition!"`;
+
+// ── STATE ──
+let conversationHistory = [];
+let isTyping = false;
+
+// ── FEEDING CHARTS (hardcoded — never wrong) ──
+const FEEDING_CHARTS = {
+  original: [
+    {max:5,normal:3.8,lazy:3.2,active:4.2},{max:10,normal:6.4,lazy:5.3,active:7.1},
+    {max:15,normal:8.7,lazy:7.2,active:9.6},{max:20,normal:10.8,lazy:8.9,active:11.9},
+    {max:30,normal:14.6,lazy:12.1,active:16.1},{max:40,normal:18.1,lazy:15.0,active:19.9},
+    {max:50,normal:21.4,lazy:17.8,active:23.6},{max:60,normal:24.6,lazy:20.4,active:27.0},
+    {max:70,normal:27.6,lazy:22.9,active:30.3},{max:80,normal:30.5,lazy:25.3,active:33.5},
+    {max:90,normal:33.3,lazy:27.6,active:36.6},{max:100,normal:36.0,lazy:29.9,active:39.6},
+    {max:110,normal:38.7,lazy:32.1,active:42.6},{max:120,normal:41.3,lazy:34.3,active:45.5},
+    {max:130,normal:43.9,lazy:36.4,active:48.3},{max:140,normal:46.4,lazy:38.5,active:51.0},
+    {max:150,normal:48.9,lazy:40.5,active:53.7},
+  ],
+  pork: [
+    {max:5,normal:2.2,lazy:1.8,active:2.4},{max:10,normal:3.6,lazy:3.0,active:4.0},
+    {max:15,normal:4.9,lazy:4.1,active:5.4},{max:20,normal:6.1,lazy:5.1,active:6.7},
+    {max:30,normal:8.3,lazy:6.9,active:9.1},{max:40,normal:10.3,lazy:8.5,active:11.3},
+    {max:50,normal:12.2,lazy:10.1,active:13.4},{max:60,normal:13.9,lazy:11.6,active:15.3},
+    {max:70,normal:15.6,lazy:13.0,active:17.2},{max:80,normal:17.3,lazy:14.3,active:19.0},
+    {max:90,normal:18.9,lazy:15.7,active:20.8},{max:100,normal:20.4,lazy:17.0,active:22.5},
+    {max:110,normal:21.9,lazy:18.2,active:24.1},{max:120,normal:23.4,lazy:19.4,active:25.8},
+    {max:130,normal:24.9,lazy:20.6,active:27.4},{max:140,normal:26.3,lazy:21.8,active:28.9},
+    {max:150,normal:27.7,lazy:23.0,active:30.5},
+  ],
+  beef: [
+    {max:5,normal:2.7,lazy:2.2,active:3.0},{max:10,normal:4.5,lazy:3.8,active:5.0},
+    {max:15,normal:6.2,lazy:5.1,active:6.8},{max:20,normal:7.6,lazy:6.3,active:8.4},
+    {max:30,normal:10.3,lazy:8.6,active:11.4},{max:40,normal:12.8,lazy:10.7,active:14.1},
+    {max:50,normal:15.2,lazy:12.6,active:16.7},{max:60,normal:17.4,lazy:14.4,active:19.1},
+    {max:70,normal:19.5,lazy:16.2,active:21.5},{max:80,normal:21.6,lazy:17.9,active:23.8},
+    {max:90,normal:23.6,lazy:19.6,active:25.9},{max:100,normal:25.5,lazy:21.2,active:28.1},
+    {max:110,normal:27.4,lazy:22.8,active:30.2},{max:120,normal:29.3,lazy:24.3,active:32.2},
+    {max:130,normal:31.1,lazy:25.8,active:34.2},{max:140,normal:32.9,lazy:27.3,active:36.1},
+    {max:150,normal:34.6,lazy:28.7,active:38.1},
+  ],
+};
+FEEDING_CHARTS.lamb = FEEDING_CHARTS.beef;
+
+const PRICE_TIERS = {
+  default: [{label:'30lb+ rate',ppl:4.83},{label:'20lb rate',ppl:5.49},{label:'10lb rate',ppl:7.49},{label:'5lb rate',ppl:10.59}],
+  lamb: [{label:'30lb+ rate',ppl:8.67},{label:'20lb rate',ppl:8.70},{label:'10lb rate',ppl:10.00},{label:'5lb rate',ppl:14.60}],
+};
+
+function getRecipeKey(recipe) {
+  const r = recipe.toLowerCase();
+  if (r.includes('original') || r.includes('turkey')) return 'original';
+  if (r.includes('pork')) return 'pork';
+  if (r.includes('beef')) return 'beef';
+  if (r.includes('lamb')) return 'lamb';
+  return null;
+}
+
+function lookupFeedingOz(recipe, weightLbs, activityLevel) {
+  const key = getRecipeKey(recipe);
+  if (!key) return null;
+  const chart = FEEDING_CHARTS[key];
+  const activity = activityLevel.toLowerCase();
+  const actKey = activity.includes('lazy') || activity.includes('low') ? 'lazy'
+               : activity.includes('active') || activity.includes('high') ? 'active' : 'normal';
+  const row = chart.find(r => weightLbs <= r.max);
+  if (!row) return null;
+  return { oz: row[actKey], actKey };
+}
+
+function calcMonthlyData(ozPerDay, recipeKey) {
+  const monthlyOz = ozPerDay * 30;
+  const monthlyLbs = monthlyOz / 16;
+  const tiers = (recipeKey === 'lamb') ? PRICE_TIERS.lamb : PRICE_TIERS.default;
+  return {
+    monthlyLbs: Math.round(monthlyLbs * 10) / 10,
+    tiers: tiers.map(t => ({ label: t.label, monthly: Math.round(monthlyLbs * t.ppl) }))
+  };
+}
+
+function injectFeedingCalc(recipe, weightLbs, activityLevel) {
+  const result = lookupFeedingOz(recipe, weightLbs, activityLevel);
+  if (!result) return `[FEEDING CALC: ${weightLbs}lb dog exceeds chart range. Tell customer to ask a team member in the store.]`;
+  const { oz, actKey } = result;
+  const recipeKey = getRecipeKey(recipe);
+  const { monthlyLbs, tiers } = calcMonthlyData(oz, recipeKey);
+  return `[FEEDING CALC — USE THESE EXACT PRE-CALCULATED NUMBERS. DO NOT RECALCULATE. DO NOT USE BOX PRICES AS MONTHLY COSTS.
+Recipe: ${recipe} | Weight: ${weightLbs}lbs | Activity: ${actKey}
+Daily feeding: ${oz} oz/day
+Monthly lbs needed: ${monthlyLbs} lbs
+HEADLINE MONTHLY COST (30lb+ rate, best value): $${tiers[0].monthly}/month ← ALWAYS LEAD WITH THIS NUMBER
+Other tiers (only if asked): ${tiers.slice(1).map(t => t.label + ': $' + t.monthly + '/month').join(', ')}
+For large orders or bulk pricing, suggest asking a team member in the store.
+Remind customer: starting point — monitor weight first 2 weeks and adjust a few oz if needed.]`;
+}
+
+function tryInjectCalc(userMessage) {
+  const recentText = conversationHistory.slice(-6).map(m => m.content).join(' ').toLowerCase();
+  const allText = (userMessage + ' ' + recentText).toLowerCase();
+  const strippedText = allText.replace(/(\d+)\s*lb\s*(pack|packs|box|boxes|bag|bags|rate|tray|trays)/gi, '');
+  const weightMatch = strippedText.match(/(\d+)\s*(?:lb|lbs|pound|pounds)/);
+  if (!weightMatch) return null;
+  const weight = parseInt(weightMatch[1]);
+  if (weight < 3 || weight > 200) return null;
+  const productSizes = [1, 2, 5, 10, 20, 30];
+  if (productSizes.includes(weight) && !strippedText.match(/dog|pup|she |he |weighs|weight|weigh/)) return null;
+
+  let activity = 'normal';
+  if (allText.match(/lazy|low.activ|sedentary|couch|not very active/)) activity = 'lazy';
+  else if (allText.match(/active|high.activ|athletic|runs|working dog|sport/)) activity = 'active';
+
+  const hasBeef = allText.includes('beef');
+  const hasPork = allText.includes('pork');
+  const hasLamb = allText.includes('lamb');
+  const hasOriginal = allText.includes('original') || allText.includes('turkey');
+  const hasAll = allText.match(/all.recipe|all.four|every recipe|compare|all of them|all recipes/);
+  const hasNone = !hasBeef && !hasPork && !hasLamb && !hasOriginal;
+
+  if (hasAll || (hasNone && allText.match(/how much|feeding|ounce|oz|amount|recipe/))) {
+    return ['Original Recipe','Beef Recipe','Pork Recipe','Lamb Recipe'].map(r => injectFeedingCalc(r, weight, activity)).join('\n');
+  }
+
+  const toCalc = [];
+  if (hasOriginal) toCalc.push('Original Recipe');
+  if (hasBeef) toCalc.push('Beef Recipe');
+  if (hasPork) toCalc.push('Pork Recipe');
+  if (hasLamb) toCalc.push('Lamb Recipe');
+  if (toCalc.length === 0) return null;
+  return toCalc.map(r => injectFeedingCalc(r, weight, activity)).join('\n');
+}
+
+// ── INACTIVITY RESET ──
+const INACTIVE_MS = 2 * 60 * 1000; // 2 minutes before warning
+const COUNTDOWN_SEC = 30;           // 30 second countdown
+
+let inactivityTimer = null;
+let countdownTimer = null;
+let countdownVal = COUNTDOWN_SEC;
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  clearInterval(countdownTimer);
+  // If overlay is showing, hide it
+  document.getElementById('resetOverlay').classList.remove('visible');
+  inactivityTimer = setTimeout(showResetWarning, INACTIVE_MS);
+}
+
+function showResetWarning() {
+  countdownVal = COUNTDOWN_SEC;
+  document.getElementById('countdownNum').textContent = countdownVal;
+  document.getElementById('resetOverlay').classList.add('visible');
+  countdownTimer = setInterval(() => {
+    countdownVal--;
+    document.getElementById('countdownNum').textContent = countdownVal;
+    if (countdownVal <= 0) {
+      clearInterval(countdownTimer);
+      doReset();
+    }
+  }, 1000);
+}
+
+function cancelReset() {
+  clearInterval(countdownTimer);
+  document.getElementById('resetOverlay').classList.remove('visible');
+  resetInactivityTimer();
+}
+
+function doReset() {
+  clearInterval(countdownTimer);
+  document.getElementById('resetOverlay').classList.remove('visible');
+  resetConversation();
+  resetInactivityTimer();
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  resetInactivityTimer();
+  appendMessage('sage', `Hi! I'm Sage, Natural Hounds' nutrition advisor.\n\nThe food in the freezer right behind me is made with real meat, real vegetables, and nothing else — human-grade, freshly cooked, and ready for your dog.\n\nTell me a bit about your pup and I'll help you find the right recipe!`);
+
+  const input = document.getElementById('userInput');
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+  });
+});
+
+// ── SEND ──
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text || isTyping) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  appendMessage('user', text);
+  const calcInjection = tryInjectCalc(text);
+  const finalText = calcInjection ? text + '\n\n' + calcInjection : text;
+  conversationHistory.push({ role: 'user', content: finalText });
+
+  showTyping();
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        messages: conversationHistory
+      })
+    });
+
+    const data = await response.json();
+    const fullText = data.content?.map(b => b.text || '').join('') || "I'm having a little trouble right now. Please ask one of our team members!";
+
+    hideTyping();
+
+    const container = document.getElementById('messages');
+    const msg = document.createElement('div');
+    msg.className = 'message sage';
+    msg.innerHTML = '<div class="avatar sage-avatar">S</div><div class="bubble"><span class="stream-text"></span><span class="stream-cursor"></span></div>';
+    container.appendChild(msg);
+
+    const textEl = msg.querySelector('.stream-text');
+    const cursorEl = msg.querySelector('.stream-cursor');
+
+    conversationHistory.push({ role: 'assistant', content: fullText });
+
+    let i = 0;
+    function typeNext() {
+      if (i < fullText.length) {
+        i += Math.ceil(fullText.length / 250);
+        i = Math.min(i, fullText.length);
+        textEl.innerHTML = formatInline(fullText.slice(0, i).trim());
+        scrollToBottom();
+        setTimeout(typeNext, 8);
+      } else {
+        textEl.innerHTML = formatInline(fullText.trim());
+        cursorEl.remove();
+        scrollToBottom();
+      }
+    }
+    typeNext();
+
+  } catch (err) {
+    hideTyping();
+    appendMessage('sage', "I'm having a little trouble right now. Please ask one of our team members — they're happy to help!");
+  }
+}
+
+function sendQuick(text) {
+  document.getElementById('userInput').value = text;
+  sendMessage();
+}
+
+function resetConversation() {
+  conversationHistory = [];
+  document.getElementById('messages').innerHTML = '';
+  appendMessage('sage', `Hi! I'm Sage, Natural Hounds' nutrition advisor.\n\nThe food in the freezer right behind me is made with real meat, real vegetables, and nothing else — human-grade, freshly cooked, and ready for your dog.\n\nTell me a bit about your pup and I'll help you find the right recipe!`);
+}
+
+function formatInline(text) {
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
+
+function appendMessage(role, text) {
+  const container = document.getElementById('messages');
+  const msg = document.createElement('div');
+  msg.className = `message ${role}`;
+  const avatar = document.createElement('div');
+  avatar.className = `avatar ${role}-avatar`;
+  avatar.textContent = role === 'sage' ? 'S' : 'You';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = formatInline(text);
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+  container.appendChild(msg);
+  scrollToBottom();
+}
+
+function showTyping() {
+  isTyping = true;
+  document.getElementById('sendBtn').style.opacity = '0.4';
+  const container = document.getElementById('messages');
+  const t = document.createElement('div');
+  t.className = 'typing';
+  t.id = 'typingIndicator';
+  t.innerHTML = `<div class="avatar sage-avatar">S</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  container.appendChild(t);
+  scrollToBottom();
+}
+
+function hideTyping() {
+  isTyping = false;
+  document.getElementById('sendBtn').style.opacity = '1';
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+function scrollToBottom() {
+  const c = document.getElementById('messages');
+  c.scrollTop = c.scrollHeight;
+}
+</script>
+</body>
+</html>
