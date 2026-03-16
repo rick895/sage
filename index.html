@@ -1795,7 +1795,12 @@ function formatTranscript() {
     .filter(m => !m.content.startsWith('[FEEDING CALC') && !m.content.startsWith('[CART'))
     .map(m => {
       const role = m.role === 'user' ? 'Customer' : 'Sage';
-      return role + ': ' + m.content;
+      // Strip any injected calc or cart blocks from within the message
+      const clean = m.content
+        .replace(/\n*\[FEEDING CALC[\s\S]*?\]/g, '')
+        .replace(/\n*\[CART[\s\S]*?\]/g, '')
+        .trim();
+      return role + ': ' + clean;
     })
     .join('\n\n');
 }
