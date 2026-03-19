@@ -1891,17 +1891,25 @@ function sendTranscript() {
 
 function resetInactivityTimer() {
   clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(sendTranscript, 2 * 60 * 1000); // 2 min inactivity
+  // Only schedule transcript send if customer has actually sent at least one message
+  const hasCustomerMessage = conversationHistory.some(m => m.role === 'user');
+  if (!hasCustomerMessage) return;
+  inactivityTimer = setTimeout(sendTranscript, 10 * 60 * 1000); // 10 min inactivity
 }
 
 // Send when user switches away (most reliable on mobile)
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') sendTranscript();
+  if (document.visibilityState === 'hidden') {
+    const hasCustomerMessage = conversationHistory.some(m => m.role === 'user');
+    if (hasCustomerMessage) sendTranscript();
+  }
 });
 
 // Fallback: sendBeacon on page close
 window.addEventListener('beforeunload', () => {
   if (transcriptSent || conversationHistory.length < 2) return;
+  const hasCustomerMessage = conversationHistory.some(m => m.role === 'user');
+  if (!hasCustomerMessage) return;
   try {
     navigator.sendBeacon('https://api.web3forms.com/submit',
       new Blob([buildTranscriptPayload()], { type: 'application/json' }));
