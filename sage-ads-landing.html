@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Natural Hounds — Fresh Dog Food</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #9fd1ff;
+    --blue-dark: #536479;
+    --cream: #f4f9ff;
+    --border: #d4e5f2;
+    --white: #FFFFFF;
+    --charcoal: #111111;
+    --mid: #536479;
+    --light: #a8bccf;
+    --shadow: 0 2px 24px rgba(83,100,121,0.10);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ── PAGE LAYOUT ── */
+  .page {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--white);
+    box-shadow: 0 0 40px rgba(83,100,121,0.08);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+
+  .header-name {
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+  }
+
+  .header-sage {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  .sage-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--blue);
+    border-radius: 50%;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── MESSAGES ── */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 3px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── BUBBLES ── */
+  .message {
+    display: flex;
+    gap: 10px;
+    max-width: 88%;
+    animation: fadeUp 0.25s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .message.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .sage-avatar {
+    background: var(--blue);
+    color: var(--charcoal);
+    font-family: 'League Spartan', sans-serif;
+    font-size: 13px;
+  }
+
+  .user-avatar {
+    background: var(--blue-dark);
+    color: var(--white);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .bubble {
+    padding: 12px 15px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .message.sage .bubble {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-top-left-radius: 4px;
+    color: var(--charcoal);
+    box-shadow: var(--shadow);
+  }
+
+  .message.user .bubble {
+    background: var(--blue-dark);
+    color: var(--white);
+    border-top-right-radius: 4px;
+    font-weight: 400;
+  }
+
+  .bubble strong { font-weight: 500; }
+  .bubble p + p { margin-top: 8px; }
+
+  /* ── RESULT CARD ── */
+  .result-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 3px 0;
+  }
+
+  .result-row .label { color: var(--mid); }
+  .result-row .value { font-weight: 500; }
+  .result-row.highlight .value { color: var(--blue-dark); font-weight: 600; }
+
+  /* ── QUICK REPLY BUTTONS ── */
+  .quick-replies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .qr-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--blue-dark);
+    background: var(--white);
+    color: var(--blue-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .qr-btn:hover, .qr-btn.selected {
+    background: var(--blue-dark);
+    color: var(--white);
+  }
+
+  .qr-btn.store-btn {
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+    border-radius: 10px;
+  }
+
+  /* ── RESERVE CONFIRM ── */
+  .reserve-confirm {
+    background: #edf7ed;
+    border: 1px solid #a8d5a8;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #2a5c2a;
+  }
+
+  /* ── TYPING ── */
+  .typing {
+    display: flex;
+    gap: 10px;
+    max-width: 88%;
+    animation: fadeUp 0.25s ease forwards;
+  }
+
+  .typing-dots {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    border-top-left-radius: 4px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    box-shadow: var(--shadow);
+  }
+
+  .typing-dots span {
+    width: 5px;
+    height: 5px;
+    background: var(--blue);
+    border-radius: 50%;
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+  }
+
+  /* ── INPUT ── */
+  .input-area {
+    flex-shrink: 0;
+    padding: 12px 16px;
+    padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom)));
+    border-top: 1px solid var(--border);
+    background: var(--white);
+  }
+
+  .input-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-shadow: var(--shadow);
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--blue-dark);
+    box-shadow: 0 2px 16px rgba(83,100,121,0.12);
+  }
+
+  #userInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--charcoal);
+    resize: none;
+    line-height: 1.5;
+    max-height: 100px;
+    min-height: 22px;
+  }
+
+  #userInput::placeholder { color: var(--light); }
+
+  .send-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--blue-dark);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+
+  .send-btn:hover { background: var(--blue); }
+  .send-btn svg { width: 14px; height: 14px; fill: white; }
+
+  .stream-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--blue-dark);
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    animation: blink 0.7s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 480px) {
+    .page { max-width: 100%; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-brand">
+      <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="header-logo" alt="Natural Hounds">
+      <span class="header-name">Natural Hounds</span>
+    </div>
+    <div class="header-sage">
+      <div class="sage-dot"></div>
+      Sage
+    </div>
+  </header>
+
+  <!-- MESSAGES -->
+  <div class="messages" id="messages"></div>
+
+  <!-- INPUT -->
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="userInput" placeholder="Type here…" rows="1"></textarea>
+      <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG ──
+const PROXY_URL = 'https://sage-proxy.rick-026.workers.dev';
+
+// ── FLOW STATE ──
+const state = {
+  stage: 'weight',      // weight → activity → recipe → confirmed → reserve_yn → name → phone → store → done
+  dogWeight: null,
+  activityLevel: 'normal',
+  recipe: null,
+  dailyOz: null,
+  monthlyLbs: null,
+  monthlyCost: null,
+  reserveName: null,
+  reservePhone: null,
+  reserveStore: null,
+};
+
+// ── FEEDING CHARTS ──
+const CHARTS = {
+  original: [
+    {max:5,normal:3.8,lazy:3.2,active:4.2},{max:10,normal:6.4,lazy:5.3,active:7.1},
+    {max:15,normal:8.7,lazy:7.2,active:9.6},{max:20,normal:10.8,lazy:8.9,active:11.9},
+    {max:30,normal:14.6,lazy:12.1,active:16.1},{max:40,normal:18.1,lazy:15.0,active:19.9},
+    {max:50,normal:21.4,lazy:17.8,active:23.6},{max:60,normal:24.6,lazy:20.4,active:27.0},
+    {max:70,normal:27.6,lazy:22.9,active:30.3},{max:80,normal:30.5,lazy:25.3,active:33.5},
+    {max:90,normal:33.3,lazy:27.6,active:36.6},{max:100,normal:36.0,lazy:29.9,active:39.6},
+    {max:110,normal:38.7,lazy:32.1,active:42.6},{max:120,normal:41.3,lazy:34.3,active:45.5},
+    {max:130,normal:43.9,lazy:36.4,active:48.3},{max:140,normal:46.4,lazy:38.5,active:51.0},
+    {max:150,normal:48.9,lazy:40.5,active:53.7},
+  ],
+  beef: [
+    {max:5,normal:2.7,lazy:2.2,active:3.0},{max:10,normal:4.5,lazy:3.8,active:5.0},
+    {max:15,normal:6.2,lazy:5.1,active:6.8},{max:20,normal:7.6,lazy:6.3,active:8.4},
+    {max:30,normal:10.3,lazy:8.6,active:11.4},{max:40,normal:12.8,lazy:10.7,active:14.1},
+    {max:50,normal:15.2,lazy:12.6,active:16.7},{max:60,normal:17.4,lazy:14.4,active:19.1},
+    {max:70,normal:19.5,lazy:16.2,active:21.5},{max:80,normal:21.6,lazy:17.9,active:23.8},
+    {max:90,normal:23.6,lazy:19.6,active:25.9},{max:100,normal:25.5,lazy:21.2,active:28.1},
+    {max:110,normal:27.4,lazy:22.8,active:30.2},{max:120,normal:29.3,lazy:24.3,active:32.2},
+  ],
+  pork: [
+    {max:5,normal:2.2,lazy:1.8,active:2.4},{max:10,normal:3.6,lazy:3.0,active:4.0},
+    {max:15,normal:4.9,lazy:4.1,active:5.4},{max:20,normal:6.1,lazy:5.1,active:6.7},
+    {max:30,normal:8.3,lazy:6.9,active:9.1},{max:40,normal:10.3,lazy:8.5,active:11.3},
+    {max:50,normal:12.2,lazy:10.1,active:13.4},{max:60,normal:13.9,lazy:11.6,active:15.3},
+    {max:70,normal:15.6,lazy:13.0,active:17.2},{max:80,normal:17.3,lazy:14.3,active:19.0},
+    {max:90,normal:18.9,lazy:15.7,active:20.8},{max:100,normal:20.4,lazy:17.0,active:22.5},
+  ],
+};
+CHARTS.lamb = CHARTS.beef;
+
+const PRICE_PER_LB = { original: 4.83, beef: 4.83, pork: 4.83, lamb: 8.67 };
+
+function calcFeeding(recipe, weight, activity) {
+  const chart = CHARTS[recipe];
+  const row = chart.find(r => weight <= r.max);
+  if (!row) return null;
+  const oz = row[activity] || row.normal;
+  const monthlyLbs = Math.round((oz * 30 / 16) * 10) / 10;
+  const monthlyCost = Math.round(monthlyLbs * PRICE_PER_LB[recipe]);
+  return { oz, monthlyLbs, monthlyCost };
+}
+
+function recipeLabel(key) {
+  return { original: 'Original (Turkey)', beef: 'Beef', pork: 'Pork', lamb: 'Lamb' }[key] || key;
+}
+
+// ── SYSTEM PROMPT (short, conversion-focused) ──
+const SYSTEM_PROMPT = `You are Sage, a friendly and confident nutrition advisor for Natural Hounds — a fresh, human-grade dog food company on Long Island, NY.
+
+Your only job on this page is to:
+1. Get the dog's weight
+2. Get the activity level (lazy / normal / active)
+3. Recommend the best recipe for this dog
+4. Show the feeding amount and cost
+5. Ask if they want a pack reserved
+
+Tone: warm, direct, confident. Short sentences. Never say "would you like to" — just lead. Never over-explain nutrition. Keep responses to 1-3 sentences max unless showing the result card.
+
+Natural Hounds makes freshly cooked, human-grade dog food. 4 recipes: Original (Turkey), Beef, Pork, Lamb. Sold in 1lb packs ($12.99) at 3 stores: Babylon, Port Jefferson, Huntington. Hours: Tues-Sat 10am-6pm, Sun 10am-3pm.
+
+The feeding calculation will be injected automatically — do NOT calculate it yourself. Just use the numbers provided.
+
+After showing the result, immediately ask: "Want me to set aside a pack for you to try?" — nothing else.
+
+If they say yes → say "Perfect. What's your name?" 
+Then ask for phone number.
+Then ask which store with buttons.
+
+Do NOT ask for email. Do NOT ask for dog's name. Do NOT re-explain the product.
+
+If they have questions, answer briefly and get back on track.`;
+
+// ── CONVERSATION HISTORY ──
+let history = [];
+let isTyping = false;
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  // Opening message — hardcoded, no API call
+  appendSage("Let's figure out exactly how much your dog should be eating and what it would cost — takes about 30 seconds.\n\nWhat's your dog's weight?");
+  state.stage = 'weight';
+
+  const input = document.getElementById('userInput');
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+  });
+});
+
+// ── SEND ──
+async function sendMessage(overrideText) {
+  const input = document.getElementById('userInput');
+  const text = (overrideText || input.value).trim();
+  if (!text || isTyping) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  appendUser(text);
+
+  // Route based on stage
+  if (state.stage === 'weight') return handleWeight(text);
+  if (state.stage === 'activity') return handleActivity(text);
+  if (state.stage === 'recipe') return handleRecipe(text);
+  if (state.stage === 'reserve_yn') return handleReserveYN(text);
+  if (state.stage === 'name') return handleName(text);
+  if (state.stage === 'phone') return handlePhone(text);
+  if (state.stage === 'store') return handleStore(text);
+
+  // Freeform question — ask Claude
+  await askClaude(text);
+}
+
+// ── STAGE HANDLERS ──
+
+function handleWeight(text) {
+  const match = text.match(/(\d+)/);
+  if (!match || parseInt(match[1]) < 2 || parseInt(match[1]) > 200) {
+    appendSage("Just need the weight in pounds — something like \"45\" works fine.");
+    return;
+  }
+  state.dogWeight = parseInt(match[1]);
+  state.stage = 'activity';
+
+  showTypingThen(600, () => {
+    const msg = appendSage("Got it. How active is your dog?");
+    addQuickReplies(msg, [
+      { label: '🛋️ Pretty lazy', value: 'lazy' },
+      { label: '🐕 Normal', value: 'normal' },
+      { label: '⚡ Very active', value: 'active' },
+    ], handleActivity);
+  });
+}
+
+function handleActivity(text) {
+  const t = text.toLowerCase();
+  if (t.includes('lazy') || t.includes('low') || t.includes('sedentary') || t.includes('couch')) {
+    state.activityLevel = 'lazy';
+  } else if (t.includes('active') || t.includes('high') || t.includes('athletic') || t.includes('runs')) {
+    state.activityLevel = 'active';
+  } else {
+    state.activityLevel = 'normal';
+  }
+  state.stage = 'recipe';
+
+  showTypingThen(600, () => {
+    const msg = appendSage("Any food sensitivities or allergies to know about? If not, most dogs do great on Beef or Original.");
+    addQuickReplies(msg, [
+      { label: 'Beef', value: 'beef' },
+      { label: 'Original (Turkey)', value: 'original' },
+      { label: 'Pork', value: 'pork' },
+      { label: 'Lamb', value: 'lamb' },
+    ], handleRecipe);
+  });
+}
+
+function handleRecipe(text) {
+  const t = text.toLowerCase();
+  let recipe = 'beef';
+  if (t.includes('original') || t.includes('turkey')) recipe = 'original';
+  else if (t.includes('pork')) recipe = 'pork';
+  else if (t.includes('lamb')) recipe = 'lamb';
+  else if (t.includes('beef')) recipe = 'beef';
+
+  state.recipe = recipe;
+  const calc = calcFeeding(recipe, state.dogWeight, state.activityLevel);
+
+  if (!calc) {
+    appendSage("Your dog's size is outside our standard chart. Give us a call at 631-760-7850 and we'll sort it out.");
+    return;
+  }
+
+  state.dailyOz = calc.oz;
+  state.monthlyLbs = calc.monthlyLbs;
+  state.monthlyCost = calc.monthlyCost;
+  state.stage = 'confirmed';
+
+  showTypingThen(700, () => {
+    const msgEl = appendSage(`Here's what your ${state.dogWeight}lb dog needs on the ${recipeLabel(recipe)} Recipe:`);
+    addResultCard(msgEl, calc, recipe);
+
+    setTimeout(() => {
+      state.stage = 'reserve_yn';
+      const followUp = appendSage("Want me to set aside a pack for you to try?");
+      addQuickReplies(followUp, [
+        { label: 'Yes, reserve one', value: 'yes' },
+        { label: 'Not yet', value: 'no' },
+      ], handleReserveYN);
+    }, 800);
+  });
+}
+
+function handleReserveYN(text) {
+  const t = text.toLowerCase();
+  if (t.includes('yes') || t.includes('sure') || t.includes('yeah') || t.includes('reserve') || t.includes('ok') || t.includes('please')) {
+    state.stage = 'name';
+    showTypingThen(500, () => appendSage("Perfect. What's your name?"));
+  } else {
+    showTypingThen(400, () => {
+      appendSage("No problem. We're at Babylon, Port Jefferson, and Huntington — Tues-Sat 10am-6pm, Sun 10am-3pm. Just ask for a 1lb pack when you come in.");
+      state.stage = 'done';
+    });
+  }
+}
+
+function handleName(text) {
+  if (text.length < 2) { appendSage("What's your name?"); return; }
+  state.reserveName = text.trim();
+  state.stage = 'phone';
+  showTypingThen(400, () => appendSage(`Got it, ${state.reserveName.split(' ')[0]}. Best phone number?`));
+}
+
+function handlePhone(text) {
+  const digits = text.replace(/\D/g, '');
+  if (digits.length < 10) {
+    appendSage("Just need a 10-digit phone number so we can text you when it's ready.");
+    return;
+  }
+  state.reservePhone = digits;
+  state.stage = 'store';
+
+  showTypingThen(400, () => {
+    const msg = appendSage("Which location is easiest for you?");
+    addStorePicker(msg);
+  });
+}
+
+function handleStore(text) {
+  const t = text.toLowerCase();
+  let store = '';
+  if (t.includes('babylon')) store = 'Babylon';
+  else if (t.includes('port') || t.includes('jeff')) store = 'Port Jefferson';
+  else if (t.includes('huntington')) store = 'Huntington';
+  else {
+    appendSage("Which location works — Babylon, Port Jefferson, or Huntington?");
+    return;
+  }
+
+  state.reserveStore = store;
+  state.stage = 'done';
+
+  // Submit to Close
+  submitReservation();
+}
+
+async function submitReservation() {
+  showTyping();
+  try {
+    await fetch(PROXY_URL + '/reserve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: state.reserveName,
+        phone: state.reservePhone,
+        store: state.reserveStore,
+        dogWeight: state.dogWeight,
+      }),
+    });
+  } catch(e) {
+    console.error('Reserve error:', e);
+  }
+  hideTyping();
+
+  const firstName = state.reserveName.split(' ')[0];
+  const msgEl = appendSage(`Done, ${firstName}! I've got a 1lb pack of ${recipeLabel(state.recipe)} set aside for you at ${state.reserveStore}.`);
+  addConfirmCard(msgEl);
+}
+
+// ── CLAUDE FALLBACK (for off-flow questions) ──
+async function askClaude(text) {
+  history.push({ role: 'user', content: text });
+  showTyping();
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        system: SYSTEM_PROMPT,
+        messages: history,
+      }),
+    });
+    const data = await res.json();
+    const reply = data.content?.map(b => b.text || '').join('') || "Give us a call at 631-760-7850 and we'll help you out.";
+    hideTyping();
+    history.push({ role: 'assistant', content: reply });
+    appendSage(reply);
+  } catch(e) {
+    hideTyping();
+    appendSage("Give us a call at 631-760-7850 and we'll help you out directly.");
+  }
+}
+
+// ── UI HELPERS ──
+
+function appendSage(text) {
+  const container = document.getElementById('messages');
+  const msg = document.createElement('div');
+  msg.className = 'message sage';
+  msg.innerHTML = `
+    <div class="avatar sage-avatar">S</div>
+    <div class="bubble">${formatText(text)}</div>
+  `;
+  container.appendChild(msg);
+  scrollBottom();
+  return msg;
+}
+
+function appendUser(text) {
+  const container = document.getElementById('messages');
+  const msg = document.createElement('div');
+  msg.className = 'message user';
+  msg.innerHTML = `
+    <div class="avatar user-avatar">You</div>
+    <div class="bubble">${formatText(text)}</div>
+  `;
+  container.appendChild(msg);
+  scrollBottom();
+}
+
+function formatText(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+}
+
+function addQuickReplies(msgEl, options, handler) {
+  const bubble = msgEl.querySelector('.bubble');
+  const wrap = document.createElement('div');
+  wrap.className = 'quick-replies';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'qr-btn';
+    btn.textContent = opt.label;
+    btn.onclick = () => {
+      // Visually select
+      wrap.querySelectorAll('.qr-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      // Disable all buttons in this set
+      wrap.querySelectorAll('.qr-btn').forEach(b => b.disabled = true);
+      appendUser(opt.label);
+      setTimeout(() => handler(opt.value), 200);
+    };
+    wrap.appendChild(btn);
+  });
+  bubble.appendChild(wrap);
+  scrollBottom();
+}
+
+function addStorePicker(msgEl) {
+  const bubble = msgEl.querySelector('.bubble');
+  const wrap = document.createElement('div');
+  wrap.className = 'quick-replies';
+  ['Babylon', 'Port Jefferson', 'Huntington'].forEach(store => {
+    const btn = document.createElement('button');
+    btn.className = 'qr-btn store-btn';
+    btn.textContent = store;
+    btn.onclick = () => {
+      wrap.querySelectorAll('.qr-btn').forEach(b => b.disabled = true);
+      btn.classList.add('selected');
+      appendUser(store);
+      setTimeout(() => handleStore(store), 200);
+    };
+    wrap.appendChild(btn);
+  });
+  bubble.appendChild(wrap);
+  scrollBottom();
+}
+
+function addResultCard(msgEl, calc, recipe) {
+  const bubble = msgEl.querySelector('.bubble');
+  const card = document.createElement('div');
+  card.className = 'result-card';
+  card.innerHTML = `
+    <div class="result-row">
+      <span class="label">Recipe</span>
+      <span class="value">${recipeLabel(recipe)}</span>
+    </div>
+    <div class="result-row">
+      <span class="label">Daily amount</span>
+      <span class="value">${calc.oz} oz/day</span>
+    </div>
+    <div class="result-row">
+      <span class="label">Monthly need</span>
+      <span class="value">${calc.monthlyLbs} lbs</span>
+    </div>
+    <div class="result-row highlight">
+      <span class="label">Monthly cost</span>
+      <span class="value">~$${calc.monthlyCost}/mo</span>
+    </div>
+  `;
+  bubble.appendChild(card);
+  scrollBottom();
+}
+
+function addConfirmCard(msgEl) {
+  const bubble = msgEl.querySelector('.bubble');
+  const card = document.createElement('div');
+  card.className = 'reserve-confirm';
+  card.innerHTML = `We'll text you to confirm pickup at <strong>${state.reserveStore}</strong>. See you soon 👍`;
+  bubble.appendChild(card);
+  scrollBottom();
+}
+
+function showTypingThen(delay, fn) {
+  showTyping();
+  setTimeout(() => { hideTyping(); fn(); }, delay);
+}
+
+function showTyping() {
+  isTyping = true;
+  const container = document.getElementById('messages');
+  const t = document.createElement('div');
+  t.className = 'typing';
+  t.id = 'typingIndicator';
+  t.innerHTML = `<div class="avatar sage-avatar">S</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  container.appendChild(t);
+  scrollBottom();
+}
+
+function hideTyping() {
+  isTyping = false;
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+function scrollBottom() {
+  const c = document.getElementById('messages');
+  c.scrollTop = c.scrollHeight;
+}
+
+// iOS keyboard fix
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    setTimeout(scrollBottom, 50);
+  });
+  document.getElementById('userInput').addEventListener('focus', () => {
+    setTimeout(scrollBottom, 300);
+  });
+}
+</script>
+</body>
+</html>
