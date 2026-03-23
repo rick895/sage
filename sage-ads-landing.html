@@ -11,10 +11,11 @@
   :root {
     --blue: #9fd1ff;
     --blue-dark: #536479;
+    --blue-deeper: #3a4e5e;
     --cream: #f4f9ff;
-    --border: #d4e5f2;
+    --border: #c8ddef;
     --white: #FFFFFF;
-    --charcoal: #111111;
+    --charcoal: #0f1923;
     --mid: #536479;
     --light: #a8bccf;
     --shadow: 0 2px 24px rgba(83,100,121,0.10);
@@ -29,7 +30,6 @@
     overflow: hidden;
   }
 
-  /* ── PAGE LAYOUT ── */
   .page {
     display: flex;
     flex-direction: column;
@@ -47,7 +47,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    height: 56px;
+    height: 54px;
     border-bottom: 1px solid var(--border);
     background: var(--white);
   }
@@ -59,8 +59,8 @@
   }
 
   .header-logo {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     object-fit: contain;
   }
 
@@ -73,10 +73,46 @@
     color: var(--charcoal);
   }
 
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--mid);
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .progress-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  .progress-dot.active { background: var(--blue-dark); }
+  .progress-dot.done   { background: var(--blue); }
+
   .header-sage {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
     font-size: 12px;
     color: var(--mid);
   }
@@ -84,7 +120,7 @@
   .sage-dot {
     width: 6px;
     height: 6px;
-    background: var(--blue);
+    background: #5ec45e;
     border-radius: 50%;
     animation: pulse 2.5s ease-in-out infinite;
   }
@@ -98,10 +134,10 @@
   .messages {
     flex: 1;
     overflow-y: auto;
-    padding: 20px 16px;
+    padding: 22px 16px 12px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
     scroll-behavior: smooth;
   }
 
@@ -112,12 +148,12 @@
   .message {
     display: flex;
     gap: 10px;
-    max-width: 88%;
-    animation: fadeUp 0.25s ease forwards;
+    max-width: 92%;
+    animation: fadeUp 0.2s ease forwards;
   }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
@@ -127,125 +163,146 @@
   }
 
   .avatar {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
     font-weight: 600;
-    margin-top: 2px;
+    margin-top: 3px;
   }
 
   .sage-avatar {
     background: var(--blue);
     color: var(--charcoal);
     font-family: 'League Spartan', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .user-avatar {
-    background: var(--blue-dark);
+    background: var(--blue-deeper);
     color: var(--white);
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 0.04em;
   }
 
   .bubble {
     padding: 12px 15px;
     border-radius: 16px;
-    font-size: 14px;
+    font-size: 14.5px;
     line-height: 1.6;
-    font-weight: 300;
   }
 
+  /* Sage — slightly bolder for hierarchy */
   .message.sage .bubble {
     background: var(--white);
     border: 1px solid var(--border);
     border-top-left-radius: 4px;
     color: var(--charcoal);
-    box-shadow: var(--shadow);
+    font-weight: 400;
+    box-shadow: 0 1px 8px rgba(83,100,121,0.08);
   }
 
+  /* User — darker, higher contrast */
   .message.user .bubble {
-    background: var(--blue-dark);
+    background: var(--blue-deeper);
     color: var(--white);
     border-top-right-radius: 4px;
-    font-weight: 400;
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(58,78,94,0.25);
   }
 
-  .bubble strong { font-weight: 500; }
+  .bubble strong { font-weight: 600; }
   .bubble p + p { margin-top: 8px; }
 
   /* ── RESULT CARD ── */
   .result-card {
-    background: var(--cream);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    background: #f0f7ff;
+    border: 1.5px solid var(--blue);
+    border-radius: 12px;
     padding: 14px 16px;
-    margin-top: 10px;
+    margin-top: 12px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 7px;
   }
 
   .result-row {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: 13.5px;
     padding: 3px 0;
+    border-bottom: 1px solid rgba(159,209,255,0.4);
   }
 
-  .result-row .label { color: var(--mid); }
-  .result-row .value { font-weight: 500; }
-  .result-row.highlight .value { color: var(--blue-dark); font-weight: 600; }
+  .result-row:last-child { border-bottom: none; }
+  .result-row .label { color: var(--mid); font-weight: 400; }
+  .result-row .value { font-weight: 600; color: var(--charcoal); }
+  .result-row.highlight .label { color: var(--blue-dark); font-weight: 500; }
+  .result-row.highlight .value { color: var(--blue-dark); font-size: 15px; }
 
   /* ── QUICK REPLY BUTTONS ── */
   .quick-replies {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 9px;
+    margin-top: 12px;
   }
 
+  /* Bigger, stronger border, light fill — "tap me" */
   .qr-btn {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1.5px solid var(--blue-dark);
-    background: var(--white);
+    padding: 10px 20px;
+    border-radius: 22px;
+    border: 2px solid var(--blue-dark);
+    background: rgba(83,100,121,0.05);
     color: var(--blue-dark);
     font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.15s ease;
     white-space: nowrap;
   }
 
-  .qr-btn:hover, .qr-btn.selected {
+  .qr-btn:hover {
     background: var(--blue-dark);
     color: var(--white);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(83,100,121,0.2);
   }
+
+  /* Selected state — pops hard */
+  .qr-btn.selected {
+    background: var(--blue-deeper);
+    color: var(--white);
+    border-color: var(--blue-deeper);
+    box-shadow: 0 3px 12px rgba(58,78,94,0.35);
+    transform: scale(1.03);
+  }
+
+  .qr-btn:disabled { cursor: default; }
 
   .qr-btn.store-btn {
     flex: 1;
-    min-width: 100px;
+    min-width: 90px;
     text-align: center;
-    border-radius: 10px;
+    border-radius: 12px;
+    padding: 12px 16px;
   }
 
   /* ── RESERVE CONFIRM ── */
   .reserve-confirm {
     background: #edf7ed;
-    border: 1px solid #a8d5a8;
+    border: 1.5px solid #7dbd7d;
     border-radius: 10px;
-    padding: 14px 16px;
+    padding: 13px 15px;
     margin-top: 10px;
     font-size: 13.5px;
     line-height: 1.6;
-    color: #2a5c2a;
+    color: #1e4d1e;
   }
 
   /* ── TYPING ── */
@@ -253,7 +310,7 @@
     display: flex;
     gap: 10px;
     max-width: 88%;
-    animation: fadeUp 0.25s ease forwards;
+    animation: fadeUp 0.2s ease forwards;
   }
 
   .typing-dots {
@@ -261,7 +318,7 @@
     border: 1px solid var(--border);
     border-radius: 16px;
     border-top-left-radius: 4px;
-    padding: 14px 18px;
+    padding: 13px 17px;
     display: flex;
     gap: 4px;
     align-items: center;
@@ -284,12 +341,12 @@
     30% { transform: translateY(-4px); }
   }
 
-  /* ── INPUT ── */
+  /* ── INPUT — darker border, matches button system ── */
   .input-area {
     flex-shrink: 0;
     padding: 12px 16px;
     padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom)));
-    border-top: 1px solid var(--border);
+    border-top: 1.5px solid var(--border);
     background: var(--white);
   }
 
@@ -298,16 +355,15 @@
     align-items: flex-end;
     gap: 10px;
     background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
     padding: 10px 14px;
     transition: border-color 0.15s, box-shadow 0.15s;
-    box-shadow: var(--shadow);
   }
 
   .input-wrap:focus-within {
     border-color: var(--blue-dark);
-    box-shadow: 0 2px 16px rgba(83,100,121,0.12);
+    box-shadow: 0 2px 14px rgba(83,100,121,0.14);
   }
 
   #userInput {
@@ -317,7 +373,7 @@
     background: transparent;
     font-family: 'DM Sans', sans-serif;
     font-size: 16px;
-    font-weight: 300;
+    font-weight: 400;
     color: var(--charcoal);
     resize: none;
     line-height: 1.5;
@@ -328,38 +384,22 @@
   #userInput::placeholder { color: var(--light); }
 
   .send-btn {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     background: var(--blue-dark);
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.15s;
+    transition: background 0.15s, transform 0.1s;
   }
 
-  .send-btn:hover { background: var(--blue); }
+  .send-btn:hover { background: var(--blue-deeper); transform: scale(1.05); }
   .send-btn svg { width: 14px; height: 14px; fill: white; }
 
-  .stream-cursor {
-    display: inline-block;
-    width: 2px;
-    height: 1em;
-    background: var(--blue-dark);
-    margin-left: 1px;
-    vertical-align: text-bottom;
-    animation: blink 0.7s ease-in-out infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
-
-  /* ── MOBILE ── */
   @media (max-width: 480px) {
     .page { max-width: 100%; box-shadow: none; }
   }
@@ -375,9 +415,19 @@
       <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="header-logo" alt="Natural Hounds">
       <span class="header-name">Natural Hounds</span>
     </div>
-    <div class="header-sage">
-      <div class="sage-dot"></div>
-      Sage
+    <div class="header-right">
+      <div class="progress-pill">
+        <div class="progress-dots">
+          <div class="progress-dot active" id="dot1"></div>
+          <div class="progress-dot" id="dot2"></div>
+          <div class="progress-dot" id="dot3"></div>
+        </div>
+        <span id="progressLabel">Step 1 of 3</span>
+      </div>
+      <div class="header-sage">
+        <div class="sage-dot"></div>
+        Sage
+      </div>
     </div>
   </header>
 
@@ -397,12 +447,10 @@
 </div>
 
 <script>
-// ── CONFIG ──
 const PROXY_URL = 'https://sage-proxy.rick-026.workers.dev';
 
-// ── FLOW STATE ──
 const state = {
-  stage: 'weight',      // weight → activity → recipe → confirmed → reserve_yn → name → phone → store → done
+  stage: 'weight',
   dogWeight: null,
   activityLevel: 'normal',
   recipe: null,
@@ -414,7 +462,17 @@ const state = {
   reserveStore: null,
 };
 
-// ── FEEDING CHARTS ──
+function updateProgress(step) {
+  const dots = [document.getElementById('dot1'), document.getElementById('dot2'), document.getElementById('dot3')];
+  const label = document.getElementById('progressLabel');
+  dots.forEach((d, i) => {
+    d.classList.remove('active', 'done');
+    if (i + 1 < step) d.classList.add('done');
+    else if (i + 1 === step) d.classList.add('active');
+  });
+  label.textContent = `Step ${step} of 3`;
+}
+
 const CHARTS = {
   original: [
     {max:5,normal:3.8,lazy:3.2,active:4.2},{max:10,normal:6.4,lazy:5.3,active:7.1},
@@ -463,41 +521,24 @@ function recipeLabel(key) {
   return { original: 'Original (Turkey)', beef: 'Beef', pork: 'Pork', lamb: 'Lamb' }[key] || key;
 }
 
-// ── SYSTEM PROMPT (short, conversion-focused) ──
 const SYSTEM_PROMPT = `You are Sage, a friendly and confident nutrition advisor for Natural Hounds — a fresh, human-grade dog food company on Long Island, NY.
 
-Your only job on this page is to:
-1. Get the dog's weight
-2. Get the activity level (lazy / normal / active)
-3. Recommend the best recipe for this dog
-4. Show the feeding amount and cost
-5. Ask if they want a pack reserved
+Your only job on this page is to guide people through: weight → activity → recipe → result → reservation.
 
-Tone: warm, direct, confident. Short sentences. Never say "would you like to" — just lead. Never over-explain nutrition. Keep responses to 1-3 sentences max unless showing the result card.
+Tone: warm, direct, confident. Short sentences. Never say "would you like to" — just lead. Keep responses to 1-3 sentences max.
 
-Natural Hounds makes freshly cooked, human-grade dog food. 4 recipes: Original (Turkey), Beef, Pork, Lamb. Sold in 1lb packs ($12.99) at 3 stores: Babylon, Port Jefferson, Huntington. Hours: Tues-Sat 10am-6pm, Sun 10am-3pm.
+Natural Hounds makes freshly cooked, human-grade dog food. 4 recipes: Original (Turkey), Beef, Pork, Lamb. Sold in 1lb packs at 3 stores: Babylon, Port Jefferson, Huntington. Hours: Tues-Sat 10am-6pm, Sun 10am-3pm.
 
-The feeding calculation will be injected automatically — do NOT calculate it yourself. Just use the numbers provided.
+Do NOT ask for email. Do NOT ask for dog's name. Answer questions briefly and get back on track.`;
 
-After showing the result, immediately ask: "Want me to set aside a pack for you to try?" — nothing else.
-
-If they say yes → say "Perfect. What's your name?" 
-Then ask for phone number.
-Then ask which store with buttons.
-
-Do NOT ask for email. Do NOT ask for dog's name. Do NOT re-explain the product.
-
-If they have questions, answer briefly and get back on track.`;
-
-// ── CONVERSATION HISTORY ──
 let history = [];
 let isTyping = false;
 
-// ── INIT ──
 window.addEventListener('DOMContentLoaded', () => {
-  // Opening message — hardcoded, no API call
-  appendSage("Let's figure out exactly how much your dog should be eating and what it would cost — takes about 30 seconds.\n\nWhat's your dog's weight?");
+  // Change 1: punchier opening message
+  appendSage("Let's calculate exactly how much your dog should eat + what it costs (30 sec)\n\nWhat's your dog's weight?");
   state.stage = 'weight';
+  updateProgress(1);
 
   const input = document.getElementById('userInput');
   input.addEventListener('keydown', e => {
@@ -509,30 +550,24 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ── SEND ──
 async function sendMessage(overrideText) {
   const input = document.getElementById('userInput');
   const text = (overrideText || input.value).trim();
   if (!text || isTyping) return;
   input.value = '';
   input.style.height = 'auto';
-
   appendUser(text);
 
-  // Route based on stage
-  if (state.stage === 'weight') return handleWeight(text);
-  if (state.stage === 'activity') return handleActivity(text);
-  if (state.stage === 'recipe') return handleRecipe(text);
-  if (state.stage === 'reserve_yn') return handleReserveYN(text);
-  if (state.stage === 'name') return handleName(text);
-  if (state.stage === 'phone') return handlePhone(text);
-  if (state.stage === 'store') return handleStore(text);
+  if (state.stage === 'weight')      return handleWeight(text);
+  if (state.stage === 'activity')    return handleActivity(text);
+  if (state.stage === 'recipe')      return handleRecipe(text);
+  if (state.stage === 'reserve_yn')  return handleReserveYN(text);
+  if (state.stage === 'name')        return handleName(text);
+  if (state.stage === 'phone')       return handlePhone(text);
+  if (state.stage === 'store')       return handleStore(text);
 
-  // Freeform question — ask Claude
   await askClaude(text);
 }
-
-// ── STAGE HANDLERS ──
 
 function handleWeight(text) {
   const match = text.match(/(\d+)/);
@@ -555,17 +590,19 @@ function handleWeight(text) {
 
 function handleActivity(text) {
   const t = text.toLowerCase();
-  if (t.includes('lazy') || t.includes('low') || t.includes('sedentary') || t.includes('couch')) {
+  if (t.includes('lazy') || t.includes('couch') || t.includes('low')) {
     state.activityLevel = 'lazy';
-  } else if (t.includes('active') || t.includes('high') || t.includes('athletic') || t.includes('runs')) {
+  } else if (t.includes('active') || t.includes('runs') || t.includes('athletic')) {
     state.activityLevel = 'active';
   } else {
     state.activityLevel = 'normal';
   }
   state.stage = 'recipe';
+  updateProgress(2);
 
   showTypingThen(600, () => {
-    const msg = appendSage("Any food sensitivities or allergies to know about? If not, most dogs do great on Beef or Original.");
+    // Change 5: shorter sensitivities question, two-line format
+    const msg = appendSage("Any allergies or sensitivities?\n\nMost dogs do great with Beef or Turkey.");
     addQuickReplies(msg, [
       { label: 'Beef', value: 'beef' },
       { label: 'Original (Turkey)', value: 'original' },
@@ -581,7 +618,6 @@ function handleRecipe(text) {
   if (t.includes('original') || t.includes('turkey')) recipe = 'original';
   else if (t.includes('pork')) recipe = 'pork';
   else if (t.includes('lamb')) recipe = 'lamb';
-  else if (t.includes('beef')) recipe = 'beef';
 
   state.recipe = recipe;
   const calc = calcFeeding(recipe, state.dogWeight, state.activityLevel);
@@ -595,9 +631,10 @@ function handleRecipe(text) {
   state.monthlyLbs = calc.monthlyLbs;
   state.monthlyCost = calc.monthlyCost;
   state.stage = 'confirmed';
+  updateProgress(3);
 
   showTypingThen(700, () => {
-    const msgEl = appendSage(`Here's what your ${state.dogWeight}lb dog needs on the ${recipeLabel(recipe)} Recipe:`);
+    const msgEl = appendSage(`Here's what your ${state.dogWeight}lb dog needs on ${recipeLabel(recipe)}:`);
     addResultCard(msgEl, calc, recipe);
 
     setTimeout(() => {
@@ -607,7 +644,7 @@ function handleRecipe(text) {
         { label: 'Yes, reserve one', value: 'yes' },
         { label: 'Not yet', value: 'no' },
       ], handleReserveYN);
-    }, 800);
+    }, 900);
   });
 }
 
@@ -618,7 +655,7 @@ function handleReserveYN(text) {
     showTypingThen(500, () => appendSage("Perfect. What's your name?"));
   } else {
     showTypingThen(400, () => {
-      appendSage("No problem. We're at Babylon, Port Jefferson, and Huntington — Tues-Sat 10am-6pm, Sun 10am-3pm. Just ask for a 1lb pack when you come in.");
+      appendSage("No problem. We're in Babylon, Port Jefferson, and Huntington — Tues-Sat 10am-6pm, Sun 10am-3pm. Ask for a 1lb pack when you stop in.");
       state.stage = 'done';
     });
   }
@@ -634,12 +671,11 @@ function handleName(text) {
 function handlePhone(text) {
   const digits = text.replace(/\D/g, '');
   if (digits.length < 10) {
-    appendSage("Just need a 10-digit phone number so we can text you when it's ready.");
+    appendSage("Just need a 10-digit number so we can text you.");
     return;
   }
   state.reservePhone = digits;
   state.stage = 'store';
-
   showTypingThen(400, () => {
     const msg = appendSage("Which location is easiest for you?");
     addStorePicker(msg);
@@ -653,14 +689,11 @@ function handleStore(text) {
   else if (t.includes('port') || t.includes('jeff')) store = 'Port Jefferson';
   else if (t.includes('huntington')) store = 'Huntington';
   else {
-    appendSage("Which location works — Babylon, Port Jefferson, or Huntington?");
+    appendSage("Which location — Babylon, Port Jefferson, or Huntington?");
     return;
   }
-
   state.reserveStore = store;
   state.stage = 'done';
-
-  // Submit to Close
   submitReservation();
 }
 
@@ -681,13 +714,11 @@ async function submitReservation() {
     console.error('Reserve error:', e);
   }
   hideTyping();
-
   const firstName = state.reserveName.split(' ')[0];
-  const msgEl = appendSage(`Done, ${firstName}! I've got a 1lb pack of ${recipeLabel(state.recipe)} set aside for you at ${state.reserveStore}.`);
+  const msgEl = appendSage(`Done, ${firstName}! A 1lb pack of ${recipeLabel(state.recipe)} is set aside at ${state.reserveStore}.`);
   addConfirmCard(msgEl);
 }
 
-// ── CLAUDE FALLBACK (for off-flow questions) ──
 async function askClaude(text) {
   history.push({ role: 'user', content: text });
   showTyping();
@@ -719,10 +750,7 @@ function appendSage(text) {
   const container = document.getElementById('messages');
   const msg = document.createElement('div');
   msg.className = 'message sage';
-  msg.innerHTML = `
-    <div class="avatar sage-avatar">S</div>
-    <div class="bubble">${formatText(text)}</div>
-  `;
+  msg.innerHTML = `<div class="avatar sage-avatar">S</div><div class="bubble">${formatText(text)}</div>`;
   container.appendChild(msg);
   scrollBottom();
   return msg;
@@ -732,10 +760,7 @@ function appendUser(text) {
   const container = document.getElementById('messages');
   const msg = document.createElement('div');
   msg.className = 'message user';
-  msg.innerHTML = `
-    <div class="avatar user-avatar">You</div>
-    <div class="bubble">${formatText(text)}</div>
-  `;
+  msg.innerHTML = `<div class="avatar user-avatar">You</div><div class="bubble">${formatText(text)}</div>`;
   container.appendChild(msg);
   scrollBottom();
 }
@@ -757,11 +782,8 @@ function addQuickReplies(msgEl, options, handler) {
     btn.className = 'qr-btn';
     btn.textContent = opt.label;
     btn.onclick = () => {
-      // Visually select
-      wrap.querySelectorAll('.qr-btn').forEach(b => b.classList.remove('selected'));
+      wrap.querySelectorAll('.qr-btn').forEach(b => { b.classList.remove('selected'); b.disabled = true; });
       btn.classList.add('selected');
-      // Disable all buttons in this set
-      wrap.querySelectorAll('.qr-btn').forEach(b => b.disabled = true);
       appendUser(opt.label);
       setTimeout(() => handler(opt.value), 200);
     };
@@ -780,7 +802,7 @@ function addStorePicker(msgEl) {
     btn.className = 'qr-btn store-btn';
     btn.textContent = store;
     btn.onclick = () => {
-      wrap.querySelectorAll('.qr-btn').forEach(b => b.disabled = true);
+      wrap.querySelectorAll('.qr-btn').forEach(b => { b.disabled = true; b.classList.remove('selected'); });
       btn.classList.add('selected');
       appendUser(store);
       setTimeout(() => handleStore(store), 200);
@@ -853,14 +875,9 @@ function scrollBottom() {
   c.scrollTop = c.scrollHeight;
 }
 
-// iOS keyboard fix
 if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => {
-    setTimeout(scrollBottom, 50);
-  });
-  document.getElementById('userInput').addEventListener('focus', () => {
-    setTimeout(scrollBottom, 300);
-  });
+  window.visualViewport.addEventListener('resize', () => setTimeout(scrollBottom, 50));
+  document.getElementById('userInput').addEventListener('focus', () => setTimeout(scrollBottom, 300));
 }
 </script>
 </body>
