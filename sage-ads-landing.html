@@ -221,11 +221,28 @@ html, body {
 .result-row.highlight .value { color: var(--blue-dark); font-size: 15px; }
 
 /* WEIGHT CHIPS */
+.weight-chips-outer {
+  position: relative;
+  margin-top: 12px;
+  max-width: 260px;
+}
+
+.weight-chips-outer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.95));
+  pointer-events: none;
+  border-radius: 0 20px 20px 0;
+}
+
 .weight-chips-wrap {
   display: flex;
   flex-wrap: nowrap;
   gap: 8px;
-  margin-top: 12px;
   overflow-x: auto;
   padding-bottom: 4px;
   -webkit-overflow-scrolling: touch;
@@ -770,6 +787,8 @@ function formatText(text) {
 
 function addWeightChips(msgEl) {
   var bubble = msgEl.querySelector('.bubble');
+  var outer = document.createElement('div');
+  outer.className = 'weight-chips-outer';
   var wrap = document.createElement('div');
   wrap.className = 'weight-chips-wrap';
 
@@ -792,7 +811,8 @@ function addWeightChips(msgEl) {
     wrap.appendChild(btn);
   });
 
-  bubble.appendChild(wrap);
+  outer.appendChild(wrap);
+  bubble.appendChild(outer);
   scrollBottom();
 }
 
