@@ -400,99 +400,49 @@
   .send-btn:hover { background: var(--blue-deeper); transform: scale(1.05); }
   .send-btn svg { width: 14px; height: 14px; fill: white; }
 
-  /* ── WEIGHT SLIDER ── */
-  .weight-slider-wrap {
-    margin-top: 14px;
+  /* ── WEIGHT CHIPS ── */
+  .weight-chips-wrap {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 12px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
-  .weight-display {
-    font-family: 'League Spartan', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--blue-deeper);
-    text-align: center;
-    letter-spacing: -0.01em;
-  }
+  .weight-chips-wrap::-webkit-scrollbar { display: none; }
 
-  .weight-display span {
-    font-size: 14px;
+  .weight-chip {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 2px solid var(--blue-dark);
+    background: rgba(83,100,121,0.05);
+    color: var(--blue-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
     font-weight: 500;
-    color: var(--mid);
-    margin-left: 3px;
-  }
-
-  .slider-track {
-    position: relative;
-    padding: 4px 0;
-  }
-
-  input[type="range"].weight-range {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--border);
-    outline: none;
     cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
   }
 
-  input[type="range"].weight-range::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--blue-deeper);
-    box-shadow: 0 2px 8px rgba(58,78,94,0.35);
-    cursor: pointer;
-    transition: transform 0.1s;
+  .weight-chip:hover {
+    background: var(--blue-dark);
+    color: var(--white);
   }
 
-  input[type="range"].weight-range::-webkit-slider-thumb:active {
-    transform: scale(1.15);
-  }
-
-  input[type="range"].weight-range::-moz-range-thumb {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--blue-deeper);
-    box-shadow: 0 2px 8px rgba(58,78,94,0.35);
-    cursor: pointer;
-    border: none;
-  }
-
-  .slider-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--light);
-    padding: 0 2px;
-  }
-
-  .weight-confirm-btn {
-    padding: 11px 0;
+  .weight-chip.selected {
     background: var(--blue-deeper);
     color: var(--white);
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    width: 100%;
-    margin-top: 2px;
+    border-color: var(--blue-deeper);
+    box-shadow: 0 3px 12px rgba(58,78,94,0.35);
+    transform: scale(1.03);
   }
 
-  .weight-confirm-btn:hover {
-    background: var(--blue-dark);
-    transform: translateY(-1px);
-  }
+  .weight-chip:disabled { cursor: default; }
 
   @media (max-width: 480px) {
     .page { max-width: 100%; box-shadow: none; }
@@ -625,7 +575,7 @@ let isTyping = false;
 
 window.addEventListener('DOMContentLoaded', () => {
   const msg = appendSage("Let's figure out exactly how much your dog should eat and what it would cost.\n\nWhat's your dog's weight?");
-  addWeightSlider(msg);
+  addWeightChips(msg);
   state.stage = 'weight';
   updateProgress(1);
 
@@ -908,16 +858,33 @@ function addWeightSlider(msgEl) {
     handleWeight(weight);
   };
 
-  trackWrap.appendChild(slider);
-  wrap.appendChild(display);
-  wrap.appendChild(trackWrap);
-  wrap.appendChild(labels);
-  wrap.appendChild(confirmBtn);
+function addWeightChips(msgEl) {
+  const bubble = msgEl.querySelector('.bubble');
+  const wrap = document.createElement('div');
+  wrap.className = 'weight-chips-wrap';
+
+  const weights = [];
+  for (let w = 5; w <= 140; w += 10) weights.push(w);
+  weights.push(150);
+
+  weights.forEach(w => {
+    const btn = document.createElement('button');
+    btn.className = 'weight-chip';
+    btn.textContent = w === 150 ? '150+ lbs' : `${w} lbs`;
+    btn.onclick = () => {
+      wrap.querySelectorAll('.weight-chip').forEach(b => { b.disabled = true; b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      appendUser(btn.textContent);
+      setTimeout(() => handleWeight(String(w)), 200);
+    };
+    wrap.appendChild(btn);
+  });
+
   bubble.appendChild(wrap);
   scrollBottom();
 }
 
-
+function addQuickReplies(msgEl, options, handler) {
   const bubble = msgEl.querySelector('.bubble');
   const wrap = document.createElement('div');
   wrap.className = 'quick-replies';
