@@ -459,9 +459,9 @@ html, body {
 
   <div class="messages" id="messages"></div>
 
-  <div class="input-area">
+  <div class="input-area" id="inputArea" style="display:none;">
     <div class="input-wrap">
-      <textarea id="userInput" placeholder="Enter your dog's weight…" rows="1"></textarea>
+      <textarea id="userInput" placeholder="Ask a question…" rows="1"></textarea>
       <button class="send-btn" onclick="sendMessage()">
         <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
       </button>
@@ -583,7 +583,35 @@ async function sendMessage(overrideText) {
   if (state.stage === 'name')       return handleName(text);
   if (state.stage === 'phone')      return handlePhone(text);
   if (state.stage === 'store')      return handleStore(text);
+  if (state.stage === 'freeform')   return handleFreeform(text);
   await askClaude(text);
+}
+
+async function handleFreeform(text) {
+  var t = text.toLowerCase();
+  // If they're ready to reserve after asking questions
+  if (t.includes('reserve') || t.includes('yes') || t.includes('sign me up') || t.includes('i\'ll try')) {
+    state.stage = 'name';
+    showTypingThen(500, function() { appendSage("Perfect. What's your name?"); });
+    return;
+  }
+  await askClaude(text);
+  // After Claude answers, nudge toward reservation
+  setTimeout(function() {
+    if (state.stage === 'freeform') {
+      var nudge = appendSage('Ready to try a pack?');
+      addQuickReplies(nudge, [
+        { label: '✅ Reserve a pack', value: 'yes' },
+        { label: '💬 Another question', value: 'more' },
+      ], function(val) {
+        if (val === 'yes') {
+          state.stage = 'name';
+          showTypingThen(400, function() { appendSage("Perfect. What's your name?"); });
+        }
+        // else stay in freeform
+      });
+    }
+  }, 1500);
 }
 
 function handleWeight(text) {
@@ -652,19 +680,33 @@ function handleRecipe(text) {
     addResultCard(msgEl, calc, recipe);
     setTimeout(function() {
       state.stage = 'reserve_yn';
-      var followUp = appendSage('Want me to set aside a pack for you to try?');
+      var followUp = appendSage('Want to try it?');
       addQuickReplies(followUp, [
-        { label: 'Yes, reserve one', value: 'yes' },
-        { label: 'Not yet', value: 'no' },
+        { label: '✅ Reserve a pack', value: 'yes' },
+        { label: '💬 I have a question first', value: 'question' },
       ], handleReserveYN);
     }, 900);
   });
 }
 
+function showInput() {
+  var inputArea = document.getElementById('inputArea');
+  inputArea.style.display = 'block';
+  setTimeout(function() { document.getElementById('userInput').focus(); }, 100);
+  scrollBottom();
+}
+
 function handleReserveYN(text) {
   var t = text.toLowerCase();
-  if (t.includes('yes') || t.includes('sure') || t.includes('yeah') || t.includes('reserve') || t.includes('ok') || t.includes('please')) {
+  if (t.includes('question')) {
+    state.stage = 'freeform';
+    showInput();
+    showTypingThen(400, function() {
+      appendSage("Go ahead — what's on your mind?");
+    });
+  } else if (t.includes('yes') || t.includes('reserve') || t.includes('sure') || t.includes('ok') || t.includes('yeah') || t.includes('please')) {
     state.stage = 'name';
+    showInput();
     showTypingThen(500, function() { appendSage("Perfect. What's your name?"); });
   } else {
     showTypingThen(400, function() {
