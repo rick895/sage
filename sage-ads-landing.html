@@ -812,51 +812,6 @@ function formatText(text) {
     .replace(/\n/g, '<br>');
 }
 
-function addWeightSlider(msgEl) {
-  const bubble = msgEl.querySelector('.bubble');
-  const wrap = document.createElement('div');
-  wrap.className = 'weight-slider-wrap';
-
-  const display = document.createElement('div');
-  display.className = 'weight-display';
-  display.innerHTML = '40 <span>lbs</span>';
-
-  const trackWrap = document.createElement('div');
-  trackWrap.className = 'slider-track';
-
-  const slider = document.createElement('input');
-  slider.type = 'range';
-  slider.className = 'weight-range';
-  slider.min = 5;
-  slider.max = 150;
-  slider.step = 5;
-  slider.value = 40;
-
-  slider.addEventListener('input', () => {
-    display.innerHTML = `${slider.value} <span>lbs</span>`;
-    // Update fill color
-    const pct = ((slider.value - 5) / (150 - 5)) * 100;
-    slider.style.background = `linear-gradient(to right, var(--blue-deeper) ${pct}%, var(--border) ${pct}%)`;
-  });
-
-  // Set initial fill
-  const initPct = ((40 - 5) / (150 - 5)) * 100;
-  slider.style.background = `linear-gradient(to right, var(--blue-deeper) ${initPct}%, var(--border) ${initPct}%)`;
-
-  const labels = document.createElement('div');
-  labels.className = 'slider-labels';
-  labels.innerHTML = '<span>5 lbs</span><span>75 lbs</span><span>150 lbs</span>';
-
-  const confirmBtn = document.createElement('button');
-  confirmBtn.className = 'weight-confirm-btn';
-  confirmBtn.textContent = `That's my dog's weight`;
-
-  confirmBtn.onclick = () => {
-    const weight = slider.value;
-    wrap.remove();
-    appendUser(`${weight} lbs`);
-    handleWeight(weight);
-  };
 
 function addWeightChips(msgEl) {
   const bubble = msgEl.querySelector('.bubble');
