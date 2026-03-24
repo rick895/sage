@@ -571,7 +571,8 @@ window.addEventListener('DOMContentLoaded', function() {
 async function sendMessage(overrideText) {
   var input = document.getElementById('userInput');
   var text = (overrideText || input.value).trim();
-  if (!text || isTyping) return;
+  if (!text) return;
+  if (isTyping && state.stage !== 'freeform') return;
   input.value = '';
   input.style.height = 'auto';
   appendUser(text);
