@@ -773,7 +773,17 @@ async function askClaude(text, showNudge) {
       }),
     });
     var data = await res.json();
-    var reply = (data.content || []).map(function(b){ return b.text || ''; }).join('') || 'Give us a call at 631-760-7850.';
+    if (data.error) {
+      hideTyping();
+      appendSage('Error from API: ' + JSON.stringify(data.error));
+      return;
+    }
+    var reply = (data.content || []).map(function(b){ return b.text || ''; }).join('');
+    if (!reply) {
+      hideTyping();
+      appendSage('No response received. Raw: ' + JSON.stringify(data).slice(0, 200));
+      return;
+    }
     hideTyping();
     history.push({ role: 'assistant', content: reply });
     var msgEl = appendSage(reply);
@@ -786,12 +796,11 @@ async function askClaude(text, showNudge) {
           state.stage = 'name';
           showTypingThen(400, function() { appendSage("Perfect. What's your name?"); });
         }
-        // 'more' — stay in freeform, input stays open
       });
     }
   } catch(e) {
     hideTyping();
-    appendSage('Give us a call at 631-760-7850 and we\'ll help you out.');
+    appendSage('Network error: ' + e.message + '. Call us at 631-760-7850.');
   }
 }
 
