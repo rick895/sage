@@ -279,7 +279,59 @@ html, body {
 
 .weight-chip:disabled { cursor: default; }
 
-/* QUICK REPLY BUTTONS */
+/* RECIPE BUTTONS */
+.recipe-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.recipe-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.recipe-btn:hover {
+  border-color: var(--blue-dark);
+  background: rgba(83,100,121,0.04);
+}
+
+.recipe-btn.selected {
+  border-color: var(--blue-deeper);
+  background: rgba(58,78,94,0.06);
+  box-shadow: 0 2px 10px rgba(58,78,94,0.15);
+}
+
+.recipe-btn:disabled { cursor: default; }
+
+.recipe-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.recipe-ing {
+  font-size: 11px;
+  color: var(--light);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* MIX ROW */
+.result-row.mix-row .label { color: var(--blue-dark); font-style: italic; }
+.result-row.mix-row .value { color: var(--blue-dark); font-style: italic; }
 .quick-replies {
   display: flex;
   flex-wrap: wrap;
@@ -543,7 +595,7 @@ function calcFeeding(recipe, weight, activity) {
 }
 
 function recipeLabel(key) {
-  var map = { original: 'Original (Turkey)', beef: 'Beef', pork: 'Pork', lamb: 'Lamb' };
+  var map = { original: 'Original (Turkey)', beef: 'Beef', pork: 'Pork', lamb: 'Lamb', multiple: 'Beef, Pork & Original Mix' };
   return map[key] || key;
 }
 
@@ -628,18 +680,47 @@ function handleActivity(text) {
   state.stage = 'recipe';
   updateProgress(2);
   showTypingThen(600, function() {
-    var msg = appendSage("Any allergies or sensitivities?\n\nMost dogs do great with Beef or Turkey.");
-    addQuickReplies(msg, [
-      { label: 'Beef', value: 'beef' },
-      { label: 'Original (Turkey)', value: 'original' },
-      { label: 'Pork', value: 'pork' },
-      { label: 'Lamb', value: 'lamb' },
-    ], handleRecipe);
+    var msg = appendSage("We have 4 recipes — pick whichever sounds best for your dog:");
+    addRecipeButtons(msg);
   });
 }
 
 function handleRecipe(text) {
   var t = text.toLowerCase();
+
+  // Multiple / variety
+  if (t.includes('multiple') || t.includes('variety') || t.includes('mix') || t.includes('not sure')) {
+    state.recipe = 'multiple';
+    var calcBeef = calcFeeding('beef', state.dogWeight, state.activityLevel);
+    var calcPork = calcFeeding('pork', state.dogWeight, state.activityLevel);
+    var calcOrig = calcFeeding('original', state.dogWeight, state.activityLevel);
+    if (!calcBeef || !calcPork || !calcOrig) {
+      appendSage("Your dog's size is outside our standard chart. Give us a call at 631-760-7850.");
+      return;
+    }
+    var avgOz = Math.round(((calcBeef.oz + calcPork.oz + calcOrig.oz) / 3) * 10) / 10;
+    var avgLbs = Math.round(((calcBeef.monthlyLbs + calcPork.monthlyLbs + calcOrig.monthlyLbs) / 3) * 10) / 10;
+    var avgCost = Math.round((calcBeef.monthlyCost + calcPork.monthlyCost + calcOrig.monthlyCost) / 3);
+    state.dailyOz = avgOz;
+    state.monthlyLbs = avgLbs;
+    state.monthlyCost = avgCost;
+    state.stage = 'confirmed';
+    updateProgress(3);
+    showTypingThen(700, function() {
+      var msgEl = appendSage("Our most popular variety mix is Beef, Pork & Original — here's the breakdown for your " + state.dogWeight + "lb dog:");
+      addResultCard(msgEl, { oz: avgOz, monthlyLbs: avgLbs, monthlyCost: avgCost }, 'multiple');
+      setTimeout(function() {
+        state.stage = 'reserve_yn';
+        var followUp = appendSage('Want to try it?');
+        addQuickReplies(followUp, [
+          { label: '✅ Reserve a pack', value: 'yes' },
+          { label: '💬 I have a question first', value: 'question' },
+        ], handleReserveYN);
+      }, 900);
+    });
+    return;
+  }
+
   var recipe = 'beef';
   if (t.includes('original') || t.includes('turkey')) recipe = 'original';
   else if (t.includes('pork')) recipe = 'pork';
@@ -776,18 +857,18 @@ async function askClaude(text, showNudge) {
     var data;
     try { data = JSON.parse(rawText); } catch(pe) {
       hideTyping();
-      appendSage('Parse error: ' + rawText.slice(0, 200));
+      appendSage("Give us a call at 631-760-7850 and we'll help you out.");
       return;
     }
     if (data.error) {
       hideTyping();
-      appendSage('API error: ' + (data.error.message || JSON.stringify(data.error)));
+      appendSage("Give us a call at 631-760-7850 and we'll help you out.");
       return;
     }
     var reply = (data.content || []).map(function(b){ return b.text || ''; }).join('');
     if (!reply) {
       hideTyping();
-      appendSage('Empty response. Status: ' + res.status + ' Data: ' + JSON.stringify(data).slice(0,150));
+      appendSage("Give us a call at 631-760-7850 and we'll help you out.");
       return;
     }
     hideTyping();
@@ -806,7 +887,7 @@ async function askClaude(text, showNudge) {
     }
   } catch(e) {
     hideTyping();
-    appendSage('Fetch failed: ' + e.message);
+    appendSage("Give us a call at 631-760-7850 and we'll help you out.");
   }
 }
 
@@ -918,12 +999,55 @@ function addResultCard(msgEl, calc, recipe) {
   var bubble = msgEl.querySelector('.bubble');
   var card = document.createElement('div');
   card.className = 'result-card';
+  var mixCost = Math.round(calc.monthlyCost * 0.5);
+  var isMix = recipe === 'multiple';
   card.innerHTML =
     '<div class="result-row"><span class="label">Recipe</span><span class="value">' + recipeLabel(recipe) + '</span></div>' +
     '<div class="result-row"><span class="label">Daily amount</span><span class="value">' + calc.oz + ' oz/day</span></div>' +
     '<div class="result-row"><span class="label">Monthly need</span><span class="value">' + calc.monthlyLbs + ' lbs</span></div>' +
-    '<div class="result-row highlight"><span class="label">Monthly cost</span><span class="value">~$' + calc.monthlyCost + '/mo</span></div>';
+    '<div class="result-row highlight"><span class="label">Monthly cost</span><span class="value">~$' + calc.monthlyCost + '/mo</span></div>' +
+    (isMix ? '' : '<div class="result-row mix-row"><span class="label">Mixing cost</span><span class="value">~$' + mixCost + '/mo</span></div>');
   bubble.appendChild(card);
+  scrollBottom();
+}
+
+const INGREDIENTS = {
+  beef:     'Ground Beef, Beef Heart, Sweet Potato, Beef Liver, Eggs, Kale, Spinach, Flaxseed Oil, Chia Seeds',
+  original: 'Turkey, Sweet Potato, Turkey Liver, Turkey Heart, Pumpkin, Brown Rice, Green Beans, Carrots, Eggs, Coconut Oil',
+  pork:     'Ground Pork, Sweet Potato, Pumpkin, Pork Liver, Broccoli, Kale, Eggs',
+  lamb:     'Ground Lamb, Cauliflower, Carrots, Lamb Liver, Eggs, Blueberries, Spinach, Flaxseed Oil',
+};
+
+function addRecipeButtons(msgEl) {
+  var bubble = msgEl.querySelector('.bubble');
+  var wrap = document.createElement('div');
+  wrap.className = 'recipe-buttons';
+
+  var recipes = [
+    { key: 'beef',     label: 'Beef' },
+    { key: 'original', label: 'Original (Turkey)' },
+    { key: 'pork',     label: 'Pork' },
+    { key: 'lamb',     label: 'Lamb' },
+    { key: 'multiple', label: '🔀 Mix / Not sure' },
+  ];
+
+  recipes.forEach(function(r) {
+    var btn = document.createElement('button');
+    btn.className = 'recipe-btn';
+    var ing = INGREDIENTS[r.key] ? '<span class="recipe-ing">' + INGREDIENTS[r.key] + '</span>' : '';
+    btn.innerHTML = '<span class="recipe-name">' + r.label + '</span>' + ing;
+    (function(recipe, button) {
+      button.onclick = function() {
+        wrap.querySelectorAll('.recipe-btn').forEach(function(b) { b.disabled = true; b.classList.remove('selected'); });
+        button.classList.add('selected');
+        appendUser(recipe.label);
+        setTimeout(function() { handleRecipe(recipe.key); }, 200);
+      };
+    })(r, btn);
+    wrap.appendChild(btn);
+  });
+
+  bubble.appendChild(wrap);
   scrollBottom();
 }
 
