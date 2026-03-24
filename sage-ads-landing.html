@@ -400,6 +400,100 @@
   .send-btn:hover { background: var(--blue-deeper); transform: scale(1.05); }
   .send-btn svg { width: 14px; height: 14px; fill: white; }
 
+  /* ── WEIGHT SLIDER ── */
+  .weight-slider-wrap {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .weight-display {
+    font-family: 'League Spartan', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--blue-deeper);
+    text-align: center;
+    letter-spacing: -0.01em;
+  }
+
+  .weight-display span {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mid);
+    margin-left: 3px;
+  }
+
+  .slider-track {
+    position: relative;
+    padding: 4px 0;
+  }
+
+  input[type="range"].weight-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"].weight-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--blue-deeper);
+    box-shadow: 0 2px 8px rgba(58,78,94,0.35);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  input[type="range"].weight-range::-webkit-slider-thumb:active {
+    transform: scale(1.15);
+  }
+
+  input[type="range"].weight-range::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--blue-deeper);
+    box-shadow: 0 2px 8px rgba(58,78,94,0.35);
+    cursor: pointer;
+    border: none;
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--light);
+    padding: 0 2px;
+  }
+
+  .weight-confirm-btn {
+    padding: 11px 0;
+    background: var(--blue-deeper);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    width: 100%;
+    margin-top: 2px;
+  }
+
+  .weight-confirm-btn:hover {
+    background: var(--blue-dark);
+    transform: translateY(-1px);
+  }
+
   @media (max-width: 480px) {
     .page { max-width: 100%; box-shadow: none; }
   }
@@ -531,11 +625,7 @@ let isTyping = false;
 
 window.addEventListener('DOMContentLoaded', () => {
   const msg = appendSage("Let's figure out exactly how much your dog should eat and what it would cost.\n\nWhat's your dog's weight?");
-  addQuickReplies(msg, [
-    { label: 'Under 20 lbs', value: '15' },
-    { label: '20–50 lbs', value: '35' },
-    { label: '50+ lbs', value: '65' },
-  ], handleWeight);
+  addWeightSlider(msg);
   state.stage = 'weight';
   updateProgress(1);
 
@@ -772,7 +862,62 @@ function formatText(text) {
     .replace(/\n/g, '<br>');
 }
 
-function addQuickReplies(msgEl, options, handler) {
+function addWeightSlider(msgEl) {
+  const bubble = msgEl.querySelector('.bubble');
+  const wrap = document.createElement('div');
+  wrap.className = 'weight-slider-wrap';
+
+  const display = document.createElement('div');
+  display.className = 'weight-display';
+  display.innerHTML = '40 <span>lbs</span>';
+
+  const trackWrap = document.createElement('div');
+  trackWrap.className = 'slider-track';
+
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  slider.className = 'weight-range';
+  slider.min = 5;
+  slider.max = 150;
+  slider.step = 5;
+  slider.value = 40;
+
+  slider.addEventListener('input', () => {
+    display.innerHTML = `${slider.value} <span>lbs</span>`;
+    // Update fill color
+    const pct = ((slider.value - 5) / (150 - 5)) * 100;
+    slider.style.background = `linear-gradient(to right, var(--blue-deeper) ${pct}%, var(--border) ${pct}%)`;
+  });
+
+  // Set initial fill
+  const initPct = ((40 - 5) / (150 - 5)) * 100;
+  slider.style.background = `linear-gradient(to right, var(--blue-deeper) ${initPct}%, var(--border) ${initPct}%)`;
+
+  const labels = document.createElement('div');
+  labels.className = 'slider-labels';
+  labels.innerHTML = '<span>5 lbs</span><span>75 lbs</span><span>150 lbs</span>';
+
+  const confirmBtn = document.createElement('button');
+  confirmBtn.className = 'weight-confirm-btn';
+  confirmBtn.textContent = `That's my dog's weight`;
+
+  confirmBtn.onclick = () => {
+    const weight = slider.value;
+    wrap.remove();
+    appendUser(`${weight} lbs`);
+    handleWeight(weight);
+  };
+
+  trackWrap.appendChild(slider);
+  wrap.appendChild(display);
+  wrap.appendChild(trackWrap);
+  wrap.appendChild(labels);
+  wrap.appendChild(confirmBtn);
+  bubble.appendChild(wrap);
+  scrollBottom();
+}
+
+
   const bubble = msgEl.querySelector('.bubble');
   const wrap = document.createElement('div');
   wrap.className = 'quick-replies';
