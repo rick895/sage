@@ -772,16 +772,22 @@ async function askClaude(text, showNudge) {
         messages: history,
       }),
     });
-    var data = await res.json();
+    var rawText = await res.text();
+    var data;
+    try { data = JSON.parse(rawText); } catch(pe) {
+      hideTyping();
+      appendSage('Parse error: ' + rawText.slice(0, 200));
+      return;
+    }
     if (data.error) {
       hideTyping();
-      appendSage('Error from API: ' + JSON.stringify(data.error));
+      appendSage('API error: ' + (data.error.message || JSON.stringify(data.error)));
       return;
     }
     var reply = (data.content || []).map(function(b){ return b.text || ''; }).join('');
     if (!reply) {
       hideTyping();
-      appendSage('No response received. Raw: ' + JSON.stringify(data).slice(0, 200));
+      appendSage('Empty response. Status: ' + res.status + ' Data: ' + JSON.stringify(data).slice(0,150));
       return;
     }
     hideTyping();
@@ -800,7 +806,7 @@ async function askClaude(text, showNudge) {
     }
   } catch(e) {
     hideTyping();
-    appendSage('Network error: ' + e.message + '. Call us at 631-760-7850.');
+    appendSage('Fetch failed: ' + e.message);
   }
 }
 
