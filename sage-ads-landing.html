@@ -589,29 +589,12 @@ async function sendMessage(overrideText) {
 
 async function handleFreeform(text) {
   var t = text.toLowerCase();
-  // If they're ready to reserve after asking questions
-  if (t.includes('reserve') || t.includes('yes') || t.includes('sign me up') || t.includes('i\'ll try')) {
+  if (t.includes('reserve') || t.includes('sign me up')) {
     state.stage = 'name';
     showTypingThen(500, function() { appendSage("Perfect. What's your name?"); });
     return;
   }
-  await askClaude(text);
-  // After Claude answers, nudge toward reservation
-  setTimeout(function() {
-    if (state.stage === 'freeform') {
-      var nudge = appendSage('Ready to try a pack?');
-      addQuickReplies(nudge, [
-        { label: '✅ Reserve a pack', value: 'yes' },
-        { label: '💬 Another question', value: 'more' },
-      ], function(val) {
-        if (val === 'yes') {
-          state.stage = 'name';
-          showTypingThen(400, function() { appendSage("Perfect. What's your name?"); });
-        }
-        // else stay in freeform
-      });
-    }
-  }, 1500);
+  await askClaude(text, true);
 }
 
 function handleWeight(text) {
@@ -774,7 +757,7 @@ async function submitReservation() {
   addConfirmCard(msgEl);
 }
 
-async function askClaude(text) {
+async function askClaude(text, showNudge) {
   history.push({ role: 'user', content: text });
   showTyping();
   try {
@@ -792,7 +775,19 @@ async function askClaude(text) {
     var reply = (data.content || []).map(function(b){ return b.text || ''; }).join('') || 'Give us a call at 631-760-7850.';
     hideTyping();
     history.push({ role: 'assistant', content: reply });
-    appendSage(reply);
+    var msgEl = appendSage(reply);
+    if (showNudge && state.stage === 'freeform') {
+      addQuickReplies(msgEl, [
+        { label: '✅ Reserve a pack', value: 'yes' },
+        { label: '💬 Another question', value: 'more' },
+      ], function(val) {
+        if (val === 'yes') {
+          state.stage = 'name';
+          showTypingThen(400, function() { appendSage("Perfect. What's your name?"); });
+        }
+        // 'more' — stay in freeform, input stays open
+      });
+    }
   } catch(e) {
     hideTyping();
     appendSage('Give us a call at 631-760-7850 and we\'ll help you out.');
