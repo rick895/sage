@@ -642,11 +642,28 @@ async function sendMessage(overrideText) {
 
 async function handleFreeform(text) {
   var t = text.toLowerCase();
-  if (t.includes('reserve') || t.includes('sign me up')) {
+
+  // Wants to reserve
+  if (t.includes('reserve') || t.includes('sign me up') || t.includes("i'll try") || t.includes('ill try')) {
     state.stage = 'name';
     showTypingThen(500, function() { appendSage("Perfect. What's your name?"); });
     return;
   }
+
+  // Mentions a specific recipe — recalculate
+  var detectedRecipe = null;
+  if ((t.includes('turkey') || t.includes('original')) && !t.includes('beef') && !t.includes('pork') && !t.includes('lamb')) detectedRecipe = 'original';
+  else if (t.includes('beef') && !t.includes('turkey') && !t.includes('pork') && !t.includes('lamb')) detectedRecipe = 'beef';
+  else if (t.includes('pork') && !t.includes('turkey') && !t.includes('beef') && !t.includes('lamb')) detectedRecipe = 'pork';
+  else if (t.includes('lamb') && !t.includes('turkey') && !t.includes('beef') && !t.includes('pork')) detectedRecipe = 'lamb';
+  else if (t.includes('beef') || t.includes('turkey') || t.includes('pork') || t.includes('original')) detectedRecipe = 'multiple';
+
+  if (detectedRecipe) {
+    state.stage = 'recipe';
+    handleRecipe(detectedRecipe);
+    return;
+  }
+
   await askClaude(text, true);
 }
 
