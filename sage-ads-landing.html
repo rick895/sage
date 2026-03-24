@@ -672,7 +672,44 @@ async function handleFreeform(text) {
 
   if (detectedRecipe) {
     state.stage = 'recipe';
-    handleRecipe(detectedRecipe);
+    // If multiple specific recipes detected, calculate their specific mix
+    if (detectedRecipe === 'multiple') {
+      var mixRecipes = [];
+      if (hasBeef) mixRecipes.push('beef');
+      if (hasTurkey) mixRecipes.push('original');
+      if (hasPork) mixRecipes.push('pork');
+      if (hasLamb) mixRecipes.push('lamb');
+
+      var calcs = mixRecipes.map(function(r) { return calcFeeding(r, state.dogWeight, state.activityLevel); }).filter(Boolean);
+      if (!calcs.length) { appendSage("Your dog's size is outside our standard chart. Give us a call at 631-760-7850."); return; }
+
+      var avgOz   = Math.round((calcs.reduce(function(s,c){ return s + c.oz; }, 0) / calcs.length) * 10) / 10;
+      var avgLbs  = Math.round((calcs.reduce(function(s,c){ return s + c.monthlyLbs; }, 0) / calcs.length) * 10) / 10;
+      var avgCost = Math.round(calcs.reduce(function(s,c){ return s + c.monthlyCost; }, 0) / calcs.length);
+      var mixLabel = mixRecipes.map(function(r){ return recipeLabel(r); }).join(' & ') + ' Mix';
+
+      state.recipe = 'multiple';
+      state.dailyOz = avgOz;
+      state.monthlyLbs = avgLbs;
+      state.monthlyCost = avgCost;
+      state.stage = 'confirmed';
+      updateProgress(3);
+
+      showTypingThen(700, function() {
+        var msgEl = appendSage('Here\'s the breakdown for a ' + mixLabel + ' for your ' + state.dogWeight + 'lb dog:');
+        addResultCard(msgEl, { oz: avgOz, monthlyLbs: avgLbs, monthlyCost: avgCost }, 'multiple', mixLabel);
+        setTimeout(function() {
+          state.stage = 'reserve_yn';
+          var followUp = appendSage('Want to try it?');
+          addQuickReplies(followUp, [
+            { label: '✅ Reserve a pack', value: 'yes' },
+            { label: '💬 I have a question first', value: 'question' },
+          ], handleReserveYN);
+        }, 900);
+      });
+    } else {
+      handleRecipe(detectedRecipe);
+    }
     return;
   }
 
@@ -1024,14 +1061,15 @@ function addStorePicker(msgEl) {
   scrollBottom();
 }
 
-function addResultCard(msgEl, calc, recipe) {
+function addResultCard(msgEl, calc, recipe, customLabel) {
   var bubble = msgEl.querySelector('.bubble');
   var card = document.createElement('div');
   card.className = 'result-card';
   var mixCost = Math.round(calc.monthlyCost * 0.5);
   var isMix = recipe === 'multiple';
+  var label = customLabel || recipeLabel(recipe);
   card.innerHTML =
-    '<div class="result-row"><span class="label">Recipe</span><span class="value">' + recipeLabel(recipe) + '</span></div>' +
+    '<div class="result-row"><span class="label">Recipe</span><span class="value">' + label + '</span></div>' +
     '<div class="result-row"><span class="label">Daily amount</span><span class="value">' + calc.oz + ' oz/day</span></div>' +
     '<div class="result-row"><span class="label">Monthly need</span><span class="value">' + calc.monthlyLbs + ' lbs</span></div>' +
     '<div class="result-row highlight"><span class="label">Monthly cost</span><span class="value">~$' + calc.monthlyCost + '/mo</span></div>' +
