@@ -414,7 +414,7 @@
     <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="header-logo" alt="Natural Hounds">
     <div class="header-text">
       <span class="header-headline">See exactly what to feed your dog — and what it costs</span>
-      <span class="header-sub">Takes ~30 seconds</span>
+      <span class="header-sub">Most dogs switch easily starting with 1–2 packs</span>
     </div>
     <div class="progress-pill">
       <div class="progress-dots">
@@ -422,7 +422,7 @@
         <div class="progress-dot" id="dot2"></div>
         <div class="progress-dot" id="dot3"></div>
       </div>
-      <span id="progressLabel">Step 1 of 3</span>
+      <span id="progressLabel">Quick 3-step plan</span>
     </div>
   </header>
 
@@ -432,7 +432,7 @@
   <!-- INPUT -->
   <div class="input-area">
     <div class="input-wrap">
-      <textarea id="userInput" placeholder="Type here…" rows="1"></textarea>
+      <textarea id="userInput" placeholder="Enter your dog's weight…" rows="1"></textarea>
       <button class="send-btn" onclick="sendMessage()" id="sendBtn">
         <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
       </button>
@@ -465,7 +465,7 @@ function updateProgress(step) {
     if (i + 1 < step) d.classList.add('done');
     else if (i + 1 === step) d.classList.add('active');
   });
-  label.textContent = `Step ${step} of 3`;
+  label.textContent = step === 1 ? 'Quick 3-step plan' : `Step ${step} of 3`;
 }
 
 const CHARTS = {
@@ -530,8 +530,12 @@ let history = [];
 let isTyping = false;
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Change 1: punchier opening message
-  appendSage("Let's calculate exactly how much your dog should eat + what it costs (30 sec)\n\nWhat's your dog's weight?");
+  const msg = appendSage("Let's figure out exactly how much your dog should eat and what it would cost.\n\nWhat's your dog's weight?");
+  addQuickReplies(msg, [
+    { label: 'Under 20 lbs', value: '15' },
+    { label: '20–50 lbs', value: '35' },
+    { label: '50+ lbs', value: '65' },
+  ], handleWeight);
   state.stage = 'weight';
   updateProgress(1);
 
