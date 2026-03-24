@@ -599,7 +599,13 @@ function recipeLabel(key) {
   return map[key] || key;
 }
 
-const SYSTEM_PROMPT = 'You are Sage, a friendly advisor for Natural Hounds — fresh human-grade dog food on Long Island, NY. Keep responses to 1-3 sentences. Be direct and confident. Do not ask for email or dog name.';
+function buildSystemPrompt() {
+  var base = 'You are Sage, a friendly advisor for Natural Hounds — fresh human-grade dog food on Long Island, NY. 4 recipes: Beef ($4.83/lb), Original Turkey ($4.83/lb), Pork ($4.83/lb), Lamb ($8.67/lb). Stores: Babylon, Port Jefferson, Huntington. Hours: Tues-Sat 10am-6pm, Sun 10am-3pm. Keep responses to 2-3 sentences. Be direct and confident. Do not ask for email or dog name.';
+  if (state.dogWeight && state.dailyOz && state.monthlyCost) {
+    base += ' IMPORTANT CONTEXT: This dog weighs ' + state.dogWeight + 'lbs, needs ' + state.dailyOz + ' oz/day, costs ~$' + state.monthlyCost + '/mo on ' + recipeLabel(state.recipe) + '. Use these exact numbers when answering cost or feeding questions — do not estimate or guess.';
+  }
+  return base;
+}
 
 var chatHistory = [];
 var isTyping = false;
@@ -650,13 +656,19 @@ async function handleFreeform(text) {
     return;
   }
 
-  // Mentions a specific recipe — recalculate
+  // Mentions recipes — recalculate
+  var hasTurkey = t.includes('turkey') || t.includes('original');
+  var hasBeef = t.includes('beef');
+  var hasPork = t.includes('pork');
+  var hasLamb = t.includes('lamb');
+  var recipeCount = [hasTurkey, hasBeef, hasPork, hasLamb].filter(Boolean).length;
+
   var detectedRecipe = null;
-  if ((t.includes('turkey') || t.includes('original')) && !t.includes('beef') && !t.includes('pork') && !t.includes('lamb')) detectedRecipe = 'original';
-  else if (t.includes('beef') && !t.includes('turkey') && !t.includes('pork') && !t.includes('lamb')) detectedRecipe = 'beef';
-  else if (t.includes('pork') && !t.includes('turkey') && !t.includes('beef') && !t.includes('lamb')) detectedRecipe = 'pork';
-  else if (t.includes('lamb') && !t.includes('turkey') && !t.includes('beef') && !t.includes('pork')) detectedRecipe = 'lamb';
-  else if (t.includes('beef') || t.includes('turkey') || t.includes('pork') || t.includes('original')) detectedRecipe = 'multiple';
+  if (recipeCount >= 2) detectedRecipe = 'multiple';
+  else if (hasTurkey) detectedRecipe = 'original';
+  else if (hasBeef) detectedRecipe = 'beef';
+  else if (hasPork) detectedRecipe = 'pork';
+  else if (hasLamb) detectedRecipe = 'lamb';
 
   if (detectedRecipe) {
     state.stage = 'recipe';
@@ -866,7 +878,7 @@ async function askClaude(text, showNudge) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 300,
-        system: SYSTEM_PROMPT,
+        system: buildSystemPrompt(),
         messages: chatHistory,
       }),
     });
