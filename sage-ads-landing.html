@@ -6,454 +6,423 @@
 <title>Natural Hounds — Fresh Dog Food</title>
 <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --blue: #9fd1ff;
-    --blue-dark: #536479;
-    --blue-deeper: #3a4e5e;
-    --cream: #f4f9ff;
-    --border: #c8ddef;
-    --white: #FFFFFF;
-    --charcoal: #0f1923;
-    --mid: #536479;
-    --light: #a8bccf;
-    --shadow: 0 2px 24px rgba(83,100,121,0.10);
-  }
+:root {
+  --blue: #9fd1ff;
+  --blue-dark: #536479;
+  --blue-deeper: #3a4e5e;
+  --cream: #f4f9ff;
+  --border: #c8ddef;
+  --white: #FFFFFF;
+  --charcoal: #0f1923;
+  --mid: #536479;
+  --light: #a8bccf;
+}
 
-  html, body {
-    height: 100%;
-    background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    color: var(--charcoal);
-    -webkit-font-smoothing: antialiased;
-    overflow: hidden;
-  }
+html, body {
+  height: 100%;
+  background: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--charcoal);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
 
-  .page {
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
-    max-width: 640px;
-    margin: 0 auto;
-    background: var(--white);
-    box-shadow: 0 0 40px rgba(83,100,121,0.08);
-  }
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--white);
+  box-shadow: 0 0 40px rgba(83,100,121,0.08);
+}
 
-  /* ── HEADER ── */
-  .header {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 16px;
-    height: 68px;
-    background: #536479;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  }
+/* HEADER */
+.header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  height: 68px;
+  background: #536479;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
 
-  .header-logo {
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-    flex-shrink: 0;
-    opacity: 0.9;
-  }
+.header-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
 
-  .header-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-    min-width: 0;
-  }
+.header-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
 
-  .header-headline {
-    font-family: 'League Spartan', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: #ffffff;
-    line-height: 1.25;
-    letter-spacing: 0.01em;
-  }
+.header-headline {
+  font-family: 'League Spartan', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.25;
+}
 
-  .header-sub {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11.5px;
-    font-weight: 400;
-    color: rgba(255,255,255,0.6);
-    letter-spacing: 0.01em;
-  }
+.header-sub {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.6);
+}
 
-  /* ── PROGRESS ── */
-  .progress-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.8);
-    flex-shrink: 0;
-  }
+.progress-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 
-  .progress-dots {
-    display: flex;
-    gap: 4px;
-  }
+.progress-dots { display: flex; gap: 4px; }
 
-  .progress-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--border);
-    transition: background 0.3s;
-  }
+.progress-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transition: background 0.3s;
+}
 
-  .progress-dot.active { background: #ffffff; }
-  .progress-dot.done   { background: var(--blue); }
+.progress-dot.active { background: #fff; }
+.progress-dot.done   { background: var(--blue); }
 
-  .sage-dot {
-    width: 6px;
-    height: 6px;
-    background: #5ec45e;
-    border-radius: 50%;
-    animation: pulse 2.5s ease-in-out infinite;
-  }
+/* MESSAGES */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  scroll-behavior: smooth;
+}
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
+.messages::-webkit-scrollbar { width: 3px; }
+.messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* ── MESSAGES ── */
-  .messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 22px 16px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    scroll-behavior: smooth;
-  }
+/* BUBBLES */
+.message {
+  display: flex;
+  gap: 10px;
+  max-width: 92%;
+  animation: fadeUp 0.2s ease forwards;
+}
 
-  .messages::-webkit-scrollbar { width: 3px; }
-  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-  /* ── BUBBLES ── */
-  .message {
-    display: flex;
-    gap: 10px;
-    max-width: 92%;
-    animation: fadeUp 0.2s ease forwards;
-  }
+.message.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-top: 3px;
+}
 
-  .message.user {
-    align-self: flex-end;
-    flex-direction: row-reverse;
-  }
+.sage-avatar {
+  background: var(--blue);
+  color: var(--charcoal);
+  font-family: 'League Spartan', sans-serif;
+  font-size: 12px;
+}
 
-  .avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    margin-top: 3px;
-  }
+.user-avatar {
+  background: var(--blue-deeper);
+  color: var(--white);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
 
-  .sage-avatar {
-    background: var(--blue);
-    color: var(--charcoal);
-    font-family: 'League Spartan', sans-serif;
-    font-size: 12px;
-  }
+.bubble {
+  padding: 12px 15px;
+  border-radius: 16px;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
 
-  .user-avatar {
-    background: var(--blue-deeper);
-    color: var(--white);
-    font-size: 9px;
-    letter-spacing: 0.04em;
-  }
+.message.sage .bubble {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top-left-radius: 4px;
+  color: var(--charcoal);
+  font-weight: 400;
+  box-shadow: 0 1px 8px rgba(83,100,121,0.08);
+}
 
-  .bubble {
-    padding: 12px 15px;
-    border-radius: 16px;
-    font-size: 14.5px;
-    line-height: 1.6;
-  }
+.message.user .bubble {
+  background: var(--blue-deeper);
+  color: var(--white);
+  border-top-right-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(58,78,94,0.25);
+}
 
-  /* Sage — slightly bolder for hierarchy */
-  .message.sage .bubble {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-top-left-radius: 4px;
-    color: var(--charcoal);
-    font-weight: 400;
-    box-shadow: 0 1px 8px rgba(83,100,121,0.08);
-  }
+.bubble strong { font-weight: 600; }
+.bubble p { margin-top: 8px; }
+.bubble p:first-child { margin-top: 0; }
 
-  /* User — darker, higher contrast */
-  .message.user .bubble {
-    background: var(--blue-deeper);
-    color: var(--white);
-    border-top-right-radius: 4px;
-    font-weight: 500;
-    font-size: 14px;
-    box-shadow: 0 2px 10px rgba(58,78,94,0.25);
-  }
+/* RESULT CARD */
+.result-card {
+  background: #f0f7ff;
+  border: 1.5px solid var(--blue);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
 
-  .bubble strong { font-weight: 600; }
-  .bubble p + p { margin-top: 8px; }
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(159,209,255,0.4);
+}
 
-  /* ── RESULT CARD ── */
-  .result-card {
-    background: #f0f7ff;
-    border: 1.5px solid var(--blue);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-top: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
+.result-row:last-child { border-bottom: none; }
+.result-row .label { color: var(--mid); }
+.result-row .value { font-weight: 600; }
+.result-row.highlight .value { color: var(--blue-dark); font-size: 15px; }
 
-  .result-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13.5px;
-    padding: 3px 0;
-    border-bottom: 1px solid rgba(159,209,255,0.4);
-  }
+/* WEIGHT CHIPS */
+.weight-chips-wrap {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
 
-  .result-row:last-child { border-bottom: none; }
-  .result-row .label { color: var(--mid); font-weight: 400; }
-  .result-row .value { font-weight: 600; color: var(--charcoal); }
-  .result-row.highlight .label { color: var(--blue-dark); font-weight: 500; }
-  .result-row.highlight .value { color: var(--blue-dark); font-size: 15px; }
+.weight-chips-wrap::-webkit-scrollbar { display: none; }
 
-  /* ── QUICK REPLY BUTTONS ── */
-  .quick-replies {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 9px;
-    margin-top: 12px;
-  }
+.weight-chip {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 2px solid var(--blue-dark);
+  background: rgba(83,100,121,0.05);
+  color: var(--blue-dark);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
 
-  /* Bigger, stronger border, light fill — "tap me" */
-  .qr-btn {
-    padding: 10px 20px;
-    border-radius: 22px;
-    border: 2px solid var(--blue-dark);
-    background: rgba(83,100,121,0.05);
-    color: var(--blue-dark);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13.5px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-  }
+.weight-chip:hover { background: var(--blue-dark); color: var(--white); }
 
-  .qr-btn:hover {
-    background: var(--blue-dark);
-    color: var(--white);
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(83,100,121,0.2);
-  }
+.weight-chip.selected {
+  background: var(--blue-deeper);
+  color: var(--white);
+  border-color: var(--blue-deeper);
+  box-shadow: 0 3px 12px rgba(58,78,94,0.35);
+  transform: scale(1.03);
+}
 
-  /* Selected state — pops hard */
-  .qr-btn.selected {
-    background: var(--blue-deeper);
-    color: var(--white);
-    border-color: var(--blue-deeper);
-    box-shadow: 0 3px 12px rgba(58,78,94,0.35);
-    transform: scale(1.03);
-  }
+.weight-chip:disabled { cursor: default; }
 
-  .qr-btn:disabled { cursor: default; }
+/* QUICK REPLY BUTTONS */
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 12px;
+}
 
-  .qr-btn.store-btn {
-    flex: 1;
-    min-width: 90px;
-    text-align: center;
-    border-radius: 12px;
-    padding: 12px 16px;
-  }
+.qr-btn {
+  padding: 10px 20px;
+  border-radius: 22px;
+  border: 2px solid var(--blue-dark);
+  background: rgba(83,100,121,0.05);
+  color: var(--blue-dark);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
 
-  /* ── RESERVE CONFIRM ── */
-  .reserve-confirm {
-    background: #edf7ed;
-    border: 1.5px solid #7dbd7d;
-    border-radius: 10px;
-    padding: 13px 15px;
-    margin-top: 10px;
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: #1e4d1e;
-  }
+.qr-btn:hover { background: var(--blue-dark); color: var(--white); transform: translateY(-1px); }
 
-  /* ── TYPING ── */
-  .typing {
-    display: flex;
-    gap: 10px;
-    max-width: 88%;
-    animation: fadeUp 0.2s ease forwards;
-  }
+.qr-btn.selected {
+  background: var(--blue-deeper);
+  color: var(--white);
+  border-color: var(--blue-deeper);
+  box-shadow: 0 3px 12px rgba(58,78,94,0.35);
+  transform: scale(1.03);
+}
 
-  .typing-dots {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    border-top-left-radius: 4px;
-    padding: 13px 17px;
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    box-shadow: var(--shadow);
-  }
+.qr-btn:disabled { cursor: default; }
 
-  .typing-dots span {
-    width: 5px;
-    height: 5px;
-    background: var(--blue);
-    border-radius: 50%;
-    animation: bounce 1.2s ease-in-out infinite;
-  }
+.qr-btn.store-btn {
+  flex: 1;
+  min-width: 90px;
+  text-align: center;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
 
-  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+/* CONFIRM CARD */
+.reserve-confirm {
+  background: #edf7ed;
+  border: 1.5px solid #7dbd7d;
+  border-radius: 10px;
+  padding: 13px 15px;
+  margin-top: 10px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #1e4d1e;
+}
 
-  @keyframes bounce {
-    0%, 60%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-4px); }
-  }
+/* TYPING */
+.typing {
+  display: flex;
+  gap: 10px;
+  max-width: 88%;
+  animation: fadeUp 0.2s ease forwards;
+}
 
-  /* ── INPUT — darker border, matches button system ── */
-  .input-area {
-    flex-shrink: 0;
-    padding: 12px 16px;
-    padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom)));
-    border-top: 1.5px solid var(--border);
-    background: var(--white);
-  }
+.typing-dots {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  border-top-left-radius: 4px;
+  padding: 13px 17px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  box-shadow: 0 1px 8px rgba(83,100,121,0.08);
+}
 
-  .input-wrap {
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    background: var(--white);
-    border: 2px solid var(--border);
-    border-radius: 14px;
-    padding: 10px 14px;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
+.typing-dots span {
+  width: 5px;
+  height: 5px;
+  background: var(--blue);
+  border-radius: 50%;
+  animation: bounce 1.2s ease-in-out infinite;
+}
 
-  .input-wrap:focus-within {
-    border-color: var(--blue-dark);
-    box-shadow: 0 2px 14px rgba(83,100,121,0.14);
-  }
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 
-  #userInput {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    color: var(--charcoal);
-    resize: none;
-    line-height: 1.5;
-    max-height: 100px;
-    min-height: 22px;
-  }
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
 
-  #userInput::placeholder { color: var(--light); }
+/* INPUT */
+.input-area {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom)));
+  border-top: 1.5px solid var(--border);
+  background: var(--white);
+}
 
-  .send-btn {
-    width: 34px;
-    height: 34px;
-    background: var(--blue-dark);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.15s, transform 0.1s;
-  }
+.input-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
 
-  .send-btn:hover { background: var(--blue-deeper); transform: scale(1.05); }
-  .send-btn svg { width: 14px; height: 14px; fill: white; }
+.input-wrap:focus-within {
+  border-color: var(--blue-dark);
+  box-shadow: 0 2px 14px rgba(83,100,121,0.14);
+}
 
-  /* ── WEIGHT CHIPS ── */
-  .weight-chips-wrap {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 8px;
-    margin-top: 12px;
-    overflow-x: auto;
-    padding-bottom: 6px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
+#userInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--charcoal);
+  resize: none;
+  line-height: 1.5;
+  max-height: 100px;
+  min-height: 22px;
+}
 
-  .weight-chips-wrap::-webkit-scrollbar { display: none; }
+#userInput::placeholder { color: var(--light); }
 
-  .weight-chip {
-    flex-shrink: 0;
-    padding: 8px 14px;
-    border-radius: 20px;
-    border: 2px solid var(--blue-dark);
-    background: rgba(83,100,121,0.05);
-    color: var(--blue-dark);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-  }
+.send-btn {
+  width: 34px;
+  height: 34px;
+  background: var(--blue-dark);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
 
-  .weight-chip:hover {
-    background: var(--blue-dark);
-    color: var(--white);
-  }
+.send-btn:hover { background: var(--blue-deeper); }
+.send-btn svg { width: 14px; height: 14px; fill: white; }
 
-  .weight-chip.selected {
-    background: var(--blue-deeper);
-    color: var(--white);
-    border-color: var(--blue-deeper);
-    box-shadow: 0 3px 12px rgba(58,78,94,0.35);
-    transform: scale(1.03);
-  }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
 
-  .weight-chip:disabled { cursor: default; }
-
-  @media (max-width: 480px) {
-    .page { max-width: 100%; box-shadow: none; }
-  }
+@media (max-width: 480px) {
+  .page { max-width: 100%; box-shadow: none; }
+}
 </style>
 </head>
 <body>
-
 <div class="page">
 
-  <!-- HEADER -->
   <header class="header">
     <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="header-logo" alt="Natural Hounds">
     <div class="header-text">
@@ -470,21 +439,18 @@
     </div>
   </header>
 
-  <!-- MESSAGES -->
   <div class="messages" id="messages"></div>
 
-  <!-- INPUT -->
   <div class="input-area">
     <div class="input-wrap">
       <textarea id="userInput" placeholder="Enter your dog's weight…" rows="1"></textarea>
-      <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+      <button class="send-btn" onclick="sendMessage()">
         <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
       </button>
     </div>
   </div>
 
 </div>
-
 <script>
 const PROXY_URL = 'https://sage-proxy.rick-026.workers.dev';
 
@@ -502,16 +468,18 @@ const state = {
 };
 
 function updateProgress(step) {
-  const dots = [document.getElementById('dot1'), document.getElementById('dot2'), document.getElementById('dot3')];
-  const label = document.getElementById('progressLabel');
-  dots.forEach((d, i) => {
-    d.classList.remove('active', 'done');
+  const ids = ['dot1','dot2','dot3'];
+  ids.forEach((id, i) => {
+    const d = document.getElementById(id);
+    d.classList.remove('active','done');
     if (i + 1 < step) d.classList.add('done');
     else if (i + 1 === step) d.classList.add('active');
   });
-  label.textContent = step === 1 ? 'Quick 3-step plan' : `Step ${step} of 3`;
+  document.getElementById('progressLabel').textContent =
+    step === 1 ? 'Quick 3-step plan' : 'Step ' + step + ' of 3';
 }
 
+// FEEDING CHARTS
 const CHARTS = {
   original: [
     {max:5,normal:3.8,lazy:3.2,active:4.2},{max:10,normal:6.4,lazy:5.3,active:7.1},
@@ -548,77 +516,68 @@ const PRICE_PER_LB = { original: 4.83, beef: 4.83, pork: 4.83, lamb: 8.67 };
 
 function calcFeeding(recipe, weight, activity) {
   const chart = CHARTS[recipe];
-  const row = chart.find(r => weight <= r.max);
+  const row = chart.find(function(r){ return weight <= r.max; });
   if (!row) return null;
-  const oz = row[activity] || row.normal;
-  const monthlyLbs = Math.round((oz * 30 / 16) * 10) / 10;
-  const monthlyCost = Math.round(monthlyLbs * PRICE_PER_LB[recipe]);
-  return { oz, monthlyLbs, monthlyCost };
+  var oz = row[activity] || row.normal;
+  var monthlyLbs = Math.round((oz * 30 / 16) * 10) / 10;
+  var monthlyCost = Math.round(monthlyLbs * PRICE_PER_LB[recipe]);
+  return { oz: oz, monthlyLbs: monthlyLbs, monthlyCost: monthlyCost };
 }
 
 function recipeLabel(key) {
-  return { original: 'Original (Turkey)', beef: 'Beef', pork: 'Pork', lamb: 'Lamb' }[key] || key;
+  var map = { original: 'Original (Turkey)', beef: 'Beef', pork: 'Pork', lamb: 'Lamb' };
+  return map[key] || key;
 }
 
-const SYSTEM_PROMPT = `You are Sage, a friendly and confident nutrition advisor for Natural Hounds — a fresh, human-grade dog food company on Long Island, NY.
+const SYSTEM_PROMPT = 'You are Sage, a friendly advisor for Natural Hounds — fresh human-grade dog food on Long Island, NY. Keep responses to 1-3 sentences. Be direct and confident. Do not ask for email or dog name.';
 
-Your only job on this page is to guide people through: weight → activity → recipe → result → reservation.
+var history = [];
+var isTyping = false;
 
-Tone: warm, direct, confident. Short sentences. Never say "would you like to" — just lead. Keep responses to 1-3 sentences max.
-
-Natural Hounds makes freshly cooked, human-grade dog food. 4 recipes: Original (Turkey), Beef, Pork, Lamb. Sold in 1lb packs at 3 stores: Babylon, Port Jefferson, Huntington. Hours: Tues-Sat 10am-6pm, Sun 10am-3pm.
-
-Do NOT ask for email. Do NOT ask for dog's name. Answer questions briefly and get back on track.`;
-
-let history = [];
-let isTyping = false;
-
-window.addEventListener('DOMContentLoaded', () => {
-  const msg = appendSage("Let's figure out exactly how much your dog should eat and what it would cost.\n\nWhat's your dog's weight?");
+window.addEventListener('DOMContentLoaded', function() {
+  var msg = appendSage("Let's figure out exactly how much your dog should eat and what it would cost.\n\nWhat's your dog's weight?");
   addWeightChips(msg);
   state.stage = 'weight';
   updateProgress(1);
 
-  const input = document.getElementById('userInput');
-  input.addEventListener('keydown', e => {
+  var input = document.getElementById('userInput');
+  input.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
-  input.addEventListener('input', () => {
+  input.addEventListener('input', function() {
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 100) + 'px';
   });
 });
 
 async function sendMessage(overrideText) {
-  const input = document.getElementById('userInput');
-  const text = (overrideText || input.value).trim();
+  var input = document.getElementById('userInput');
+  var text = (overrideText || input.value).trim();
   if (!text || isTyping) return;
   input.value = '';
   input.style.height = 'auto';
   appendUser(text);
 
-  if (state.stage === 'weight')      return handleWeight(text);
-  if (state.stage === 'activity')    return handleActivity(text);
-  if (state.stage === 'recipe')      return handleRecipe(text);
-  if (state.stage === 'reserve_yn')  return handleReserveYN(text);
-  if (state.stage === 'name')        return handleName(text);
-  if (state.stage === 'phone')       return handlePhone(text);
-  if (state.stage === 'store')       return handleStore(text);
-
+  if (state.stage === 'weight')     return handleWeight(text);
+  if (state.stage === 'activity')   return handleActivity(text);
+  if (state.stage === 'recipe')     return handleRecipe(text);
+  if (state.stage === 'reserve_yn') return handleReserveYN(text);
+  if (state.stage === 'name')       return handleName(text);
+  if (state.stage === 'phone')      return handlePhone(text);
+  if (state.stage === 'store')      return handleStore(text);
   await askClaude(text);
 }
 
 function handleWeight(text) {
-  const match = text.match(/(\d+)/);
+  var match = text.match(/(\d+)/);
   if (!match || parseInt(match[1]) < 2 || parseInt(match[1]) > 200) {
-    appendSage("Just need the weight in pounds — something like \"45\" works fine.");
+    appendSage('Just need the weight in pounds — something like "45" works fine.');
     return;
   }
   state.dogWeight = parseInt(match[1]);
   state.stage = 'activity';
-
-  showTypingThen(600, () => {
-    const msg = appendSage("Got it. How active is your dog?");
+  showTypingThen(600, function() {
+    var msg = appendSage('Got it. How active is your dog?');
     addQuickReplies(msg, [
       { label: '🛋️ Pretty lazy', value: 'lazy' },
       { label: '🐕 Normal', value: 'normal' },
@@ -628,7 +587,7 @@ function handleWeight(text) {
 }
 
 function handleActivity(text) {
-  const t = text.toLowerCase();
+  var t = text.toLowerCase();
   if (t.includes('lazy') || t.includes('couch') || t.includes('low')) {
     state.activityLevel = 'lazy';
   } else if (t.includes('active') || t.includes('runs') || t.includes('athletic')) {
@@ -638,10 +597,8 @@ function handleActivity(text) {
   }
   state.stage = 'recipe';
   updateProgress(2);
-
-  showTypingThen(600, () => {
-    // Change 5: shorter sensitivities question, two-line format
-    const msg = appendSage("Any allergies or sensitivities?\n\nMost dogs do great with Beef or Turkey.");
+  showTypingThen(600, function() {
+    var msg = appendSage("Any allergies or sensitivities?\n\nMost dogs do great with Beef or Turkey.");
     addQuickReplies(msg, [
       { label: 'Beef', value: 'beef' },
       { label: 'Original (Turkey)', value: 'original' },
@@ -652,17 +609,17 @@ function handleActivity(text) {
 }
 
 function handleRecipe(text) {
-  const t = text.toLowerCase();
-  let recipe = 'beef';
+  var t = text.toLowerCase();
+  var recipe = 'beef';
   if (t.includes('original') || t.includes('turkey')) recipe = 'original';
   else if (t.includes('pork')) recipe = 'pork';
   else if (t.includes('lamb')) recipe = 'lamb';
 
   state.recipe = recipe;
-  const calc = calcFeeding(recipe, state.dogWeight, state.activityLevel);
+  var calc = calcFeeding(recipe, state.dogWeight, state.activityLevel);
 
   if (!calc) {
-    appendSage("Your dog's size is outside our standard chart. Give us a call at 631-760-7850 and we'll sort it out.");
+    appendSage("Your dog's size is outside our standard chart. Give us a call at 631-760-7850.");
     return;
   }
 
@@ -672,13 +629,12 @@ function handleRecipe(text) {
   state.stage = 'confirmed';
   updateProgress(3);
 
-  showTypingThen(700, () => {
-    const msgEl = appendSage(`Here's what your ${state.dogWeight}lb dog needs on ${recipeLabel(recipe)}:`);
+  showTypingThen(700, function() {
+    var msgEl = appendSage('Here\'s what your ' + state.dogWeight + 'lb dog needs on ' + recipeLabel(recipe) + ':');
     addResultCard(msgEl, calc, recipe);
-
-    setTimeout(() => {
+    setTimeout(function() {
       state.stage = 'reserve_yn';
-      const followUp = appendSage("Want me to set aside a pack for you to try?");
+      var followUp = appendSage('Want me to set aside a pack for you to try?');
       addQuickReplies(followUp, [
         { label: 'Yes, reserve one', value: 'yes' },
         { label: 'Not yet', value: 'no' },
@@ -688,13 +644,13 @@ function handleRecipe(text) {
 }
 
 function handleReserveYN(text) {
-  const t = text.toLowerCase();
+  var t = text.toLowerCase();
   if (t.includes('yes') || t.includes('sure') || t.includes('yeah') || t.includes('reserve') || t.includes('ok') || t.includes('please')) {
     state.stage = 'name';
-    showTypingThen(500, () => appendSage("Perfect. What's your name?"));
+    showTypingThen(500, function() { appendSage("Perfect. What's your name?"); });
   } else {
-    showTypingThen(400, () => {
-      appendSage("No problem. We're in Babylon, Port Jefferson, and Huntington — Tues-Sat 10am-6pm, Sun 10am-3pm. Ask for a 1lb pack when you stop in.");
+    showTypingThen(400, function() {
+      appendSage("No problem. We're in Babylon, Port Jefferson, and Huntington — Tues-Sat 10am-6pm, Sun 10am-3pm.");
       state.stage = 'done';
     });
   }
@@ -704,31 +660,33 @@ function handleName(text) {
   if (text.length < 2) { appendSage("What's your name?"); return; }
   state.reserveName = text.trim();
   state.stage = 'phone';
-  showTypingThen(400, () => appendSage(`Got it, ${state.reserveName.split(' ')[0]}. Best phone number?`));
+  showTypingThen(400, function() {
+    appendSage('Got it, ' + state.reserveName.split(' ')[0] + '. Best phone number?');
+  });
 }
 
 function handlePhone(text) {
-  const digits = text.replace(/\D/g, '');
+  var digits = text.replace(/\D/g, '');
   if (digits.length < 10) {
-    appendSage("Just need a 10-digit number so we can text you.");
+    appendSage('Just need a 10-digit number so we can text you.');
     return;
   }
   state.reservePhone = digits;
   state.stage = 'store';
-  showTypingThen(400, () => {
-    const msg = appendSage("Which location is easiest for you?");
+  showTypingThen(400, function() {
+    var msg = appendSage('Which location is easiest for you?');
     addStorePicker(msg);
   });
 }
 
 function handleStore(text) {
-  const t = text.toLowerCase();
-  let store = '';
+  var t = text.toLowerCase();
+  var store = '';
   if (t.includes('babylon')) store = 'Babylon';
   else if (t.includes('port') || t.includes('jeff')) store = 'Port Jefferson';
   else if (t.includes('huntington')) store = 'Huntington';
   else {
-    appendSage("Which location — Babylon, Port Jefferson, or Huntington?");
+    appendSage('Which location — Babylon, Port Jefferson, or Huntington?');
     return;
   }
   state.reserveStore = store;
@@ -749,12 +707,10 @@ async function submitReservation() {
         dogWeight: state.dogWeight,
       }),
     });
-  } catch(e) {
-    console.error('Reserve error:', e);
-  }
+  } catch(e) { console.error('Reserve error:', e); }
   hideTyping();
-  const firstName = state.reserveName.split(' ')[0];
-  const msgEl = appendSage(`Done, ${firstName}! A 1lb pack of ${recipeLabel(state.recipe)} is set aside at ${state.reserveStore}.`);
+  var firstName = state.reserveName.split(' ')[0];
+  var msgEl = appendSage('Done, ' + firstName + '! A 1lb pack of ' + recipeLabel(state.recipe) + ' is set aside at ' + state.reserveStore + '.');
   addConfirmCard(msgEl);
 }
 
@@ -762,44 +718,44 @@ async function askClaude(text) {
   history.push({ role: 'user', content: text });
   showTyping();
   try {
-    const res = await fetch(PROXY_URL, {
+    var res = await fetch(PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 400,
+        max_tokens: 300,
         system: SYSTEM_PROMPT,
         messages: history,
       }),
     });
-    const data = await res.json();
-    const reply = data.content?.map(b => b.text || '').join('') || "Give us a call at 631-760-7850 and we'll help you out.";
+    var data = await res.json();
+    var reply = (data.content || []).map(function(b){ return b.text || ''; }).join('') || 'Give us a call at 631-760-7850.';
     hideTyping();
     history.push({ role: 'assistant', content: reply });
     appendSage(reply);
   } catch(e) {
     hideTyping();
-    appendSage("Give us a call at 631-760-7850 and we'll help you out directly.");
+    appendSage('Give us a call at 631-760-7850 and we\'ll help you out.');
   }
 }
 
-// ── UI HELPERS ──
+// UI HELPERS
 
 function appendSage(text) {
-  const container = document.getElementById('messages');
-  const msg = document.createElement('div');
+  var container = document.getElementById('messages');
+  var msg = document.createElement('div');
   msg.className = 'message sage';
-  msg.innerHTML = `<div class="avatar sage-avatar">S</div><div class="bubble">${formatText(text)}</div>`;
+  msg.innerHTML = '<div class="avatar sage-avatar">S</div><div class="bubble">' + formatText(text) + '</div>';
   container.appendChild(msg);
   scrollBottom();
   return msg;
 }
 
 function appendUser(text) {
-  const container = document.getElementById('messages');
-  const msg = document.createElement('div');
+  var container = document.getElementById('messages');
+  var msg = document.createElement('div');
   msg.className = 'message user';
-  msg.innerHTML = `<div class="avatar user-avatar">You</div><div class="bubble">${formatText(text)}</div>`;
+  msg.innerHTML = '<div class="avatar user-avatar">You</div><div class="bubble">' + formatText(text) + '</div>';
   container.appendChild(msg);
   scrollBottom();
 }
@@ -808,30 +764,31 @@ function formatText(text) {
   return text
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n\n/g, '<br><br>')
     .replace(/\n/g, '<br>');
 }
 
-
 function addWeightChips(msgEl) {
-  const bubble = msgEl.querySelector('.bubble');
-  const wrap = document.createElement('div');
+  var bubble = msgEl.querySelector('.bubble');
+  var wrap = document.createElement('div');
   wrap.className = 'weight-chips-wrap';
 
-  const weights = [];
-  for (let w = 5; w <= 140; w += 10) weights.push(w);
+  var weights = [];
+  for (var w = 5; w <= 140; w += 10) weights.push(w);
   weights.push(150);
 
-  weights.forEach(w => {
-    const btn = document.createElement('button');
+  weights.forEach(function(w) {
+    var btn = document.createElement('button');
     btn.className = 'weight-chip';
-    btn.textContent = w === 150 ? '150+ lbs' : `${w} lbs`;
-    btn.onclick = () => {
-      wrap.querySelectorAll('.weight-chip').forEach(b => { b.disabled = true; b.classList.remove('selected'); });
-      btn.classList.add('selected');
-      appendUser(btn.textContent);
-      setTimeout(() => handleWeight(String(w)), 200);
-    };
+    btn.textContent = w === 150 ? '150+ lbs' : w + ' lbs';
+    (function(weight, button) {
+      button.onclick = function() {
+        wrap.querySelectorAll('.weight-chip').forEach(function(b) { b.disabled = true; b.classList.remove('selected'); });
+        button.classList.add('selected');
+        appendUser(button.textContent);
+        setTimeout(function() { handleWeight(String(weight)); }, 200);
+      };
+    })(w, btn);
     wrap.appendChild(btn);
   });
 
@@ -840,19 +797,21 @@ function addWeightChips(msgEl) {
 }
 
 function addQuickReplies(msgEl, options, handler) {
-  const bubble = msgEl.querySelector('.bubble');
-  const wrap = document.createElement('div');
+  var bubble = msgEl.querySelector('.bubble');
+  var wrap = document.createElement('div');
   wrap.className = 'quick-replies';
-  options.forEach(opt => {
-    const btn = document.createElement('button');
+  options.forEach(function(opt) {
+    var btn = document.createElement('button');
     btn.className = 'qr-btn';
     btn.textContent = opt.label;
-    btn.onclick = () => {
-      wrap.querySelectorAll('.qr-btn').forEach(b => { b.classList.remove('selected'); b.disabled = true; });
-      btn.classList.add('selected');
-      appendUser(opt.label);
-      setTimeout(() => handler(opt.value), 200);
-    };
+    (function(o, button) {
+      button.onclick = function() {
+        wrap.querySelectorAll('.qr-btn').forEach(function(b) { b.classList.remove('selected'); b.disabled = true; });
+        button.classList.add('selected');
+        appendUser(o.label);
+        setTimeout(function() { handler(o.value); }, 200);
+      };
+    })(opt, btn);
     wrap.appendChild(btn);
   });
   bubble.appendChild(wrap);
@@ -860,19 +819,21 @@ function addQuickReplies(msgEl, options, handler) {
 }
 
 function addStorePicker(msgEl) {
-  const bubble = msgEl.querySelector('.bubble');
-  const wrap = document.createElement('div');
+  var bubble = msgEl.querySelector('.bubble');
+  var wrap = document.createElement('div');
   wrap.className = 'quick-replies';
-  ['Babylon', 'Port Jefferson', 'Huntington'].forEach(store => {
-    const btn = document.createElement('button');
+  ['Babylon', 'Port Jefferson', 'Huntington'].forEach(function(store) {
+    var btn = document.createElement('button');
     btn.className = 'qr-btn store-btn';
     btn.textContent = store;
-    btn.onclick = () => {
-      wrap.querySelectorAll('.qr-btn').forEach(b => { b.disabled = true; b.classList.remove('selected'); });
-      btn.classList.add('selected');
-      appendUser(store);
-      setTimeout(() => handleStore(store), 200);
-    };
+    (function(s, button) {
+      button.onclick = function() {
+        wrap.querySelectorAll('.qr-btn').forEach(function(b) { b.disabled = true; b.classList.remove('selected'); });
+        button.classList.add('selected');
+        appendUser(s);
+        setTimeout(function() { handleStore(s); }, 200);
+      };
+    })(store, btn);
     wrap.appendChild(btn);
   });
   bubble.appendChild(wrap);
@@ -880,70 +841,57 @@ function addStorePicker(msgEl) {
 }
 
 function addResultCard(msgEl, calc, recipe) {
-  const bubble = msgEl.querySelector('.bubble');
-  const card = document.createElement('div');
+  var bubble = msgEl.querySelector('.bubble');
+  var card = document.createElement('div');
   card.className = 'result-card';
-  card.innerHTML = `
-    <div class="result-row">
-      <span class="label">Recipe</span>
-      <span class="value">${recipeLabel(recipe)}</span>
-    </div>
-    <div class="result-row">
-      <span class="label">Daily amount</span>
-      <span class="value">${calc.oz} oz/day</span>
-    </div>
-    <div class="result-row">
-      <span class="label">Monthly need</span>
-      <span class="value">${calc.monthlyLbs} lbs</span>
-    </div>
-    <div class="result-row highlight">
-      <span class="label">Monthly cost</span>
-      <span class="value">~$${calc.monthlyCost}/mo</span>
-    </div>
-  `;
+  card.innerHTML =
+    '<div class="result-row"><span class="label">Recipe</span><span class="value">' + recipeLabel(recipe) + '</span></div>' +
+    '<div class="result-row"><span class="label">Daily amount</span><span class="value">' + calc.oz + ' oz/day</span></div>' +
+    '<div class="result-row"><span class="label">Monthly need</span><span class="value">' + calc.monthlyLbs + ' lbs</span></div>' +
+    '<div class="result-row highlight"><span class="label">Monthly cost</span><span class="value">~$' + calc.monthlyCost + '/mo</span></div>';
   bubble.appendChild(card);
   scrollBottom();
 }
 
 function addConfirmCard(msgEl) {
-  const bubble = msgEl.querySelector('.bubble');
-  const card = document.createElement('div');
+  var bubble = msgEl.querySelector('.bubble');
+  var card = document.createElement('div');
   card.className = 'reserve-confirm';
-  card.innerHTML = `We'll text you to confirm pickup at <strong>${state.reserveStore}</strong>. See you soon 👍`;
+  card.innerHTML = "We'll text you to confirm pickup at <strong>" + state.reserveStore + "</strong>. See you soon 👍";
   bubble.appendChild(card);
   scrollBottom();
 }
 
 function showTypingThen(delay, fn) {
   showTyping();
-  setTimeout(() => { hideTyping(); fn(); }, delay);
+  setTimeout(function() { hideTyping(); fn(); }, delay);
 }
 
 function showTyping() {
   isTyping = true;
-  const container = document.getElementById('messages');
-  const t = document.createElement('div');
+  var container = document.getElementById('messages');
+  var t = document.createElement('div');
   t.className = 'typing';
   t.id = 'typingIndicator';
-  t.innerHTML = `<div class="avatar sage-avatar">S</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  t.innerHTML = '<div class="avatar sage-avatar">S</div><div class="typing-dots"><span></span><span></span><span></span></div>';
   container.appendChild(t);
   scrollBottom();
 }
 
 function hideTyping() {
   isTyping = false;
-  const t = document.getElementById('typingIndicator');
+  var t = document.getElementById('typingIndicator');
   if (t) t.remove();
 }
 
 function scrollBottom() {
-  const c = document.getElementById('messages');
+  var c = document.getElementById('messages');
   c.scrollTop = c.scrollHeight;
 }
 
 if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => setTimeout(scrollBottom, 50));
-  document.getElementById('userInput').addEventListener('focus', () => setTimeout(scrollBottom, 300));
+  window.visualViewport.addEventListener('resize', function() { setTimeout(scrollBottom, 50); });
+  document.getElementById('userInput').addEventListener('focus', function() { setTimeout(scrollBottom, 300); });
 }
 </script>
 </body>
