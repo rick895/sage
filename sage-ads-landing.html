@@ -861,7 +861,8 @@ Huntington — 44 Gerard St, Huntington NY 11743
 === TONE GUIDELINES ===
 - Confident and knowledgeable, not salesy. Here to help the owner make the right decision for their dog.
 - Use plain language. Avoid jargon.
-- When someone is on the fence, lean on the 1lb trial pack — it removes all risk. $12.99, grab it from our freezers at any location.
+- CRITICAL — SAMPLES/TRYING: In this version, customers are being offered a free trial pack as the main CTA. If anyone asks "can I get a sample?", "can I try it?", "do you have samples?" or similar — just say "Yes! Just hit the button below." Never mention $12.99, never explain pack sizes or the in-store process. Just point to the button.
+- When someone is on the fence, point them to the button below.
 - Never badmouth competitors or other brands by name.
 - Never claim fresh food cures or treats medical conditions — always suggest consulting their vet for medical concerns.
 - If asked something you genuinely don't know, direct them to call 631-760-7850.`;
@@ -915,7 +916,7 @@ async function handleFreeform(text) {
   var t = text.toLowerCase();
 
   // Wants to reserve
-  if (t.includes('reserve') || t.includes('sign me up') || t.includes("i'll try") || t.includes('ill try')) {
+  if (t.includes('reserve') || t.includes('claim') || t.includes('sign me up') || t.includes("i'll try") || t.includes('ill try')) {
     state.stage = 'name';
     showTypingThen(500, function() { appendSage("Perfect. What's your name?"); });
     return;
@@ -965,9 +966,9 @@ async function handleFreeform(text) {
         addResultCard(msgEl, { oz: avgOz, monthlyLbs: avgLbs, monthlyCost: avgCost }, 'multiple', mixLabel);
         setTimeout(function() {
           state.stage = 'reserve_yn';
-          var followUp = appendSage('Want to try it?');
+          var followUp = appendSage('Ready to claim your starter pack?');
           addQuickReplies(followUp, [
-            { label: '✅ Reserve a pack', value: 'yes' },
+            { label: '🐾 Claim your starter pack', value: 'yes' },
             { label: '💬 I have a question first', value: 'question' },
           ], handleReserveYN);
         }, 900);
@@ -1042,9 +1043,9 @@ function handleRecipe(text) {
       addResultCard(msgEl, { oz: avgOz, monthlyLbs: avgLbs, monthlyCost: avgCost }, 'multiple');
       setTimeout(function() {
         state.stage = 'reserve_yn';
-        var followUp = appendSage('Want to try it?');
+        var followUp = appendSage('Ready to claim your starter pack?');
         addQuickReplies(followUp, [
-          { label: '✅ Reserve a pack', value: 'yes' },
+          { label: '🐾 Claim your starter pack', value: 'yes' },
           { label: '💬 I have a question first', value: 'question' },
         ], handleReserveYN);
       }, 900);
@@ -1076,9 +1077,9 @@ function handleRecipe(text) {
     addResultCard(msgEl, calc, recipe);
     setTimeout(function() {
       state.stage = 'reserve_yn';
-      var followUp = appendSage('Want to try it?');
+      var followUp = appendSage('Ready to claim your starter pack?');
       addQuickReplies(followUp, [
-        { label: '✅ Reserve a pack', value: 'yes' },
+        { label: '🐾 Claim your starter pack', value: 'yes' },
         { label: '💬 I have a question first', value: 'question' },
       ], handleReserveYN);
     }, 900);
@@ -1100,7 +1101,7 @@ function handleReserveYN(text) {
     showTypingThen(400, function() {
       appendSage("Go ahead — what's on your mind?");
     });
-  } else if (t.includes('yes') || t.includes('reserve') || t.includes('sure') || t.includes('ok') || t.includes('yeah') || t.includes('please') || t.includes('let') || t.includes('do it')) {
+  } else if (t.includes('yes') || t.includes('reserve') || t.includes('claim') || t.includes('free') || t.includes('sure') || t.includes('ok') || t.includes('yeah') || t.includes('please') || t.includes('let') || t.includes('do it')) {
     state.stage = 'name';
     showInput();
     showTypingThen(500, function() { appendSage("Perfect. What's your name?"); });
@@ -1214,7 +1215,7 @@ async function askClaude(text, showNudge) {
     var msgEl = appendSage(reply);
     if (showNudge && state.stage === 'freeform') {
       addQuickReplies(msgEl, [
-        { label: '✅ Reserve a pack', value: 'yes' },
+        { label: '🐾 Claim your starter pack', value: 'yes' },
         { label: '💬 Another question', value: 'more' },
       ], function(val) {
         if (val === 'yes') {
