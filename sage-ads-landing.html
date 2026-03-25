@@ -391,6 +391,18 @@ html, body {
 .result-row.mix-row .label { color: var(--blue-dark); font-style: italic; }
 .result-row.mix-row .value { color: var(--blue-dark); font-style: italic; }
 
+/* Original recipe cost tip */
+.original-tip {
+  margin-top: 10px;
+  padding: 9px 12px;
+  background: rgba(159,209,255,0.15);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.5;
+}
+
 /* ── QUICK REPLIES ── */
 .quick-replies {
   display: flex;
@@ -966,7 +978,7 @@ Huntington — 44 Gerard St, Huntington NY 11743
 === TONE GUIDELINES ===
 - Confident and knowledgeable, not salesy. Here to help the owner make the right decision for their dog.
 - Use plain language. Avoid jargon.
-- STARTER PACK: A starter pack is a 1lb container of any one of our recipes. Customers can try one of each recipe, or any combo they want — there's no limit. If someone asks "what's a starter pack?" or "what do I get?", explain it simply: it's a 1lb pack of whichever recipe they want to start with, and they can grab one of each if they want to try a few. It's the perfect low-commitment way to see how their dog responds before ordering in bulk.
+- ORIGINAL RECIPE COST NOTE: Original Recipe has the lowest calorie density (34 cal/oz), which means dogs need to eat more of it per day — making it more expensive per month than Beef or Pork. If a customer selects Original alone and sees a high monthly cost, proactively mention this: "Because Original is our lowest-calorie recipe, your dog needs a bit more of it each day — which makes it more expensive than our other options. If you mixed in Beef or Pork, the cost would drop significantly." Always offer the mix as a natural next suggestion. Customers can try one of each recipe, or any combo they want — there's no limit. If someone asks "what's a starter pack?" or "what do I get?", explain it simply: it's a 1lb pack of whichever recipe they want to start with, and they can grab one of each if they want to try a few. It's the perfect low-commitment way to see how their dog responds before ordering in bulk.
 - CRITICAL — SAMPLES/TRYING: In this version, customers are being offered a starter pack as the main CTA. If anyone asks "can I get a sample?", "can I try it?", "do you have samples?" or similar — just say "Yes! Just hit the button below." Never mention pricing, never explain the in-store process. Just point to the button.
 - When someone is on the fence, point them to the button below.
 - Never badmouth competitors or other brands by name.
@@ -1453,12 +1465,16 @@ function addResultCard(msgEl, calc, recipe, customLabel) {
   var mixCost = Math.round(calc.monthlyCost * 0.5);
   var isMix = recipe === 'multiple';
   var label = customLabel || recipeLabel(recipe);
+  var originalTip = recipe === 'original'
+    ? '<div class="original-tip">💡 Original is our lowest-calorie recipe, so dogs need more of it daily — making it more expensive than our other options. Mixing in Beef or Pork would bring the cost down significantly.</div>'
+    : '';
   card.innerHTML =
     '<div class="result-row"><span class="label">Recipe</span><span class="value">' + label + '</span></div>' +
     '<div class="result-row"><span class="label">Daily amount</span><span class="value">' + calc.oz + ' oz/day</span></div>' +
     '<div class="result-row"><span class="label">Monthly need</span><span class="value">' + calc.monthlyLbs + ' lbs</span></div>' +
     '<div class="result-row highlight"><span class="label">Monthly cost</span><span class="value">~$' + calc.monthlyCost + '/mo</span></div>' +
-    (isMix ? '' : '') + '<div class="result-row mix-row"><span class="label">Mixed with kibble</span><span class="value">~$' + mixCost + '/mo</span></div>';
+    '<div class="result-row mix-row"><span class="label">Mixed with kibble</span><span class="value">~$' + mixCost + '/mo</span></div>' +
+    originalTip;
   bubble.appendChild(card);
   scrollBottom();
 }
