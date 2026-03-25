@@ -829,20 +829,27 @@ function showInput() {
 
 function handleReserveYN(text) {
   var t = text.toLowerCase();
-  if (t.includes('question')) {
+  if (t.includes('question') || t.includes('actually') || t.includes('wait') || t.includes('sorry') || t.includes('hang on')) {
     state.stage = 'freeform';
     showInput();
     showTypingThen(400, function() {
       appendSage("Go ahead — what's on your mind?");
     });
-  } else if (t.includes('yes') || t.includes('reserve') || t.includes('sure') || t.includes('ok') || t.includes('yeah') || t.includes('please')) {
+  } else if (t.includes('yes') || t.includes('reserve') || t.includes('sure') || t.includes('ok') || t.includes('yeah') || t.includes('please') || t.includes('let') || t.includes('do it')) {
     state.stage = 'name';
     showInput();
     showTypingThen(500, function() { appendSage("Perfect. What's your name?"); });
-  } else {
+  } else if (t.includes('no') || t.includes('not yet') || t.includes('maybe later') || t.includes('pass')) {
     showTypingThen(400, function() {
       appendSage("No problem. We're in Babylon, Port Jefferson, and Huntington — Tues-Sat 10am-6pm, Sun 10am-3pm.");
       state.stage = 'done';
+    });
+  } else {
+    // Ambiguous — treat as a question
+    state.stage = 'freeform';
+    showInput();
+    showTypingThen(400, function() {
+      appendSage("Go ahead — what's on your mind?");
     });
   }
 }
