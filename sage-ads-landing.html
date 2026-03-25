@@ -330,9 +330,9 @@ html, body {
 
 .recipe-btn {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   padding: 10px 14px;
   border-radius: 12px;
   border: 2px solid var(--border);
@@ -356,6 +356,22 @@ html, body {
 
 .recipe-btn:disabled { cursor: default; }
 
+.recipe-photo {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--cream);
+}
+
+.recipe-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .recipe-name {
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
@@ -368,6 +384,10 @@ html, body {
   color: var(--light);
   font-weight: 400;
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
 }
 
 /* ── MIX ROW ── */
@@ -664,7 +684,7 @@ html, body {
   <header class="header">
     <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="header-logo" alt="Natural Hounds">
     <div class="header-text">
-      <span class="header-headline">See exactly what to feed your dog — and what it costs</span>
+      <span class="header-headline">Your dog's plan, made on Long Island</span>
       <span class="header-sub">Most dogs switch easily starting with 1–2 packs</span>
     </div>
     <div class="progress-pill">
@@ -1453,6 +1473,13 @@ const INGREDIENTS = {
   lamb:     'Ground Lamb, Cauliflower, Carrots, Lamb Liver, Eggs, Blueberries, Spinach, Flaxseed Oil',
 };
 
+const RECIPE_PHOTOS = {
+  beef:     'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_26.png?v=1657915212',
+  original: 'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029',
+  pork:     'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_25.png?v=1657914033',
+  lamb:     'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_24.png?v=1657912896',
+};
+
 function addRecipeButtons(msgEl) {
   var bubble = msgEl.querySelector('.bubble');
   var wrap = document.createElement('div');
@@ -1469,8 +1496,12 @@ function addRecipeButtons(msgEl) {
   recipes.forEach(function(r) {
     var btn = document.createElement('button');
     btn.className = 'recipe-btn';
+    var photoHtml = '';
+    if (RECIPE_PHOTOS[r.key]) {
+      photoHtml = '<img class="recipe-photo" src="' + RECIPE_PHOTOS[r.key] + '" alt="' + r.label + '" onerror="this.style.display=\'none\'">';
+    }
     var ing = INGREDIENTS[r.key] ? '<span class="recipe-ing">' + INGREDIENTS[r.key] + '</span>' : '';
-    btn.innerHTML = '<span class="recipe-name">' + r.label + '</span>' + ing;
+    btn.innerHTML = photoHtml + '<div class="recipe-info"><span class="recipe-name">' + r.label + '</span>' + ing + '</div>';
     (function(recipe, button) {
       button.onclick = function() {
         wrap.querySelectorAll('.recipe-btn').forEach(function(b) { b.disabled = true; b.classList.remove('selected'); });
