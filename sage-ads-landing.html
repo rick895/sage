@@ -1080,7 +1080,7 @@ function addResultCard(msgEl, calc, recipe, customLabel) {
     '<div class="result-row"><span class="label">Daily amount</span><span class="value">' + calc.oz + ' oz/day</span></div>' +
     '<div class="result-row"><span class="label">Monthly need</span><span class="value">' + calc.monthlyLbs + ' lbs</span></div>' +
     '<div class="result-row highlight"><span class="label">Monthly cost</span><span class="value">~$' + calc.monthlyCost + '/mo</span></div>' +
-    (isMix ? '' : '<div class="result-row mix-row"><span class="label">Mixing cost</span><span class="value">~$' + mixCost + '/mo</span></div>');
+    (isMix ? '' : '') + '<div class="result-row mix-row"><span class="label">Mixed with kibble</span><span class="value">~$' + mixCost + '/mo</span></div>';
   bubble.appendChild(card);
   scrollBottom();
 }
