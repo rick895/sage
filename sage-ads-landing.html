@@ -600,7 +600,7 @@ function recipeLabel(key) {
 }
 
 function buildSystemPrompt() {
-  var base = 'You are Sage, a friendly advisor for Natural Hounds — fresh human-grade dog food on Long Island, NY. 4 recipes: Beef ($4.83/lb), Original Turkey ($4.83/lb), Pork ($4.83/lb), Lamb ($8.67/lb). Stores: Babylon, Port Jefferson, Huntington. Hours: Tues-Sat 10am-6pm, Sun 10am-3pm. Keep responses to 2-3 sentences. Be direct and confident. Do not ask for email or dog name.';
+  var base = 'You are Sage, a friendly advisor for Natural Hounds — fresh human-grade dog food on Long Island, NY. 4 recipes: Beef ($4.83/lb, 48 cal/oz), Original Turkey ($4.83/lb, 34 cal/oz), Pork ($4.83/lb, 60 cal/oz), Lamb ($8.67/lb, 48 cal/oz). Stores: Babylon, Port Jefferson, Huntington. Hours: Tues-Sat 10am-6pm, Sun 10am-3pm. Keep responses to 2-3 sentences. Be direct and confident. Do not ask for email or dog name.';
   if (state.dogWeight && state.dailyOz && state.monthlyCost) {
     base += ' IMPORTANT CONTEXT: This dog weighs ' + state.dogWeight + 'lbs, needs ' + state.dailyOz + ' oz/day, costs ~$' + state.monthlyCost + '/mo on ' + recipeLabel(state.recipe) + '. Use these exact numbers when answering cost or feeding questions — do not estimate or guess.';
   }
