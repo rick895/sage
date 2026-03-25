@@ -44,39 +44,47 @@ html, body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 20px;
-  height: 64px;
+  padding: 0 16px;
+  height: 60px;
   background: #536479;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .header-logo {
-  width: 30px;
-  height: 30px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
   flex-shrink: 0;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .header-text {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
 
 .header-headline {
   font-family: 'League Spartan', sans-serif;
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 600;
   color: #fff;
   line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-sub {
-  font-size: 11.5px;
-  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Hide on very small screens */
+  display: none;
 }
 
 .progress-pill {
@@ -237,19 +245,37 @@ html, body {
 /* ── WEIGHT CHIPS ── */
 .weight-chips-outer {
   position: relative;
-  margin-top: 12px;
+  margin-top: 14px;
   overflow: hidden;
 }
 
+/* Stronger fade + arrow hint on right edge */
 .weight-chips-outer::after {
-  content: '';
+  content: '→';
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 0;
-  width: 36px;
+  transform: translateY(-50%);
+  width: 44px;
   height: 100%;
-  background: linear-gradient(to right, transparent, white);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+  background: linear-gradient(to right, transparent, white 60%);
   pointer-events: none;
+  font-size: 14px;
+  color: var(--light);
+  line-height: 1;
+}
+
+.weight-chips-scroll-hint {
+  font-size: 11px;
+  color: var(--light);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .weight-chips-wrap {
@@ -257,26 +283,29 @@ html, body {
   flex-wrap: nowrap;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  /* Snap to chips for better UX */
+  scroll-snap-type: x mandatory;
 }
 
 .weight-chips-wrap::-webkit-scrollbar { display: none; }
 
 .weight-chip {
   flex-shrink: 0;
-  padding: 8px 14px;
-  border-radius: 20px;
+  padding: 9px 16px;
+  border-radius: 22px;
   border: 2px solid var(--blue-dark);
   background: rgba(83,100,121,0.05);
   color: var(--blue-dark);
   font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
+  scroll-snap-align: start;
 }
 
 .weight-chip:hover { background: var(--blue-dark); color: var(--white); }
@@ -508,6 +537,13 @@ html, body {
   .page {
     background: var(--cream);
   }
+  .header {
+    height: 68px;
+    padding: 0 24px;
+  }
+  .header-logo { width: 44px; height: 44px; }
+  .header-headline { font-size: 15px; white-space: normal; }
+  .header-sub { display: block; font-size: 11.5px; }
   .page-body {
     max-width: 680px;
     background: var(--white);
@@ -519,7 +555,6 @@ html, body {
   .input-area {
     padding: 14px 24px;
     padding-bottom: 18px;
-    border-radius: 0 0 0 0;
   }
   .message.sage .bubble {
     max-width: min(500px, 68vw);
@@ -530,9 +565,11 @@ html, body {
 @media (min-width: 900px) {
   .header {
     padding: 0 32px;
-    height: 68px;
+    height: 72px;
   }
+  .header-logo { width: 48px; height: 48px; }
   .header-headline { font-size: 16px; }
+  .header-sub { font-size: 12px; }
   .page-body {
     max-width: 800px;
   }
@@ -1264,6 +1301,12 @@ function addWeightChips(msgEl) {
   var bubble = msgEl.querySelector('.bubble');
   var outer = document.createElement('div');
   outer.className = 'weight-chips-outer';
+
+  var hint = document.createElement('div');
+  hint.className = 'weight-chips-scroll-hint';
+  hint.innerHTML = 'Scroll to find your dog\'s weight &nbsp;→';
+  bubble.appendChild(hint);
+
   var wrap = document.createElement('div');
   wrap.className = 'weight-chips-wrap';
 
