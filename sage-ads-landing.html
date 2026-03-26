@@ -996,6 +996,7 @@ var isTyping = false;
 
 window.addEventListener('DOMContentLoaded', function() {
   var msg = appendSage("Let's figure out exactly how much your dog should eat and what it would cost.\n\nWhat's your dog's weight?");
+  resetInactivityTimer();
   // Inject the intro line above the existing text with lighter styling
   var bubble = msg.querySelector('.bubble');
   var intro = document.createElement('div');
@@ -1017,6 +1018,7 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 async function sendMessage(overrideText) {
+  resetInactivityTimer();
   var input = document.getElementById('userInput');
   var text = (overrideText || input.value).trim();
   if (!text) return;
@@ -1285,6 +1287,38 @@ function handleStore(text) {
   submitReservation();
 }
 
+var transcriptSent = false;
+var inactivityTimer = null;
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(function() {
+    sendTranscript(false);
+  }, 3 * 60 * 1000); // 3 minutes of inactivity
+}
+
+async function sendTranscript(didReserve) {
+  if (transcriptSent) return;
+  if (chatHistory.length === 0) return;
+  transcriptSent = true;
+  try {
+    await fetch(PROXY_URL + '/transcript', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: chatHistory,
+        dogWeight: state.dogWeight,
+        recipe: state.recipe ? recipeLabel(state.recipe) : null,
+        monthlyCost: state.monthlyCost,
+        reserveName: state.reserveName || null,
+        reservePhone: state.reservePhone || null,
+        reserveStore: state.reserveStore || null,
+        didReserve: didReserve,
+      }),
+    });
+  } catch(e) { console.error('Transcript error:', e); }
+}
+
 async function submitReservation() {
   showTyping();
   try {
@@ -1303,6 +1337,7 @@ async function submitReservation() {
   var firstName = state.reserveName.split(' ')[0];
   var msgEl = appendSage('Done, ' + firstName + '! A 1lb pack of ' + recipeLabel(state.recipe) + ' is set aside at ' + state.reserveStore + '.');
   addConfirmCard(msgEl);
+  sendTranscript(true);
 }
 
 async function askClaude(text, showNudge) {
