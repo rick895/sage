@@ -1551,7 +1551,7 @@ function addConfirmCard(msgEl) {
   var bubble = msgEl.querySelector('.bubble');
   var card = document.createElement('div');
   card.className = 'reserve-confirm';
-  card.innerHTML = "We'll text you to confirm pickup at <strong>" + state.reserveStore + "</strong>. See you soon 👍";
+  card.innerHTML = "We'll text you to confirm pickup at <strong>" + state.reserveStore + "</strong>. See you soon 👍<br><br><span style='font-size:12px;'>In the meantime, <a href='https://naturalhounds.com' target='_blank' style='color:#536479;font-weight:600;'>view our shop</a></span>";
   bubble.appendChild(card);
   scrollBottom();
 }
