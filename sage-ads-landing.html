@@ -1299,14 +1299,29 @@ function resetInactivityTimer() {
 
 async function sendTranscript(didReserve) {
   if (transcriptSent) return;
-  if (chatHistory.length === 0) return;
   transcriptSent = true;
+
+  // Build transcript from the DOM if chatHistory is sparse
+  var messages = [];
+  document.querySelectorAll('.message').forEach(function(el) {
+    var isUser = el.classList.contains('user');
+    var bubble = el.querySelector('.bubble');
+    if (!bubble) return;
+    // Get just the text content, skip child widgets like chips/buttons
+    var clone = bubble.cloneNode(true);
+    clone.querySelectorAll('.weight-chips-outer, .quick-replies, .recipe-buttons, .result-card, .original-tip, .reserve-confirm').forEach(function(w){ w.remove(); });
+    var text = clone.innerText.trim();
+    if (text) messages.push({ role: isUser ? 'user' : 'assistant', content: text });
+  });
+
+  if (messages.length === 0) return;
+
   try {
     await fetch(PROXY_URL + '/transcript', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        messages: chatHistory,
+        messages: messages,
         dogWeight: state.dogWeight,
         recipe: state.recipe ? recipeLabel(state.recipe) : null,
         monthlyCost: state.monthlyCost,
