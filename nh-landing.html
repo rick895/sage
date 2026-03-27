@@ -2,790 +2,781 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Natural Hounds — Fresh Dog Food, Made on Long Island</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Natural Hounds — What does it cost to feed your dog real food?</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --navy: #1a2b3c;
   --blue: #536479;
   --blue-light: #9fd1ff;
-  --cream: #f7f4ef;
+  --cream: #f4f9ff;
+  --border: #c8ddef;
   --white: #ffffff;
-  --gold: #c8a96e;
-  --text: #1a2b3c;
-  --muted: #3d5166;
+  --charcoal: #0f1923;
 }
-
-html { scroll-behavior: smooth; }
-
-body {
+html, body {
+  height: 100%;
   font-family: 'DM Sans', sans-serif;
-  background: var(--cream);
-  color: var(--text);
+  background: #536479;
+  color: var(--white);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
-/* ── HERO ── */
-.hero {
-  position: relative;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background: #536479;
-}
-
-@keyframes heroZoom {
-  from { transform: scale(1.05); }
-  to   { transform: scale(1.0); }
-}
-
-.hero-nav {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 32px 24px;
-}
-
-.hero-logo {
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-}
-
-.hero-locations {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.loc-pill {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 100px;
-  padding: 5px 14px;
-  font-size: 11.5px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.85);
-  letter-spacing: 0.03em;
-  backdrop-filter: blur(8px);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 10;
-  flex: 1;
+/* ENTRY SCREEN */
+#entryScreen {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: 100dvh;
+  padding: 32px 24px 48px;
   text-align: center;
-  padding: 40px 24px 60px;
-  gap: 28px;
 }
-
-.hero-eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--blue-light);
-  opacity: 0;
-  animation: fadeUp 0.7s ease 0.3s forwards;
+.entry-logo {
+  width: 60px; height: 60px; object-fit: contain;
+  margin-bottom: 28px; opacity: 0;
+  animation: fadeUp 0.5s ease 0.1s forwards;
 }
-
-.hero-headline {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(38px, 9vw, 82px);
-  font-weight: 900;
-  color: var(--white);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  max-width: 800px;
-  opacity: 0;
-  animation: fadeUp 0.7s ease 0.5s forwards;
+.entry-headline {
+  font-family: 'League Spartan', sans-serif;
+  font-size: clamp(24px, 7vw, 46px);
+  font-weight: 800; color: var(--white);
+  line-height: 1.1; letter-spacing: -0.02em;
+  max-width: 500px; margin-bottom: 12px;
+  opacity: 0; animation: fadeUp 0.5s ease 0.2s forwards;
 }
-
-.hero-headline em {
-  font-style: italic;
-  color: var(--blue-light);
+.entry-sub {
+  font-size: 16px; color: rgba(255,255,255,0.6);
+  margin-bottom: 32px;
+  opacity: 0; animation: fadeUp 0.5s ease 0.3s forwards;
 }
-
-.hero-sub {
-  font-size: clamp(15px, 2.5vw, 18px);
-  color: rgba(255,255,255,0.7);
-  max-width: 480px;
-  line-height: 1.65;
-  font-weight: 300;
-  opacity: 0;
-  animation: fadeUp 0.7s ease 0.7s forwards;
+.weight-entry {
+  display: flex; align-items: center;
+  background: var(--white); border-radius: 14px;
+  overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  width: 100%; max-width: 380px; margin-bottom: 14px;
+  opacity: 0; animation: fadeUp 0.5s ease 0.4s forwards;
 }
-
-.hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--white);
-  color: var(--navy);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 18px 36px;
-  border-radius: 100px;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-  opacity: 0;
-  animation: fadeUp 0.7s ease 0.9s forwards;
+.weight-input {
+  flex: 1; border: none; outline: none;
+  padding: 18px 16px; font-family: 'DM Sans', sans-serif;
+  font-size: 17px; font-weight: 500; color: var(--charcoal);
+  background: transparent; min-width: 0;
 }
-
-.hero-cta:hover {
-  background: var(--blue-light);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 50px rgba(0,0,0,0.4);
+.weight-input::placeholder { color: #a8bccf; font-weight: 400; }
+.weight-suffix { font-size: 14px; color: #a8bccf; padding-right: 4px; white-space: nowrap; flex-shrink: 0; }
+.weight-submit {
+  background: var(--navy); border: none;
+  padding: 18px 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
 }
-
-.hero-cta-arrow {
-  font-size: 18px;
-  transition: transform 0.2s ease;
+.weight-submit:hover { background: #263d52; }
+.weight-submit svg { width: 20px; height: 20px; fill: white; }
+.weight-chips {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  justify-content: center; max-width: 380px;
+  margin-bottom: 30px;
+  opacity: 0; animation: fadeUp 0.5s ease 0.5s forwards;
 }
-
-.hero-cta:hover .hero-cta-arrow { transform: translateX(4px); }
-
-.hero-reviews {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  opacity: 0;
-  animation: fadeUp 0.7s ease 1.1s forwards;
+.wchip {
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 100px; padding: 8px 16px;
+  font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.85); cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
 }
-
-.hero-stars { color: #f5c842; font-size: 14px; letter-spacing: 2px; }
-
-.hero-reviews-text {
-  font-size: 13px;
-  color: rgba(255,255,255,0.6);
+.wchip:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+.trust-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.5s ease 0.6s forwards;
 }
-
-.hero-scroll {
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  opacity: 0;
-  animation: fadeIn 1s ease 1.5s forwards;
-}
-
-.hero-scroll-line {
-  width: 1px;
-  height: 40px;
-  background: rgba(255,255,255,0.3);
-  animation: scrollPulse 2s ease-in-out infinite;
-}
-
-@keyframes scrollPulse {
-  0%, 100% { opacity: 0.3; transform: scaleY(1); }
-  50% { opacity: 1; transform: scaleY(1.2); }
-}
-
-.hero-scroll-text {
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-}
+.trust-item { font-size: 12px; color: rgba(255,255,255,0.55); white-space: nowrap; }
+.trust-dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; flex-shrink: 0; }
+.entry-footnote { font-size: 11px; color: rgba(255,255,255,0.28); margin-top: 14px; opacity: 0; animation: fadeUp 0.5s ease 0.7s forwards; }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+/* SAGE OVERLAY */
+#sageOverlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: var(--white); flex-direction: column;
 }
-
-/* ── TRUST BAR ── */
-.trust-bar {
-  background: var(--navy);
-  padding: 20px 32px;
+#sageOverlay.active {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
+  animation: slideUp 0.28s ease forwards;
+}
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: rgba(255,255,255,0.75);
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
+/* Sage header */
+.sage-header {
+  flex-shrink: 0; display: flex; align-items: center;
+  gap: 12px; padding: 0 16px; height: 60px;
+  background: #536479; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-
-.trust-item-icon { font-size: 16px; }
-
-.trust-divider {
-  width: 1px;
-  height: 20px;
-  background: rgba(255,255,255,0.15);
+.sage-logo { width: 34px; height: 34px; object-fit: contain; opacity: 0.9; }
+.sage-header-text { flex: 1; min-width: 0; }
+.sage-header-title { font-family: 'League Spartan', sans-serif; font-size: 14px; font-weight: 600; color: #fff; line-height: 1.2; }
+.sage-header-sub { font-size: 11px; color: rgba(255,255,255,0.55); }
+.sage-prog {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px; padding: 4px 10px;
+  font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.8);
+  flex-shrink: 0; white-space: nowrap;
 }
+.pdots { display: flex; gap: 4px; }
+.pdot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: background 0.3s; }
+.pdot.active { background: #fff; }
+.pdot.done   { background: #9fd1ff; }
 
-/* ── SECTION COMMON ── */
-section { padding: 80px 24px; }
-
-.section-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: #3a5a78;
-  margin-bottom: 14px;
+/* Sage body */
+.sage-body {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; max-width: 780px; width: 100%; margin: 0 auto;
 }
-
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(28px, 5vw, 48px);
-  font-weight: 700;
-  line-height: 1.15;
-  color: var(--navy);
-  margin-bottom: 16px;
+.sage-msgs {
+  flex: 1; overflow-y: auto;
+  padding: 20px 16px 12px;
+  display: flex; flex-direction: column; gap: 16px;
+  scroll-behavior: smooth; background: var(--cream);
 }
+.sage-msgs::-webkit-scrollbar { width: 3px; }
+.sage-msgs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-.section-body {
-  font-size: 16px;
-  line-height: 1.7;
-  color: var(--muted);
-  max-width: 520px;
+/* Bubbles */
+.smsg { display: flex; gap: 10px; max-width: 88%; animation: fadeUp 0.2s ease forwards; }
+.smsg.user { align-self: flex-end; flex-direction: row-reverse; }
+.savatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  flex-shrink: 0; display: flex; align-items: center;
+  justify-content: center; font-weight: 600; margin-top: 3px;
+  font-family: 'League Spartan', sans-serif; font-size: 11px;
 }
-
-/* ── WHAT IS IT ── */
-.what {
-  background: var(--white);
+.savatar.sage { background: #9fd1ff; color: var(--charcoal); }
+.savatar.user { background: #3a4e5e; color: white; font-size: 9px; letter-spacing: 0.04em; }
+.sbubble { padding: 11px 15px; border-radius: 16px; font-size: 14.5px; line-height: 1.65; }
+.smsg.sage .sbubble {
+  background: var(--white); border: 1px solid var(--border);
+  border-top-left-radius: 4px; color: var(--charcoal);
+  box-shadow: 0 1px 8px rgba(83,100,121,0.08);
+  max-width: min(460px, 72vw); overflow: hidden;
 }
-
-.what-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: center;
+.smsg.user .sbubble {
+  background: #3a4e5e; color: white;
+  border-top-right-radius: 4px; font-weight: 500;
+  font-size: 14px; box-shadow: 0 2px 10px rgba(58,78,94,0.25);
 }
+.sbubble strong { font-weight: 600; }
+.sbubble p { margin-top: 8px; }
+.sbubble p:first-child { margin-top: 0; }
 
-.what-images {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+/* Quick replies */
+.sqr { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.sqr-btn {
+  padding: 9px 18px; border-radius: 22px;
+  border: 2px solid #536479; background: rgba(83,100,121,0.05);
+  color: #536479; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
 }
+.sqr-btn:hover { background: #536479; color: white; }
+.sqr-btn.selected { background: #3a4e5e; color: white; border-color: #3a4e5e; }
+.sqr-btn:disabled { cursor: default; }
+.sqr-btn.store-btn { flex: 1; min-width: 80px; text-align: center; border-radius: 12px; padding: 11px 14px; }
 
-.what-img {
-  border-radius: 12px;
-  overflow: hidden;
-  aspect-ratio: 1;
+/* Recipe buttons */
+.srecipe-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.srecipe-btn {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: 12px;
+  border: 2px solid var(--border); background: white;
+  cursor: pointer; transition: all 0.15s; text-align: left; width: 100%;
 }
+.srecipe-btn:hover { border-color: #536479; background: rgba(83,100,121,0.04); }
+.srecipe-btn.selected { border-color: #3a4e5e; background: rgba(58,78,94,0.06); }
+.srecipe-btn:disabled { cursor: default; }
+.srecipe-photo { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.srecipe-name { font-size: 13.5px; font-weight: 600; color: var(--charcoal); }
+.srecipe-ing { font-size: 10.5px; color: #a8bccf; line-height: 1.4; margin-top: 2px; }
 
-.what-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
+/* Result card */
+.sresult {
+  background: #f0f7ff; border: 1.5px solid #9fd1ff;
+  border-radius: 12px; padding: 13px 15px; margin-top: 10px;
+  display: flex; flex-direction: column; gap: 6px;
 }
+.sresult-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; border-bottom: 1px solid rgba(159,209,255,0.4); }
+.sresult-row:last-child { border-bottom: none; }
+.sresult-row .rl { color: #536479; }
+.sresult-row .rv { font-weight: 600; }
+.sresult-row.hl .rv { color: #536479; font-size: 14.5px; }
+.sresult-row.mx .rl, .sresult-row.mx .rv { color: #536479; font-style: italic; }
+.orig-tip { margin-top: 8px; padding: 8px 11px; background: rgba(159,209,255,0.15); border-left: 3px solid #9fd1ff; border-radius: 0 8px 8px 0; font-size: 11.5px; color: #536479; line-height: 1.5; }
+.cta-nudge { font-size: 12px; color: #a8bccf; text-align: center; margin: 10px 0 4px; line-height: 1.5; }
 
-.what-img:hover img { transform: scale(1.04); }
+/* Confirm card */
+.sconfirm { background: #edf7ed; border: 1.5px solid #7dbd7d; border-radius: 10px; padding: 12px 14px; margin-top: 10px; font-size: 13px; line-height: 1.6; color: #1e4d1e; }
 
-.what-img.tall {
-  grid-row: span 2;
-  aspect-ratio: auto;
-}
+/* Typing */
+.styping { display: flex; gap: 10px; max-width: 88%; animation: fadeUp 0.2s ease forwards; }
+.styping-dots { background: white; border: 1px solid var(--border); border-radius: 16px; border-top-left-radius: 4px; padding: 12px 16px; display: flex; gap: 4px; align-items: center; box-shadow: 0 1px 8px rgba(83,100,121,0.08); }
+.styping-dots span { width: 5px; height: 5px; background: #9fd1ff; border-radius: 50%; animation: bounce 1.2s ease-in-out infinite; }
+.styping-dots span:nth-child(2) { animation-delay: 0.2s; }
+.styping-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
 
-.what-points {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 28px;
-}
+/* Input */
+.sage-input-area { flex-shrink: 0; padding: 12px 16px; padding-bottom: max(16px, calc(12px + env(safe-area-inset-bottom))); border-top: 1.5px solid var(--border); background: white; }
+.sage-input-wrap { display: flex; align-items: flex-end; gap: 10px; background: white; border: 2px solid var(--border); border-radius: 14px; padding: 10px 14px; transition: border-color 0.15s, box-shadow 0.15s; }
+.sage-input-wrap:focus-within { border-color: #536479; box-shadow: 0 2px 14px rgba(83,100,121,0.14); }
+#sageInput { flex: 1; border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 16px; color: var(--charcoal); resize: none; line-height: 1.5; max-height: 100px; min-height: 22px; }
+#sageInput::placeholder { color: #a8bccf; }
+.sage-send { width: 34px; height: 34px; background: #536479; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+.sage-send:hover { background: #3a4e5e; }
+.sage-send svg { width: 14px; height: 14px; fill: white; }
 
-.what-point {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
+/* Trust footer */
+.sage-trust { flex-shrink: 0; background: #f0f5fa; border-top: 1px solid var(--border); padding: 8px 16px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.st-star { color: #f5a623; font-size: 11px; }
+.st-text { font-size: 11.5px; font-weight: 600; color: #536479; white-space: nowrap; }
+.st-div { color: var(--border); font-size: 11px; }
+.st-loc { font-size: 11px; color: #a8bccf; white-space: nowrap; }
 
-.what-point-icon {
-  width: 36px;
-  height: 36px;
-  background: #eef6ff;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.what-point-text strong {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--navy);
-  margin-bottom: 2px;
-}
-
-.what-point-text span {
-  font-size: 13.5px;
-  color: #3d5166;
-  line-height: 1.5;
-}
-
-/* ── STORES ── */
-.stores {
-  background: var(--cream);
-}
-
-.stores-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.stores-header {
-  text-align: center;
-  margin-bottom: 52px;
-}
-
-.stores-header .section-body {
-  margin: 0 auto;
-  text-align: center;
-}
-
-.stores-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.store-card {
-  background: var(--white);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 20px rgba(26,43,60,0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.store-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 40px rgba(26,43,60,0.12);
-}
-
-.store-img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  object-position: center;
-}
-
-.store-info {
-  padding: 20px 22px 24px;
-}
-
-.store-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 6px;
-}
-
-.store-address {
-  font-size: 13px;
-  color: #3d5166;
-  margin-bottom: 12px;
-  line-height: 1.5;
-}
-
-.store-hours {
-  font-size: 12.5px;
-  color: #2c4a63;
-  font-weight: 600;
-}
-
-.store-badge {
-  display: inline-block;
-  margin-top: 10px;
-  background: #eef6ff;
-  color: var(--blue);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 100px;
-}
-
-/* ── FOOD ── */
-.food {
-  background: var(--navy);
-  padding: 80px 24px;
-}
-
-.food-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: center;
-}
-
-.food .section-label { color: var(--blue-light); }
-.food .section-title { color: var(--white); }
-.food .section-body { color: rgba(255,255,255,0.6); }
-
-.food-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.food-item {
-  border-radius: 14px;
-  overflow: hidden;
-  aspect-ratio: 1;
-  position: relative;
-}
-
-.food-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.food-item:hover img { transform: scale(1.06); }
-
-.food-item-label {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px 12px 12px;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  letter-spacing: 0.04em;
-}
-
-/* ── CTA SECTION ── */
-.cta-section {
-  background: var(--cream);
-  text-align: center;
-  padding: 100px 24px;
-}
-
-.cta-inner {
-  max-width: 620px;
-  margin: 0 auto;
-}
-
-.cta-inner .section-label { text-align: center; }
-.cta-inner .section-title { text-align: center; margin-bottom: 16px; }
-
-.cta-desc {
-  font-size: 16px;
-  color: var(--muted);
-  line-height: 1.7;
-  margin-bottom: 36px;
-}
-
-.cta-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--navy);
-  color: var(--white);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 17px;
-  font-weight: 600;
-  padding: 20px 44px;
-  border-radius: 100px;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 8px 32px rgba(26,43,60,0.2);
-}
-
-.cta-btn:hover {
-  background: var(--blue);
-  transform: translateY(-2px);
-  box-shadow: 0 14px 44px rgba(26,43,60,0.3);
-}
-
-.cta-note {
-  margin-top: 18px;
-  font-size: 13px;
-  color: #3d5166;
-}
-
-/* ── FOOTER ── */
-footer {
-  background: var(--navy);
-  padding: 32px 24px;
-  text-align: center;
-}
-
-.footer-logo {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  opacity: 0.6;
-  margin-bottom: 12px;
-}
-
-.footer-text {
-  font-size: 12px;
-  color: rgba(255,255,255,0.35);
-}
-
-.footer-link {
-  color: rgba(255,255,255,0.5);
-  text-decoration: none;
-  font-size: 12px;
-}
-
-.footer-link:hover { color: rgba(255,255,255,0.8); }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  .hero-nav { padding: 20px; }
-  .hero-locations { display: none; }
-
-  .trust-bar { gap: 20px; padding: 16px 20px; }
-  .trust-divider { display: none; }
-
-  section { padding: 60px 20px; }
-
-  .what-inner,
-  .food-inner { grid-template-columns: 1fr; gap: 36px; }
-
-  .what-images { order: -1; }
-
-  .stores-grid { grid-template-columns: 1fr; }
-
-  .store-img { height: 160px; }
-}
-
-@media (max-width: 480px) {
-  .hero-logo { width: 42px; height: 42px; }
-  .hero-cta { font-size: 15px; padding: 16px 28px; }
+@media (min-width: 600px) {
+  .sage-msgs { padding: 24px 24px 16px; }
+  #sageOverlay { background: var(--cream); }
+  .sage-body { background: white; box-shadow: 0 0 60px rgba(83,100,121,0.1); }
 }
 </style>
 </head>
 <body>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
+<!-- ENTRY SCREEN -->
+<div id="entryScreen">
+  <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="entry-logo" alt="Natural Hounds">
+  <h1 class="entry-headline">See exactly what it costs to feed your dog real food</h1>
+  <p class="entry-sub">Takes 60 seconds. No commitment.</p>
 
-  <nav class="hero-nav">
-    <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="hero-logo" alt="Natural Hounds">
-  </nav>
-
-  <div class="hero-content">
-    <p class="hero-eyebrow">Long Island's Fresh Dog Food Kitchen</p>
-    <h1 class="hero-headline">Real food.<br><em>Real dogs.</em><br>Made here.</h1>
-    <p class="hero-sub">Human-grade, slow-cooked dog food made fresh daily in our Long Island kitchens. No fillers, no mystery ingredients — just food you can actually recognize.</p>
-    <a href="https://shop.naturalhounds.com/sage" class="hero-cta">
-      Find out what to feed your dog <span class="hero-cta-arrow">→</span>
-    </a>
-    <div class="hero-reviews">
-      <span class="hero-stars">★★★★★</span>
-      <span class="hero-reviews-text">300+ verified Google reviews</span>
-    </div>
+  <div class="weight-entry">
+    <input type="number" id="weightInput" class="weight-input" placeholder="Enter your dog's weight" min="1" max="250">
+    <span class="weight-suffix">lbs&nbsp;</span>
+    <button class="weight-submit" onclick="startWithWeight()">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
   </div>
 
-  <div class="hero-scroll">
-    <div class="hero-scroll-line"></div>
-    <span class="hero-scroll-text">Scroll</span>
+  <div class="weight-chips">
+    <button class="wchip" onclick="launchWithWeight(15)">15 lbs</button>
+    <button class="wchip" onclick="launchWithWeight(35)">35 lbs</button>
+    <button class="wchip" onclick="launchWithWeight(65)">65 lbs</button>
   </div>
-</section>
 
-<!-- TRUST BAR -->
-<div class="trust-bar">
-  <div class="trust-item"><span class="trust-item-icon">🏪</span> 3 Long Island locations</div>
-  <div class="trust-divider"></div>
-  <div class="trust-item"><span class="trust-item-icon">👨‍🍳</span> Made fresh daily</div>
-  <div class="trust-divider"></div>
-  <div class="trust-item"><span class="trust-item-icon">🥩</span> 100% human-grade</div>
-  <div class="trust-divider"></div>
-  <div class="trust-item"><span class="trust-item-icon">⭐</span> 300+ five-star reviews</div>
-  <div class="trust-divider"></div>
-  <div class="trust-item"><span class="trust-item-icon">🚫</span> No fillers, ever</div>
+  <div class="trust-row">
+    <span class="trust-item">⭐ 300+ 5-star reviews</span>
+    <div class="trust-dot"></div>
+    <span class="trust-item">📍 3 Long Island locations</span>
+    <div class="trust-dot"></div>
+    <span class="trust-item">🍳 Made fresh daily</span>
+  </div>
+  <p class="entry-footnote">Free starter pack at the end</p>
 </div>
 
-<!-- WHAT IS IT -->
-<section class="what">
-  <div class="what-inner">
-    <div class="what-images">
-      <div class="what-img tall">
-        <img src="https://rick895.github.io/sage/NaturalHounds_By_MarissaGPhotographyINC-14.jpg" alt="Natural Hounds store interior">
-      </div>
-      <div class="what-img">
-        <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_26.png?v=1657915212" alt="Beef recipe">
-      </div>
-      <div class="what-img">
-        <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029" alt="Original recipe">
-      </div>
+<!-- SAGE OVERLAY -->
+<div id="sageOverlay">
+  <header class="sage-header">
+    <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="sage-logo" alt="Natural Hounds">
+    <div class="sage-header-text">
+      <div class="sage-header-title">Your dog's plan, made on Long Island</div>
+      <div class="sage-header-sub">Most dogs switch easily starting with 1–2 packs</div>
     </div>
-
-    <div class="what-text">
-      <p class="section-label">What we do</p>
-      <h2 class="section-title">Think home-cooked meals — for your dog.</h2>
-      <p class="section-body">We slow-cook real meat, organs, and vegetables daily in our Port Jefferson kitchen. The result is food your dog goes crazy for and a coat, energy level, and digestion that shows it.</p>
-
-      <div class="what-points">
-        <div class="what-point">
-          <div class="what-point-icon">🥩</div>
-          <div class="what-point-text">
-            <strong>80% muscle meat, 10% organ</strong>
-            <span>More protein than any national brand. Cooked the way you'd cook it at home.</span>
-          </div>
-        </div>
-        <div class="what-point">
-          <div class="what-point-icon">🏝️</div>
-          <div class="what-point-text">
-            <strong>Made right here on Long Island</strong>
-            <span>Not shipped from a warehouse. Our kitchen is in Port Jefferson — you can walk in and see it.</span>
-          </div>
-        </div>
-        <div class="what-point">
-          <div class="what-point-icon">💊</div>
-          <div class="what-point-text">
-            <strong>No fillers, ever</strong>
-            <span>No corn, wheat, soy, artificial preservatives, or ingredients you can't pronounce.</span>
-          </div>
-        </div>
+    <div class="sage-prog">
+      <div class="pdots">
+        <div class="pdot active" id="pdot1"></div>
+        <div class="pdot" id="pdot2"></div>
+        <div class="pdot" id="pdot3"></div>
       </div>
-      <a href="https://shop.naturalhounds.com/sage" style="display:inline-flex;align-items:center;gap:8px;margin-top:28px;background:var(--navy);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;padding:14px 30px;border-radius:100px;text-decoration:none;transition:all 0.2s ease;box-shadow:0 4px 20px rgba(26,43,60,0.2);">
-        Find your dog's meal plan →
-      </a>
+      <span id="pLabel">Quick 3-step plan</span>
     </div>
-  </div>
-</section>
+  </header>
 
-<!-- STORES -->
-<section class="stores">
-  <div class="stores-inner">
-    <div class="stores-header">
-      <p class="section-label">Find us</p>
-      <h2 class="section-title">3 locations across Long Island</h2>
-      <p class="section-body">Stop in, grab a starter pack, and see how your dog responds. No commitment, no subscription — just real food.</p>
-    </div>
-
-    <div class="stores-grid">
-      <div class="store-card">
-        <img src="https://rick895.github.io/sage/4.png" class="store-img" style="object-position: center top;" alt="Natural Hounds Babylon storefront">
-        <div class="store-info">
-          <div class="store-name">Babylon</div>
-          <div class="store-address">73 W Main St, Babylon NY 11702<br>Next to Fancy Lee, across from La Famiglia</div>
-          <div class="store-hours">Tues–Sat 10am–6pm · Sun 10am–3pm</div>
-          <span class="store-badge">🍳 Full kitchen — food made here</span>
-        </div>
-      </div>
-
-      <div class="store-card">
-        <img src="https://rick895.github.io/sage/5.png" class="store-img" style="object-position: center center;" alt="Natural Hounds Port Jefferson storefront">
-        <div class="store-info">
-          <div class="store-name">Port Jefferson</div>
-          <div class="store-address">216B Main St, Port Jefferson NY 11777<br>Between The Pie and Salsa Salsa</div>
-          <div class="store-hours">Tues–Sat 10am–6pm · Sun 10am–3pm</div>
-          <span class="store-badge">🍳 Full kitchen — food made here</span>
-        </div>
-      </div>
-
-      <div class="store-card">
-        <img src="https://rick895.github.io/sage/3.png" class="store-img" style="object-position: center top;" alt="Natural Hounds Huntington storefront">
-        <div class="store-info">
-          <div class="store-name">Huntington</div>
-          <div class="store-address">44 Gerard St, Huntington NY 11743<br>Across from The Barn, next to Pasta Joint</div>
-          <div class="store-hours">Tues–Sat 10am–6pm · Sun 10am–3pm</div>
-        </div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:44px;">
-      <a href="https://shop.naturalhounds.com/sage" style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;padding:16px 36px;border-radius:100px;text-decoration:none;box-shadow:0 4px 20px rgba(26,43,60,0.15);">
-        Claim your starter pack →
-      </a>
-      <p style="margin-top:12px;font-size:13px;color:var(--muted);">Takes 60 seconds · No commitment</p>
-    </div>
-  </div>
-</section>
-<section class="food">
-  <div class="food-inner">
-    <div>
-      <p class="section-label">The menu</p>
-      <h2 class="section-title">4 recipes. All made with ingredients you'd actually buy at a grocery store.</h2>
-      <p class="section-body">Beef, Original (Turkey), Pork, and Lamb. Each recipe is formulated to be complete and balanced — not a topper, not a supplement. A full meal.</p>
-      <br>
-      <p class="section-body" style="color:rgba(255,255,255,0.45);font-size:14px;">Not sure which one is right for your dog? Our AI advisor Sage will figure it out in 60 seconds.</p>
-    </div>
-
-    <div class="food-grid">
-      <div class="food-item">
-        <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_26.png?v=1657915212" alt="Beef recipe">
-        <div class="food-item-label">Beef</div>
-      </div>
-      <div class="food-item">
-        <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029" alt="Original Turkey recipe">
-        <div class="food-item-label">Original (Turkey)</div>
-      </div>
-      <div class="food-item">
-        <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_25.png?v=1657914033" alt="Pork recipe">
-        <div class="food-item-label">Pork</div>
-      </div>
-      <div class="food-item">
-        <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_24.png?v=1657912896" alt="Lamb recipe">
-        <div class="food-item-label">Lamb</div>
+  <div class="sage-body">
+    <div class="sage-msgs" id="sageMsgs"></div>
+    <div class="sage-input-area" id="sageInputArea" style="display:none;">
+      <div class="sage-input-wrap">
+        <textarea id="sageInput" placeholder="Ask a question…" rows="1"></textarea>
+        <button class="sage-send" onclick="sageSend()">
+          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+        </button>
       </div>
     </div>
   </div>
-</section>
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta-inner">
-    <p class="section-label">Get started</p>
-    <h2 class="section-title">Find out exactly what to feed your dog — and what it costs.</h2>
-    <p class="cta-desc">Tell our AI advisor Sage your dog's weight and activity level. She'll calculate their exact daily portion, monthly cost, and recommend the best recipe in under a minute.</p>
-    <a href="https://shop.naturalhounds.com/sage" class="cta-btn">
-      Find out what to feed your dog →
-    </a>
-    <p class="cta-note">Takes about 60 seconds · No account needed · Claim a free starter pack at the end</p>
+  <div class="sage-trust">
+    <span class="st-star">★★★★★</span>
+    <span class="st-text">300+ verified Google reviews</span>
+    <span class="st-div">·</span>
+    <span class="st-loc">Babylon · Port Jefferson · Huntington</span>
   </div>
-</section>
+</div>
 
-<!-- FOOTER -->
-<footer>
-  <img src="https://cdn.shopify.com/s/files/1/0270/6777/7113/files/NATURAL_HOUNDS_PREMIUM_1024_x_1024_px_512_x_512_px_24_x_24_in_2.png?v=1774307442" class="footer-logo" alt="Natural Hounds">
-  <p class="footer-text">© 2025 Natural Hounds Dog Food Co. · Long Island, NY · <a href="tel:6317607850" class="footer-link">631-760-7850</a></p>
-</footer>
+<script>
+const PROXY_URL = 'https://sage-proxy.rick-026.workers.dev';
 
+const state = {
+  stage: 'activity',
+  dogWeight: null,
+  activityLevel: 'normal',
+  recipe: null,
+  dailyOz: null,
+  monthlyLbs: null,
+  monthlyCost: null,
+  reserveName: null,
+  reservePhone: null,
+  reserveStore: null,
+};
+
+// ENTRY
+function startWithWeight() {
+  var val = parseInt(document.getElementById('weightInput').value);
+  if (!val || val < 2 || val > 250) { document.getElementById('weightInput').focus(); return; }
+  launchWithWeight(val);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('weightInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') startWithWeight();
+  });
+  document.getElementById('sageInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sageSend(); }
+  });
+  document.getElementById('sageInput').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
+});
+
+function launchWithWeight(weight) {
+  state.dogWeight = weight;
+  state.stage = 'activity';
+  openSage();
+  updateProgress(1);
+  setTimeout(function() {
+    var msg = appendSage("Hey — let's figure this out.\n\nHow active is your **" + weight + " lb** dog?");
+    addQR(msg, [
+      { label: '🛋️ Pretty lazy', value: 'lazy' },
+      { label: '🐕 Normal', value: 'normal' },
+      { label: '⚡ Very active', value: 'active' },
+    ], handleActivity);
+  }, 280);
+}
+
+function openSage() {
+  document.getElementById('sageOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+// PROGRESS
+function updateProgress(step) {
+  ['pdot1','pdot2','pdot3'].forEach(function(id, i) {
+    var d = document.getElementById(id);
+    d.classList.remove('active','done');
+    if (i + 1 < step) d.classList.add('done');
+    else if (i + 1 === step) d.classList.add('active');
+  });
+  document.getElementById('pLabel').textContent = step === 1 ? 'Quick 3-step plan' : 'Step ' + step + ' of 3';
+}
+
+// CHARTS
+const CHARTS = {
+  original: [
+    {max:5,normal:3.8,lazy:3.2,active:4.2},{max:10,normal:6.4,lazy:5.3,active:7.1},
+    {max:15,normal:8.7,lazy:7.2,active:9.6},{max:20,normal:10.8,lazy:8.9,active:11.9},
+    {max:30,normal:14.6,lazy:12.1,active:16.1},{max:40,normal:18.1,lazy:15.0,active:19.9},
+    {max:50,normal:21.4,lazy:17.8,active:23.6},{max:60,normal:24.6,lazy:20.4,active:27.0},
+    {max:70,normal:27.6,lazy:22.9,active:30.3},{max:80,normal:30.5,lazy:25.3,active:33.5},
+    {max:90,normal:33.3,lazy:27.6,active:36.6},{max:100,normal:36.0,lazy:29.9,active:39.6},
+    {max:110,normal:38.7,lazy:32.1,active:42.6},{max:120,normal:41.3,lazy:34.3,active:45.5},
+    {max:130,normal:43.9,lazy:36.4,active:48.3},{max:140,normal:46.4,lazy:38.5,active:51.0},
+    {max:150,normal:48.9,lazy:40.5,active:53.7},
+  ],
+  beef: [
+    {max:5,normal:2.7,lazy:2.2,active:3.0},{max:10,normal:4.5,lazy:3.8,active:5.0},
+    {max:15,normal:6.2,lazy:5.1,active:6.8},{max:20,normal:7.6,lazy:6.3,active:8.4},
+    {max:30,normal:10.3,lazy:8.6,active:11.4},{max:40,normal:12.8,lazy:10.7,active:14.1},
+    {max:50,normal:15.2,lazy:12.6,active:16.7},{max:60,normal:17.4,lazy:14.4,active:19.1},
+    {max:70,normal:19.5,lazy:16.2,active:21.5},{max:80,normal:21.6,lazy:17.9,active:23.8},
+    {max:90,normal:23.6,lazy:19.6,active:25.9},{max:100,normal:25.5,lazy:21.2,active:28.1},
+    {max:110,normal:27.4,lazy:22.8,active:30.2},{max:120,normal:29.3,lazy:24.3,active:32.2},
+  ],
+  pork: [
+    {max:5,normal:2.2,lazy:1.8,active:2.4},{max:10,normal:3.6,lazy:3.0,active:4.0},
+    {max:15,normal:4.9,lazy:4.1,active:5.4},{max:20,normal:6.1,lazy:5.1,active:6.7},
+    {max:30,normal:8.3,lazy:6.9,active:9.1},{max:40,normal:10.3,lazy:8.5,active:11.3},
+    {max:50,normal:12.2,lazy:10.1,active:13.4},{max:60,normal:13.9,lazy:11.6,active:15.3},
+    {max:70,normal:15.6,lazy:13.0,active:17.2},{max:80,normal:17.3,lazy:14.3,active:19.0},
+    {max:90,normal:18.9,lazy:15.7,active:20.8},{max:100,normal:20.4,lazy:17.0,active:22.5},
+  ],
+};
+CHARTS.lamb = CHARTS.beef;
+const PPL = { original: 4.83, beef: 4.83, pork: 4.83, lamb: 8.67 };
+
+function calcFeeding(recipe, weight, activity) {
+  var row = CHARTS[recipe].find(function(r){ return weight <= r.max; });
+  if (!row) return null;
+  var oz = row[activity] || row.normal;
+  return { oz: oz, monthlyLbs: Math.round((oz*30/16)*10)/10, monthlyCost: Math.round((oz*30/16)*PPL[recipe]) };
+}
+
+function recipeLabel(k) {
+  return {original:'Original (Turkey)',beef:'Beef',pork:'Pork',lamb:'Lamb',multiple:'Beef, Pork & Original Mix'}[k] || k;
+}
+
+// FLOW
+function handleActivity(text) {
+  var t = text.toLowerCase();
+  state.activityLevel = t.includes('lazy')||t.includes('couch') ? 'lazy' : t.includes('active') ? 'active' : 'normal';
+  state.stage = 'recipe';
+  updateProgress(2);
+  showTypingThen(600, function() {
+    var msg = appendSage("We have 4 recipes — pick whichever sounds best for your dog:");
+    addRecipeButtons(msg);
+  });
+}
+
+function handleRecipe(text) {
+  var t = text.toLowerCase();
+  if (t.includes('multiple')||t.includes('mix')||t.includes('not sure')) {
+    state.recipe = 'multiple';
+    var cb=calcFeeding('beef',state.dogWeight,state.activityLevel);
+    var cp=calcFeeding('pork',state.dogWeight,state.activityLevel);
+    var co=calcFeeding('original',state.dogWeight,state.activityLevel);
+    if (!cb||!cp||!co) { appendSage("Your dog's size is outside our standard chart. Call 631-760-7850."); return; }
+    var avgOz=Math.round(((cb.oz+cp.oz+co.oz)/3)*10)/10;
+    var avgLbs=Math.round(((cb.monthlyLbs+cp.monthlyLbs+co.monthlyLbs)/3)*10)/10;
+    var avgCost=Math.round((cb.monthlyCost+cp.monthlyCost+co.monthlyCost)/3);
+    state.dailyOz=avgOz; state.monthlyLbs=avgLbs; state.monthlyCost=avgCost;
+    state.stage='confirmed'; updateProgress(3);
+    showTypingThen(700, function() {
+      var m=appendSage("Most popular mix is Beef, Pork & Original — here's the breakdown for your "+state.dogWeight+"lb dog:");
+      addResultCard(m,{oz:avgOz,monthlyLbs:avgLbs,monthlyCost:avgCost},'multiple');
+      setTimeout(showCTA,900);
+    });
+    return;
+  }
+  var recipe='beef';
+  if (t.includes('original')||t.includes('turkey')) recipe='original';
+  else if (t.includes('pork')) recipe='pork';
+  else if (t.includes('lamb')) recipe='lamb';
+  state.recipe=recipe;
+  var calc=calcFeeding(recipe,state.dogWeight,state.activityLevel);
+  if (!calc) { appendSage("Your dog's size is outside our standard chart. Call 631-760-7850."); return; }
+  state.dailyOz=calc.oz; state.monthlyLbs=calc.monthlyLbs; state.monthlyCost=calc.monthlyCost;
+  state.stage='confirmed'; updateProgress(3);
+  showTypingThen(700, function() {
+    var m=appendSage("Here's what your "+state.dogWeight+"lb dog needs on "+recipeLabel(recipe)+":");
+    addResultCard(m,calc,recipe);
+    setTimeout(showCTA,900);
+  });
+}
+
+function showCTA() {
+  state.stage='reserve_yn';
+  var f=appendSage('Ready to claim your starter pack?');
+  addCtaNudge(f);
+  addQR(f,[
+    {label:'🐾 Claim your starter pack',value:'yes'},
+    {label:'💬 I have a question first',value:'question'},
+  ],handleReserveYN);
+}
+
+function handleReserveYN(text) {
+  var t=text.toLowerCase();
+  if (t.includes('question')||t.includes('actually')||t.includes('wait')||t.includes('hang on')) {
+    state.stage='freeform'; showSageInput();
+    showTypingThen(400,function(){appendSage("Go ahead — what's on your mind?");});
+  } else if (t.includes('yes')||t.includes('claim')||t.includes('sure')||t.includes('ok')||t.includes('yeah')||t.includes('please')||t.includes('do it')) {
+    state.stage='name'; showSageInput();
+    showTypingThen(500,function(){appendSage("Perfect. What's your name?");});
+  } else if (t.includes('no')||t.includes('not yet')||t.includes('pass')) {
+    showTypingThen(400,function(){
+      appendSage("No problem. We're in Babylon, Port Jefferson, and Huntington — Tues-Sat 10am-6pm, Sun 10am-3pm.");
+      state.stage='done';
+    });
+  } else {
+    state.stage='freeform'; showSageInput();
+    showTypingThen(400,function(){appendSage("Go ahead — what's on your mind?");});
+  }
+}
+
+function handleName(text) {
+  if (text.length<2){appendSage("What's your name?");return;}
+  state.reserveName=text.trim(); state.stage='phone';
+  showTypingThen(400,function(){appendSage('Got it, '+state.reserveName.split(' ')[0]+'. Best phone number?');});
+}
+
+function handlePhone(text) {
+  var d=text.replace(/\D/g,'');
+  if (d.length<10){appendSage('Just need a 10-digit number so we can text you.');return;}
+  state.reservePhone=d; state.stage='store';
+  showTypingThen(400,function(){var m=appendSage('Which location is easiest?');addStorePicker(m);});
+}
+
+function handleStore(text) {
+  var t=text.toLowerCase();
+  var s=t.includes('babylon')?'Babylon':t.includes('port')||t.includes('jeff')?'Port Jefferson':t.includes('huntington')?'Huntington':'';
+  if (!s){appendSage('Which location — Babylon, Port Jefferson, or Huntington?');return;}
+  state.reserveStore=s; state.stage='done'; submitReservation();
+}
+
+// FREEFORM
+var chatHistory=[];
+
+async function handleFreeform(text) {
+  var t=text.toLowerCase();
+  if (t.includes('reserve')||t.includes('claim')){
+    state.stage='name'; showTypingThen(500,function(){appendSage("Perfect. What's your name?");}); return;
+  }
+  await askClaude(text,true);
+}
+
+async function askClaude(text,showNudge) {
+  chatHistory.push({role:'user',content:text});
+  showTyping();
+  try {
+    var res=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:buildSystemPrompt(),messages:chatHistory})});
+    var data=await res.json();
+    var reply=(data.content||[]).map(function(b){return b.text||'';}).join('');
+    hideTyping();
+    if (!reply){appendSage("Give us a call at 631-760-7850.");return;}
+    chatHistory.push({role:'assistant',content:reply});
+    var m=appendSage(reply);
+    if (showNudge){
+      addQR(m,[{label:'🐾 Claim your starter pack',value:'yes'},{label:'💬 Another question',value:'more'}],function(val){
+        if (val==='yes'){state.stage='name';showTypingThen(400,function(){appendSage("Perfect. What's your name?");});}
+      });
+    }
+  } catch(e){hideTyping();appendSage("Give us a call at 631-760-7850.");}
+}
+
+// SAGE INPUT
+function showSageInput() {
+  document.getElementById('sageInputArea').style.display='block';
+  setTimeout(function(){document.getElementById('sageInput').focus();},100);
+  scrollBottom();
+}
+
+function sageSend(overrideText) {
+  var input=document.getElementById('sageInput');
+  var text=(overrideText||input.value).trim();
+  if (!text) return;
+  input.value=''; input.style.height='auto';
+  appendUser(text);
+  if (state.stage==='activity') return handleActivity(text);
+  if (state.stage==='recipe') return handleRecipe(text);
+  if (state.stage==='reserve_yn') return handleReserveYN(text);
+  if (state.stage==='name') return handleName(text);
+  if (state.stage==='phone') return handlePhone(text);
+  if (state.stage==='store') return handleStore(text);
+  if (state.stage==='freeform') return handleFreeform(text);
+}
+
+// TRANSCRIPTS
+var transcriptSent=false, inactivityTimer=null;
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer=setTimeout(function(){sendTranscript(false);},3*60*1000);
+}
+
+async function sendTranscript(didReserve) {
+  if (transcriptSent) return;
+  transcriptSent=true;
+  var messages=[];
+  document.querySelectorAll('#sageMsgs .smsg').forEach(function(el){
+    var isUser=el.classList.contains('user');
+    var bubble=el.querySelector('.sbubble');
+    if (!bubble) return;
+    var clone=bubble.cloneNode(true);
+    clone.querySelectorAll('.sqr,.srecipe-btns,.sresult,.orig-tip,.sconfirm,.cta-nudge').forEach(function(w){w.remove();});
+    var text=clone.innerText.trim();
+    if (text) messages.push({role:isUser?'user':'assistant',content:text});
+  });
+  if (!messages.length) return;
+  try {
+    await fetch(PROXY_URL+'/transcript',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,dogWeight:state.dogWeight,recipe:state.recipe?recipeLabel(state.recipe):null,monthlyCost:state.monthlyCost,reserveName:state.reserveName||null,reservePhone:state.reservePhone||null,reserveStore:state.reserveStore||null,didReserve})});
+  } catch(e){}
+}
+
+async function submitReservation() {
+  showTyping();
+  try {
+    await fetch(PROXY_URL+'/reserve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:state.reserveName,phone:state.reservePhone,store:state.reserveStore,dogWeight:state.dogWeight})});
+  } catch(e){}
+  hideTyping();
+  var m=appendSage('Done, '+state.reserveName.split(' ')[0]+'! A 1lb pack of '+recipeLabel(state.recipe)+' is set aside at '+state.reserveStore+'.');
+  addConfirmCard(m);
+  sendTranscript(true);
+}
+
+// SYSTEM PROMPT
+function buildSystemPrompt() {
+  var base=`You are Sage, Natural Hounds' AI nutrition advisor. Natural Hounds is a premium human-grade dog food company on Long Island, NY with 3 locations: Port Jefferson (full kitchen), Babylon (full kitchen), and Huntington. Warm, knowledgeable, confident — never pushy. 2–3 sentences max unless more detail is needed.
+
+BRAND: Premium, clean, honest. Confident but not boastful.
+
+RECIPES:
+ORIGINAL (Turkey) — $4.83/lb | 34 cal/oz: Turkey, Sweet Potato, Turkey Liver, Turkey Heart, Pumpkin, Brown Rice, Green Beans, Carrots, Eggs, Coconut Oil. Protein 7.02%, Fat 5.58%. Best for sensitive stomachs/pancreatitis.
+BEEF — $4.83/lb | 48 cal/oz: Ground Beef, Beef Heart, Sweet Potato, Beef Liver, Eggs, Kale, Spinach, Flaxseed Oil, Chia Seeds. Protein 12.8%, Fat 10.4%. Customer favorite.
+PORK — $4.83/lb | 60 cal/oz: Ground Pork, Sweet Potato, Pumpkin, Pork Liver, Pork Heart, Broccoli, Kale, Eggs. Protein 14.1%, Fat 14.1%. Best for very active dogs.
+LAMB — $8.67/lb | 48 cal/oz: Ground Lamb, Cauliflower, Carrots, Lamb Liver, Lamb Heart, Eggs, Blueberries, Spinach, Flaxseed Oil. Protein 16.1%. Best for allergies/novel protein.
+
+ORIGINAL COST NOTE: Original is lowest-calorie so dogs need more daily — making it pricier. Suggest mixing Beef or Pork to reduce cost.
+
+PRICING: 1lb $12.99 (Original/Beef/Pork) | $18.99 (Lamb) in-store only. 5lbs $52.99 | 10lbs $74.99 | 20lbs $109.99 | 30lbs+ $4.83/lb.
+
+STORES: 631-760-7850 | Tues–Sat 10am–6pm | Sun 10am–3pm | Closed Monday
+Babylon — 73 W Main St | Port Jefferson — 216B Main St (FULL KITCHEN) | Huntington — 44 Gerard St
+
+TONE:
+- Samples/trying: Just say "Yes! Hit the button below." Never mention pricing or in-store process.
+- Starter pack: 1lb container of any recipe. Can try one of each.
+- On the fence: point to the button.
+- Never badmouth competitors. Never claim food cures conditions.
+- Unknown: direct to 631-760-7850.`;
+  if (state.dogWeight&&state.dailyOz&&state.monthlyCost) {
+    base+='\n\nCONTEXT: '+state.dogWeight+'lb dog, '+state.dailyOz+' oz/day, ~$'+state.monthlyCost+'/mo on '+recipeLabel(state.recipe)+'. Use these exact numbers.';
+  }
+  return base;
+}
+
+// UI HELPERS
+function appendSage(text) {
+  var c=document.getElementById('sageMsgs');
+  var m=document.createElement('div');
+  m.className='smsg sage';
+  m.innerHTML='<div class="savatar sage">S</div><div class="sbubble">'+formatText(text)+'</div>';
+  c.appendChild(m); scrollBottom(); return m;
+}
+
+function appendUser(text) {
+  var c=document.getElementById('sageMsgs');
+  var m=document.createElement('div');
+  m.className='smsg user';
+  m.innerHTML='<div class="savatar user">You</div><div class="sbubble">'+formatText(text)+'</div>';
+  c.appendChild(m); scrollBottom(); resetInactivityTimer();
+}
+
+function formatText(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
+
+function addQR(msgEl,options,handler) {
+  var bubble=msgEl.querySelector('.sbubble');
+  var wrap=document.createElement('div'); wrap.className='sqr';
+  options.forEach(function(opt){
+    var btn=document.createElement('button'); btn.className='sqr-btn'; btn.textContent=opt.label;
+    (function(o,b){b.onclick=function(){
+      wrap.querySelectorAll('.sqr-btn').forEach(function(x){x.classList.remove('selected');x.disabled=true;});
+      b.classList.add('selected'); appendUser(o.label);
+      setTimeout(function(){handler(o.value);},200);
+    };})(opt,btn);
+    wrap.appendChild(btn);
+  });
+  bubble.appendChild(wrap); scrollBottom();
+}
+
+function addStorePicker(msgEl) {
+  var bubble=msgEl.querySelector('.sbubble');
+  var wrap=document.createElement('div'); wrap.className='sqr';
+  ['Babylon','Port Jefferson','Huntington'].forEach(function(store){
+    var btn=document.createElement('button'); btn.className='sqr-btn store-btn'; btn.textContent=store;
+    (function(s,b){b.onclick=function(){
+      wrap.querySelectorAll('.sqr-btn').forEach(function(x){x.disabled=true;x.classList.remove('selected');});
+      b.classList.add('selected'); appendUser(s); setTimeout(function(){handleStore(s);},200);
+    };})(store,btn);
+    wrap.appendChild(btn);
+  });
+  bubble.appendChild(wrap); scrollBottom();
+}
+
+function addRecipeButtons(msgEl) {
+  var bubble=msgEl.querySelector('.sbubble');
+  var wrap=document.createElement('div'); wrap.className='srecipe-btns';
+  var PHOTOS={beef:'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_26.png?v=1657915212',original:'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_23.png?v=1657901029',pork:'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_25.png?v=1657914033',lamb:'https://cdn.shopify.com/s/files/1/0270/6777/7113/products/Untitleddesign_24.png?v=1657912896'};
+  var INGS={beef:'Ground Beef, Beef Heart, Sweet Potato, Beef Liver, Eggs, Kale, Spinach, Flaxseed Oil, Chia Seeds',original:'Turkey, Sweet Potato, Turkey Liver, Turkey Heart, Pumpkin, Brown Rice, Green Beans, Carrots, Eggs, Coconut Oil',pork:'Ground Pork, Sweet Potato, Pumpkin, Pork Liver, Broccoli, Kale, Eggs',lamb:'Ground Lamb, Cauliflower, Carrots, Lamb Liver, Eggs, Blueberries, Spinach, Flaxseed Oil'};
+  [{key:'beef',label:'Beef'},{key:'original',label:'Original (Turkey)'},{key:'pork',label:'Pork'},{key:'lamb',label:'Lamb'},{key:'multiple',label:'🔀 Mix / Not sure'}].forEach(function(r){
+    var btn=document.createElement('button'); btn.className='srecipe-btn';
+    var photo=PHOTOS[r.key]?'<img class="srecipe-photo" src="'+PHOTOS[r.key]+'" alt="'+r.label+'">':'';
+    var ing=INGS[r.key]?'<div class="srecipe-ing">'+INGS[r.key]+'</div>':'';
+    btn.innerHTML=photo+'<div><div class="srecipe-name">'+r.label+'</div>'+ing+'</div>';
+    (function(rec,b){b.onclick=function(){
+      wrap.querySelectorAll('.srecipe-btn').forEach(function(x){x.disabled=true;x.classList.remove('selected');});
+      b.classList.add('selected'); appendUser(rec.label); setTimeout(function(){handleRecipe(rec.key);},200);
+    };})(r,btn);
+    wrap.appendChild(btn);
+  });
+  bubble.appendChild(wrap); scrollBottom();
+}
+
+function addResultCard(msgEl,calc,recipe,customLabel) {
+  var bubble=msgEl.querySelector('.sbubble');
+  var card=document.createElement('div'); card.className='sresult';
+  var mixCost=Math.round(calc.monthlyCost*0.5);
+  var label=customLabel||recipeLabel(recipe);
+  var tip=recipe==='original'?'<div class="orig-tip">💡 Original needs more food daily due to lower calories — making it pricier. Mixing in Beef or Pork lowers the cost significantly.</div>':'';
+  card.innerHTML='<div class="sresult-row"><span class="rl">Recipe</span><span class="rv">'+label+'</span></div>'+
+    '<div class="sresult-row"><span class="rl">Daily amount</span><span class="rv">'+calc.oz+' oz/day</span></div>'+
+    '<div class="sresult-row"><span class="rl">Monthly need</span><span class="rv">'+calc.monthlyLbs+' lbs</span></div>'+
+    '<div class="sresult-row hl"><span class="rl">Monthly cost</span><span class="rv">~$'+calc.monthlyCost+'/mo</span></div>'+
+    '<div class="sresult-row mx"><span class="rl">Mixed with kibble</span><span class="rv">~$'+mixCost+'/mo</span></div>'+tip;
+  bubble.appendChild(card); scrollBottom();
+}
+
+function addCtaNudge(msgEl) {
+  var bubble=msgEl.querySelector('.sbubble');
+  var n=document.createElement('div'); n.className='cta-nudge';
+  n.innerHTML='The easiest way to start is to grab a 1 lb pack and see how your dog does.<br><span style="font-size:11px;">No commitment — most people start small and adjust from there.</span>';
+  bubble.appendChild(n);
+}
+
+function addConfirmCard(msgEl) {
+  var bubble=msgEl.querySelector('.sbubble');
+  var card=document.createElement('div'); card.className='sconfirm';
+  card.innerHTML="We'll text you to confirm pickup at <strong>"+state.reserveStore+"</strong>. See you soon 👍<br><br><span style='font-size:12px;'>In the meantime, <a href='https://naturalhounds.com' target='_blank' style='color:#536479;font-weight:600;'>view our shop</a></span>";
+  bubble.appendChild(card); scrollBottom();
+}
+
+function showTypingThen(delay,fn){showTyping();setTimeout(function(){hideTyping();fn();},delay);}
+
+function showTyping() {
+  var c=document.getElementById('sageMsgs');
+  var t=document.createElement('div'); t.className='styping'; t.id='typingIndicator';
+  t.innerHTML='<div class="savatar sage">S</div><div class="styping-dots"><span></span><span></span><span></span></div>';
+  c.appendChild(t); scrollBottom();
+}
+
+function hideTyping(){var t=document.getElementById('typingIndicator');if(t)t.remove();}
+
+function scrollBottom(){var c=document.getElementById('sageMsgs');if(c)c.scrollTop=c.scrollHeight;}
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize',function(){setTimeout(scrollBottom,50);});
+}
+</script>
 </body>
 </html>
