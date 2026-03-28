@@ -562,6 +562,19 @@ async function submitForm() {
     });
   } catch(e) { console.error(e); }
 
+  try {
+    await fetch(PROXY_URL + '/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name,
+        phone: phone,
+        store: location,
+        pickupDay: pickupDay,
+      }),
+    });
+  } catch(e) { console.error(e); }
+
   document.getElementById('formState').style.display = 'none';
   document.getElementById('successState').style.display = 'block';
 }
