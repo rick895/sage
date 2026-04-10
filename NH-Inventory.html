@@ -719,6 +719,11 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Inventory Items
       </div>
+      <div class="nav-section">Financials</div>
+      <div class="nav-item" onclick="showPage('financials')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Financials
+      </div>
       <div class="nav-section">Activity</div>
       <div class="nav-item" onclick="showPage('log')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -923,6 +928,112 @@
         </div>
       </div>
 
+      <!-- FINANCIALS PAGE -->
+      <div id="page-financials" class="page">
+        <div class="flex items-center justify-between mb-24">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div class="form-group" style="margin:0;">
+              <select id="finDateRange" onchange="renderFinancials()" style="width:160px;">
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="365">Last 12 months</option>
+                <option value="all">All time</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="exportFinancials()">↓ Export CSV</button>
+        </div>
+
+        <!-- Financial stat cards -->
+        <div class="stat-grid mb-24" style="grid-template-columns:repeat(4,1fr);">
+          <div class="stat-card">
+            <div class="stat-label">Inventory Value</div>
+            <div class="stat-value text-accent" id="finInventoryValue">$—</div>
+            <div class="stat-sub">at cost, on hand</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">COGS (Period)</div>
+            <div class="stat-value" id="finCOGS">$—</div>
+            <div class="stat-sub">cost of goods sold</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Order Cost</div>
+            <div class="stat-value" id="finAvgCost">$—</div>
+            <div class="stat-sub">per order processed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Units Consumed</div>
+            <div class="stat-value" id="finUnitsConsumed">—</div>
+            <div class="stat-sub">across all items</div>
+          </div>
+        </div>
+
+        <div class="two-col mb-24">
+          <!-- Inventory value by item -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Inventory Value by Item</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>On Hand</th>
+                    <th>Unit Cost</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody id="finValueTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- COGS by product -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">COGS by Product</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Units Sold</th>
+                    <th>COGS</th>
+                  </tr>
+                </thead>
+                <tbody id="finCOGSTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cost per receipt log -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Purchase History</span>
+            <span style="font-size:11px;color:var(--text3);">Stock receipts with cost data</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Unit Cost</th>
+                  <th>Total Cost</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="finPurchaseTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- LOG PAGE -->
       <div id="page-log" class="page">
         <div class="card">
@@ -1102,6 +1213,10 @@
           <input type="number" id="receiveModalQty" value="1" min="1" style="width:80px;">
           <button class="number-btn" onclick="adjustQty('receiveModalQty', 1)">+</button>
         </div>
+      </div>
+      <div class="form-group">
+        <label>Unit Cost <span class="text-muted">(for COGS tracking)</span></label>
+        <input type="number" id="receiveModalCost" placeholder="0.00" step="0.01" />
       </div>
       <div class="form-group">
         <label>Notes</label>
@@ -1485,6 +1600,7 @@ function openReceiveModal() {
   populateItemSelects();
   document.getElementById('receiveModalItem').value = '';
   document.getElementById('receiveModalQty').value = 1;
+  document.getElementById('receiveModalCost').value = '';
   document.getElementById('receiveModalNotes').value = '';
   document.getElementById('receiveModal').classList.add('open');
 }
@@ -1499,6 +1615,28 @@ function receiveStockModal() {
 
   const item = state.items.find(i => i.id === itemId);
   item.qty = (item.qty || 0) + qty;
+
+  // Update weighted average cost if cost provided
+  const cost = parseFloat(document.getElementById('receiveModalCost')?.value) || item.unitCost || 0;
+  if (cost > 0) {
+    const existingValue = (item.qty - qty) * (item.unitCost || 0);
+    const newValue = qty * cost;
+    item.unitCost = (existingValue + newValue) / item.qty;
+  }
+
+  // Log purchase
+  if (!state.purchases) state.purchases = [];
+  state.purchases.unshift({
+    id: Date.now().toString(),
+    itemId,
+    itemName: item.name,
+    qty,
+    unitCost: cost,
+    totalCost: cost * qty,
+    notes,
+    ts: new Date().toISOString()
+  });
+
   addLog('in', `Received +${qty} ${item.unit} of ${item.name}${notes ? ' — ' + notes : ''}`);
   save();
   renderAll();
@@ -1509,19 +1647,43 @@ function receiveStockModal() {
 function receiveStock() {
   const itemId = document.getElementById('receiveItem').value;
   const qty = parseFloat(document.getElementById('receiveQty').value);
+  const cost = parseFloat(document.getElementById('receiveCost').value) || 0;
   const notes = document.getElementById('receiveNotes').value.trim();
 
   if (!itemId) { toast('Select an item', 'error'); return; }
   if (!qty || qty <= 0) { toast('Enter a valid quantity', 'error'); return; }
 
   const item = state.items.find(i => i.id === itemId);
-  item.qty = (item.qty || 0) + qty;
+  const prevQty = item.qty || 0;
+  item.qty = prevQty + qty;
+
+  // Weighted average cost
+  if (cost > 0) {
+    const existingValue = prevQty * (item.unitCost || 0);
+    const newValue = qty * cost;
+    item.unitCost = (existingValue + newValue) / item.qty;
+  }
+
+  // Log purchase
+  if (!state.purchases) state.purchases = [];
+  state.purchases.unshift({
+    id: Date.now().toString(),
+    itemId,
+    itemName: item.name,
+    qty,
+    unitCost: cost,
+    totalCost: cost * qty,
+    notes,
+    ts: new Date().toISOString()
+  });
+
   addLog('in', `Received +${qty} ${item.unit} of ${item.name}${notes ? ' — ' + notes : ''}`);
   save();
   renderAll();
   toast(`+${qty} ${item.unit} added to ${item.name}`, 'success');
 
   document.getElementById('receiveQty').value = 1;
+  document.getElementById('receiveCost').value = '';
   document.getElementById('receiveNotes').value = '';
 }
 
@@ -1557,6 +1719,7 @@ function renderAll() {
   renderBomList();
   renderLog();
   renderOrdersTable();
+  renderFinancials();
   populateItemSelects();
 }
 
@@ -1794,15 +1957,164 @@ function populateItemSelects() {
   });
 }
 
-// ═══════════════════════════════════════════════
-// NAV
-// ═══════════════════════════════════════════════
+function renderFinancials() {
+  if (!state.purchases) state.purchases = [];
+
+  const days = document.getElementById('finDateRange')?.value;
+  const cutoff = days === 'all' ? null : new Date(Date.now() - days * 86400000);
+
+  // Inventory value
+  let totalValue = 0;
+  const valueRows = state.items.map(item => {
+    const cost = item.unitCost || 0;
+    const value = (item.qty || 0) * cost;
+    totalValue += value;
+    return { item, cost, value };
+  }).sort((a, b) => b.value - a.value);
+
+  document.getElementById('finInventoryValue').textContent = '$' + totalValue.toFixed(2);
+
+  document.getElementById('finValueTable').innerHTML = valueRows.length === 0
+    ? `<tr><td colspan="4"><div class="empty" style="padding:24px;">No items yet</div></td></tr>`
+    : valueRows.map(r => `<tr>
+      <td><div class="item-name">${r.item.name}</div><div class="item-sku">${r.item.category}</div></td>
+      <td style="color:var(--text2);">${r.item.qty || 0} ${r.item.unit}</td>
+      <td style="color:var(--text2);">${r.cost > 0 ? '$' + r.cost.toFixed(4) : '—'}</td>
+      <td style="color:var(--accent);font-weight:500;">${r.cost > 0 ? '$' + r.value.toFixed(2) : '—'}</td>
+    </tr>`).join('');
+
+  // COGS from log — parse drawdown entries
+  const cogsByProduct = {};
+  let totalCOGS = 0;
+  let totalUnits = 0;
+  let ordersWithCost = 0;
+
+  // Scan log for drawdown entries
+  state.log.forEach(entry => {
+    if (entry.type !== 'out' || !entry.ref) return;
+    if (cutoff && new Date(entry.ts) < cutoff) return;
+
+    // Parse "Order #XXXX: −QTY unit of ITEMNAME"
+    const match = entry.message.match(/Order (.+?): −([\d.]+) .+ of (.+)/);
+    if (!match) return;
+
+    const [, orderRef, qtyStr, itemName] = match;
+    const qty = parseFloat(qtyStr);
+    const item = state.items.find(i => i.name === itemName);
+    if (!item || !item.unitCost) return;
+
+    const cost = qty * item.unitCost;
+    totalCOGS += cost;
+    totalUnits += qty;
+
+    // Find which BOM/product this came from
+    const productKey = orderRef;
+    if (!cogsByProduct[productKey]) cogsByProduct[productKey] = { orders: 0, cost: 0 };
+    cogsByProduct[productKey].cost += cost;
+  });
+
+  // Count orders in period
+  const ordersInPeriod = state.recentOrders.filter(o => {
+    if (!cutoff) return true;
+    return new Date(o.created_at) >= cutoff;
+  });
+
+  // Better COGS: scan orders × BOMs
+  const cogsByBom = {};
+  let betterCOGS = 0;
+  let betterUnits = 0;
+  ordersInPeriod.forEach(order => {
+    if (!state.syncedOrders.includes(String(order.id))) return;
+    order.line_items?.forEach(li => {
+      const key = `${li.product_id}_${li.variant_id}`;
+      const key2 = `${li.product_id}`;
+      const bom = state.boms.find(b => b.productKey === key || b.productKey === key2);
+      if (!bom) return;
+
+      let orderCost = 0;
+      bom.components.forEach(c => {
+        const item = state.items.find(i => i.id === c.itemId);
+        if (!item || !item.unitCost) return;
+        const used = c.qty * li.quantity;
+        orderCost += used * item.unitCost;
+        betterUnits += used;
+      });
+
+      betterCOGS += orderCost;
+      if (!cogsByBom[bom.productTitle]) cogsByBom[bom.productTitle] = { units: 0, cost: 0 };
+      cogsByBom[bom.productTitle].units += li.quantity;
+      cogsByBom[bom.productTitle].cost += orderCost;
+    });
+  });
+
+  document.getElementById('finCOGS').textContent = '$' + betterCOGS.toFixed(2);
+  document.getElementById('finUnitsConsumed').textContent = betterUnits.toFixed(1);
+  document.getElementById('finAvgCost').textContent = ordersInPeriod.length > 0
+    ? '$' + (betterCOGS / ordersInPeriod.length).toFixed(2) : '$0.00';
+
+  // COGS by product table
+  const cogsEntries = Object.entries(cogsByBom).sort((a, b) => b[1].cost - a[1].cost);
+  document.getElementById('finCOGSTable').innerHTML = cogsEntries.length === 0
+    ? `<tr><td colspan="3"><div class="empty" style="padding:24px;">No BOMs with costed items yet</div></td></tr>`
+    : cogsEntries.map(([title, data]) => `<tr>
+      <td><div class="item-name">${title}</div></td>
+      <td style="color:var(--text2);">${data.units}</td>
+      <td style="color:var(--accent);font-weight:500;">$${data.cost.toFixed(2)}</td>
+    </tr>`).join('');
+
+  // Purchase history
+  const purchases = (state.purchases || []).filter(p => !cutoff || new Date(p.ts) >= cutoff);
+  document.getElementById('finPurchaseTable').innerHTML = purchases.length === 0
+    ? `<tr><td colspan="6"><div class="empty" style="padding:24px;">No purchase history yet. Add unit costs when receiving stock.</div></td></tr>`
+    : purchases.map(p => {
+      const date = new Date(p.ts).toLocaleDateString();
+      return `<tr>
+        <td style="color:var(--text3);">${date}</td>
+        <td><div class="item-name">${p.itemName}</div></td>
+        <td style="color:var(--text2);">${p.qty}</td>
+        <td style="color:var(--text2);">${p.unitCost > 0 ? '$' + p.unitCost.toFixed(4) : '—'}</td>
+        <td style="color:var(--accent);">${p.totalCost > 0 ? '$' + p.totalCost.toFixed(2) : '—'}</td>
+        <td style="color:var(--text3);font-size:11px;">${p.notes || ''}</td>
+      </tr>`;
+    }).join('');
+}
+
+function exportFinancials() {
+  const days = document.getElementById('finDateRange')?.value;
+  const cutoff = days === 'all' ? null : new Date(Date.now() - days * 86400000);
+
+  let csv = 'Type,Date,Item/Product,Qty,Unit Cost,Total Cost,Notes\n';
+
+  // Inventory value rows
+  state.items.forEach(item => {
+    const value = (item.qty || 0) * (item.unitCost || 0);
+    csv += `Inventory Value,,${item.name},${item.qty || 0},${(item.unitCost || 0).toFixed(4)},${value.toFixed(2)},\n`;
+  });
+
+  // Purchase history
+  (state.purchases || []).filter(p => !cutoff || new Date(p.ts) >= cutoff).forEach(p => {
+    const date = new Date(p.ts).toLocaleDateString();
+    csv += `Purchase,${date},${p.itemName},${p.qty},${p.unitCost.toFixed(4)},${p.totalCost.toFixed(2)},"${p.notes || ''}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `nh-inventory-financials-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported', 'success');
+}
+
+
 const pageTitles = {
   dashboard: 'Dashboard',
   stock: 'Stock Levels',
   receive: 'Receive Stock',
   bom: 'Bill of Materials',
   items: 'Inventory Items',
+  financials: 'Financials',
   log: 'Activity Log',
   orders: 'Recent Orders',
   settings: 'Settings'
@@ -1877,4 +2189,3 @@ function toast(message, type = 'info') {
 </script>
 </body>
 </html>
-
