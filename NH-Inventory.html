@@ -147,6 +147,9 @@
   .loading-overlay { position: fixed; inset: 0; background: rgba(15,14,12,0.8); display: flex; align-items: center; justify-content: center; z-index: 300; flex-direction: column; gap: 16px; }
   .loading-overlay.hidden { display: none; }
   .webhook-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(109,184,122,0.1); border: 1px solid rgba(109,184,122,0.2); border-radius: 20px; padding: 3px 10px; font-size: 10px; color: var(--green); }
+  .input-prefix { position: relative; }
+  .input-prefix::before { content: '$'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 12px; pointer-events: none; z-index: 1; }
+  .input-prefix input { padding-left: 22px; }
 </style>
 </head>
 <body>
@@ -309,7 +312,7 @@
                 <button class="number-btn" onclick="adjustQty('receiveQty', 1)">+</button>
               </div>
             </div>
-            <div class="form-group"><label>Unit Cost <span class="text-muted">(for COGS tracking)</span></label><input type="number" id="receiveCost" placeholder="0.00" step="0.01"></div>
+            <div class="form-group"><label>Unit Cost <span class="text-muted">(for COGS tracking)</span></label><div class="input-prefix"><input type="number" id="receiveCost" placeholder="0.00" step="0.0001"></div></div>
             <div class="form-group"><label>Notes</label><input type="text" id="receiveNotes" placeholder="PO #, supplier, etc."></div>
             <div class="divider"></div>
             <button class="btn btn-primary" onclick="receiveStock()" style="width:100%;justify-content:center;padding:12px;">Record Receipt</button>
@@ -452,7 +455,10 @@
         <div class="form-group"><label>Category</label><select id="itemCategory"><option value="packaging">Packaging</option><option value="ingredient">Ingredient</option><option value="supply">Supply</option></select></div>
         <div class="form-group"><label>Unit of Measure</label><input type="text" id="itemUnit" placeholder="bags, lbs, rolls..." /></div>
       </div>
-      <div class="form-group"><label>Low Stock Alert Threshold</label><input type="number" id="itemThreshold" value="10" min="0" /></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group"><label>Unit Cost <span class="text-muted">(per unit)</span></label><div class="input-prefix"><input type="number" id="itemUnitCost" placeholder="0.00" step="0.0001" min="0" /></div></div>
+        <div class="form-group"><label>Low Stock Alert Threshold</label><input type="number" id="itemThreshold" value="10" min="0" /></div>
+      </div>
       <div class="form-group"><label>Starting Quantity</label><input type="number" id="itemStartQty" value="0" min="0" /></div>
       <div class="form-group"><label>Notes (optional)</label><input type="text" id="itemNotes" placeholder="Supplier, spec, etc." /></div>
     </div>
@@ -493,7 +499,7 @@
           <button class="number-btn" onclick="adjustQty('receiveModalQty', 1)">+</button>
         </div>
       </div>
-      <div class="form-group"><label>Unit Cost <span class="text-muted">(for COGS)</span></label><input type="number" id="receiveModalCost" placeholder="0.00" step="0.01" /></div>
+      <div class="form-group"><label>Unit Cost <span class="text-muted">(for COGS)</span></label><div class="input-prefix"><input type="number" id="receiveModalCost" placeholder="0.00" step="0.0001" /></div></div>
       <div class="form-group"><label>Notes</label><input type="text" id="receiveModalNotes" placeholder="PO #, supplier, etc." /></div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('receiveModal')">Cancel</button><button class="btn btn-primary" onclick="receiveStockModal()">Record Receipt</button></div>
@@ -675,6 +681,7 @@ function openItemModal(id) {
     document.getElementById('itemName').value = item.name;
     document.getElementById('itemCategory').value = item.category;
     document.getElementById('itemUnit').value = item.unit;
+    document.getElementById('itemUnitCost').value = item.unitCost != null ? item.unitCost : '';
     document.getElementById('itemThreshold').value = item.threshold;
     document.getElementById('itemStartQty').value = item.qty;
     document.getElementById('itemNotes').value = item.notes || '';
@@ -684,6 +691,7 @@ function openItemModal(id) {
     document.getElementById('itemName').value = '';
     document.getElementById('itemCategory').value = 'packaging';
     document.getElementById('itemUnit').value = '';
+    document.getElementById('itemUnitCost').value = '';
     document.getElementById('itemThreshold').value = '10';
     document.getElementById('itemStartQty').value = '0';
     document.getElementById('itemNotes').value = '';
@@ -696,10 +704,13 @@ async function saveItem() {
   if (!name) { toast('Enter a name', 'error'); return; }
 
   const editId = document.getElementById('itemEditId').value;
+  const unitCostRaw = document.getElementById('itemUnitCost').value;
+  const unitCost = unitCostRaw === '' ? null : parseFloat(unitCostRaw);
   const data = {
     name,
     category: document.getElementById('itemCategory').value,
     unit: document.getElementById('itemUnit').value.trim() || 'units',
+    unitCost: unitCost != null && !isNaN(unitCost) && unitCost >= 0 ? unitCost : null,
     threshold: parseFloat(document.getElementById('itemThreshold').value) || 10,
     qty: parseFloat(document.getElementById('itemStartQty').value) || 0,
     notes: document.getElementById('itemNotes').value.trim()
@@ -948,7 +959,7 @@ function renderStockTable() {
 function renderItemsTable() {
   document.getElementById('itemsTable').innerHTML = state.items.length === 0
     ? `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📦</div><div class="empty-text">No items yet.</div></div></td></tr>`
-    : state.items.map(item => `<tr><td><div class="item-name">${item.name}</div></td><td><span class="tag">${item.category}</span></td><td style="color:var(--text3);">${item.unit}</td><td style="color:var(--text2);">${item.unitCost?'$'+item.unitCost.toFixed(4):'—'}</td><td style="color:var(--text3);">${item.threshold} ${item.unit}</td><td><div class="flex gap-8"><button class="btn btn-ghost btn-sm" onclick="openItemModal('${item.id}')">Edit</button><button class="btn btn-ghost btn-sm btn-danger" onclick="deleteItem('${item.id}')">Delete</button></div></td></tr>`).join('');
+    : state.items.map(item => `<tr><td><div class="item-name">${item.name}</div></td><td><span class="tag">${item.category}</span></td><td style="color:var(--text3);">${item.unit}</td><td style="color:var(--text2);">${item.unitCost!=null && item.unitCost>=0 ?'$'+Number(item.unitCost).toFixed(4):'—'}</td><td style="color:var(--text3);">${item.threshold} ${item.unit}</td><td><div class="flex gap-8"><button class="btn btn-ghost btn-sm" onclick="openItemModal('${item.id}')">Edit</button><button class="btn btn-ghost btn-sm btn-danger" onclick="deleteItem('${item.id}')">Delete</button></div></td></tr>`).join('');
 }
 
 function renderBomList() {
