@@ -137,3 +137,986 @@
   .w-full { width: 100%; }
   .number-input-row { display: flex; align-items: center; gap: 0; }
   .number-input-row input { border-radius: 0; text-align: center; width: 60px; }
+  .number-btn { background: var(--surface2); border: 1px solid var(--border2); color: var(--text2); width: 30px; height: 34px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.1s; flex-shrink: 0; }
+  .number-btn:first-child { border-radius: 6px 0 0 6px; border-right: none; }
+  .number-btn:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+  .number-btn:hover { background: var(--border2); color: var(--text); }
+  .tag { display: inline-flex; align-items: center; padding: 2px 7px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; font-size: 10px; color: var(--text3); }
+  .page { display: none; }
+  .page.active { display: block; }
+  .loading-overlay { position: fixed; inset: 0; background: rgba(15,14,12,0.8); display: flex; align-items: center; justify-content: center; z-index: 300; flex-direction: column; gap: 16px; }
+  .loading-overlay.hidden { display: none; }
+  .webhook-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(109,184,122,0.1); border: 1px solid rgba(109,184,122,0.2); border-radius: 20px; padding: 3px 10px; font-size: 10px; color: var(--green); }
+  .input-prefix { position: relative; }
+  .input-prefix::before { content: '$'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 12px; pointer-events: none; z-index: 1; }
+  .input-prefix input { padding-left: 22px; }
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <span class="spinner" style="width:24px;height:24px;"></span>
+  <span style="color:var(--text2);font-size:12px;">Loading inventory...</span>
+</div>
+
+<!-- SETUP SCREEN -->
+<div id="setupScreen" class="setup-screen" style="display:none;">
+  <div class="setup-card">
+    <div class="setup-logo">Natural Hounds</div>
+    <div class="setup-sub">Inventory Manager</div>
+    <div class="setup-note">
+      Enter your Cloudflare Worker URL and Shopify credentials.<br>
+      All data is stored server-side in Cloudflare KV.
+    </div>
+    <div class="setup-field">
+      <label>Shopify Store URL</label>
+      <input type="text" id="setupStore" placeholder="natural-hounds.myshopify.com" />
+    </div>
+    <div class="setup-field">
+      <label>Admin API Access Token</label>
+      <input type="password" id="setupToken" placeholder="shpat_..." />
+    </div>
+    <div class="setup-field">
+      <label>Worker Proxy URL</label>
+      <input type="text" id="setupProxy" placeholder="https://nh-inventory-proxy.rick-026.workers.dev" />
+    </div>
+    <button class="btn btn-primary w-full" onclick="saveSetup()" style="justify-content:center;padding:12px;">
+      Connect Store
+    </button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appShell" class="shell" style="display:none;">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="wordmark">Natural Hounds</div>
+      <div class="sub">Inventory</div>
+    </div>
+    <nav>
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-section">Inventory</div>
+      <div class="nav-item" onclick="showPage('stock')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Stock Levels
+      </div>
+      <div class="nav-item" onclick="showPage('receive')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Receive Stock
+      </div>
+      <div class="nav-section">Configuration</div>
+      <div class="nav-item" onclick="showPage('bom')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Bill of Materials
+      </div>
+      <div class="nav-item" onclick="showPage('items')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Inventory Items
+      </div>
+      <div class="nav-section">Financials</div>
+      <div class="nav-item" onclick="showPage('financials')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Financials
+      </div>
+      <div class="nav-section">Activity</div>
+      <div class="nav-item" onclick="showPage('log')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Activity Log
+      </div>
+      <div class="nav-item" onclick="showPage('orders')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+        Recent Orders
+      </div>
+    </nav>
+    <div style="padding:16px 20px; border-top:1px solid var(--border);">
+      <div class="nav-item" style="padding:8px 0;" onclick="showPage('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;opacity:0.5"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M16.24 7.76a6 6 0 0 1 0 8.49"/></svg>
+        <span style="font-size:11px;color:var(--text3);" id="storeLabel">Connecting...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="webhook-pill">⚡ Auto-sync on</div>
+        <button class="btn btn-ghost btn-sm" onclick="refreshData()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh
+        </button>
+        <div class="store-badge">
+          <div class="dot"></div>
+          <span id="storeBadgeText">Connected</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page active">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value" id="statTotal">—</div><div class="stat-sub">inventory items tracked</div></div>
+          <div class="stat-card" id="statLowCard"><div class="stat-label">Low Stock</div><div class="stat-value" id="statLow">—</div><div class="stat-sub">below threshold</div></div>
+          <div class="stat-card" id="statOutCard"><div class="stat-label">Out of Stock</div><div class="stat-value" id="statOut">—</div><div class="stat-sub">zero units remaining</div></div>
+          <div class="stat-card"><div class="stat-label">Orders Processed</div><div class="stat-value" id="statOrders">—</div><div class="stat-sub">auto drawdowns done</div></div>
+        </div>
+        <div id="alertsSection"></div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Critical Items</span><button class="btn btn-ghost btn-sm" onclick="showPage('stock')">View All</button></div>
+            <div class="table-wrap"><table><thead><tr><th>Item</th><th>Stock</th><th>Status</th></tr></thead><tbody id="criticalTable"><tr><td colspan="3"><div class="empty"><div class="empty-icon">📦</div><div class="empty-text">Loading...</div></div></td></tr></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Recent Activity</span><button class="btn btn-ghost btn-sm" onclick="showPage('log')">View All</button></div>
+            <div id="recentActivity" style="padding:0 16px;"><div class="empty" style="padding:32px 0;"><div class="empty-icon">📋</div><div class="empty-text">No activity yet</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STOCK LEVELS -->
+      <div id="page-stock" class="page">
+        <div class="flex items-center justify-between mb-24">
+          <div></div>
+          <div class="flex gap-8">
+            <input type="text" id="stockSearch" placeholder="Search items..." style="width:200px;" oninput="renderStockTable()">
+            <button class="btn btn-primary" onclick="openReceiveModal()">+ Add Stock</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Threshold</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="stockTable"><tr><td colspan="6"><div class="empty"><div class="empty-icon">📦</div><div class="empty-text">No items yet.</div></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECEIVE STOCK -->
+      <div id="page-receive" class="page">
+        <div class="card" style="max-width:600px;">
+          <div class="card-header"><span class="card-title">Receive Stock</span><span class="text-muted" style="font-size:11px;">Add incoming inventory</span></div>
+          <div style="padding:20px;">
+            <div class="form-group"><label>Item</label><select id="receiveItem"><option value="">Select item...</option></select></div>
+            <div class="form-group"><label>Quantity Received</label>
+              <div class="number-input-row">
+                <button class="number-btn" onclick="adjustQty('receiveQty', -1)">−</button>
+                <input type="number" id="receiveQty" value="1" min="1" style="width:80px;">
+                <button class="number-btn" onclick="adjustQty('receiveQty', 1)">+</button>
+              </div>
+            </div>
+            <div class="form-group"><label>Unit Cost <span class="text-muted">(for COGS tracking)</span></label><div class="input-prefix"><input type="number" id="receiveCost" placeholder="0.00" step="0.0001"></div></div>
+            <div class="form-group"><label>Notes</label><input type="text" id="receiveNotes" placeholder="PO #, supplier, etc."></div>
+            <div class="divider"></div>
+            <button class="btn btn-primary" onclick="receiveStock()" style="width:100%;justify-content:center;padding:12px;">Record Receipt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOM -->
+      <div id="page-bom" class="page">
+        <div class="flex items-center justify-between mb-24">
+          <p style="color:var(--text3);font-size:12px;">Define what inventory items get consumed when each Shopify product is sold.</p>
+          <button class="btn btn-primary" onclick="openBomModal()">+ New BOM</button>
+        </div>
+        <div id="bomList"><div class="empty"><div class="empty-icon">🔗</div><div class="empty-text">No BOMs defined yet.</div></div></div>
+      </div>
+
+      <!-- INVENTORY ITEMS -->
+      <div id="page-items" class="page">
+        <div class="flex items-center justify-between mb-24">
+          <p style="color:var(--text3);font-size:12px;">Manage your physical inventory items.</p>
+          <button class="btn btn-primary" onclick="openItemModal()">+ New Item</button>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Category</th><th>Unit</th><th>Unit Cost</th><th>Low Stock Alert</th><th>Actions</th></tr></thead>
+              <tbody id="itemsTable"><tr><td colspan="6"><div class="empty"><div class="empty-icon">📦</div><div class="empty-text">No items yet.</div></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCIALS -->
+      <div id="page-financials" class="page">
+        <div class="flex items-center justify-between mb-24">
+          <select id="finDateRange" onchange="renderFinancials()" style="width:160px;">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="365">Last 12 months</option>
+            <option value="all">All time</option>
+          </select>
+          <div class="flex gap-8">
+            <button class="btn btn-ghost btn-sm" onclick="triggerWeeklySummary()">Send Summary Now</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportFinancials()">↓ Export CSV</button>
+          </div>
+        </div>
+        <div class="stat-grid mb-24">
+          <div class="stat-card"><div class="stat-label">Inventory Value</div><div class="stat-value text-accent" id="finInventoryValue">$—</div><div class="stat-sub">at cost, on hand</div></div>
+          <div class="stat-card"><div class="stat-label">COGS (Period)</div><div class="stat-value" id="finCOGS">$—</div><div class="stat-sub">cost of goods sold</div></div>
+          <div class="stat-card"><div class="stat-label">Avg Order Cost</div><div class="stat-value" id="finAvgCost">$—</div><div class="stat-sub">per order processed</div></div>
+          <div class="stat-card"><div class="stat-label">Units Consumed</div><div class="stat-value" id="finUnitsConsumed">—</div><div class="stat-sub">across all items</div></div>
+        </div>
+        <div class="two-col mb-24">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Inventory Value by Item</span></div>
+            <div class="table-wrap"><table><thead><tr><th>Item</th><th>On Hand</th><th>Unit Cost</th><th>Value</th></tr></thead><tbody id="finValueTable"></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">COGS by Product</span></div>
+            <div class="table-wrap"><table><thead><tr><th>Product</th><th>Units Sold</th><th>COGS</th></tr></thead><tbody id="finCOGSTable"></tbody></table></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Purchase History</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Unit Cost</th><th>Total Cost</th><th>Notes</th></tr></thead><tbody id="finPurchaseTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- LOG -->
+      <div id="page-log" class="page">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Activity Log</span><button class="btn btn-ghost btn-sm btn-danger" onclick="clearLog()">Clear Log</button></div>
+          <div style="padding:0 16px;" id="logList"><div class="empty" style="padding:40px 0;"><div class="empty-icon">📋</div><div class="empty-text">No activity yet</div></div></div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div id="page-orders" class="page">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent Shopify Orders</span><span class="webhook-pill">⚡ Auto-processed via webhook</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Total</th><th>Drawdown</th></tr></thead>
+              <tbody id="ordersTable"><tr><td colspan="5"><div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">No orders yet.</div></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="page-settings" class="page">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Connection Settings</span></div>
+            <div style="padding:20px;">
+              <div class="form-group"><label>Shopify Store URL</label><input type="text" id="settingsStore" /></div>
+              <div class="form-group"><label>Admin API Access Token</label><input type="password" id="settingsToken" /></div>
+              <div class="form-group"><label>Worker Proxy URL</label><input type="text" id="settingsProxy" /></div>
+              <div class="divider"></div>
+              <div class="flex gap-8">
+                <button class="btn btn-primary" onclick="saveSettingsForm()">Save</button>
+                <button class="btn btn-ghost btn-danger" onclick="resetApp()">Reset All Data</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Webhook Setup</span></div>
+            <div style="padding:20px;">
+              <p style="color:var(--text2);font-size:12px;margin-bottom:16px;">Register this URL as a Shopify webhook for <strong>orders/create</strong> and <strong>orders/paid</strong> events:</p>
+              <div style="background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:10px 12px;font-size:11px;color:var(--accent);word-break:break-all;" id="webhookUrl">—</div>
+              <div class="divider"></div>
+              <p style="color:var(--text3);font-size:11px;">In Shopify admin → Settings → Notifications → Webhooks → Create webhook</p>
+              <div style="margin-top:12px;">
+                <p style="color:var(--text3);font-size:11px;margin-bottom:8px;">Also set your Shopify webhook secret in the Worker env as <code>SHOPIFY_WEBHOOK_SECRET</code></p>
+              </div>
+              <div class="divider"></div>
+              <div class="form-group" style="margin-bottom:8px;"><label>Migrate existing localStorage data to KV</label></div>
+              <button class="btn btn-ghost btn-sm" onclick="migrateFromLocalStorage()">Migrate Local Data → Server</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- MODAL: Item -->
+<div class="modal-overlay" id="itemModal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="itemModalTitle">New Inventory Item</span><button class="modal-close" onclick="closeModal('itemModal')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="itemEditId">
+      <div class="form-group"><label>Item Name</label><input type="text" id="itemName" placeholder="e.g. 1lb Kraft Bag, Ice Pack, Chicken Breast" /></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group"><label>Category</label><select id="itemCategory"><option value="packaging">Packaging</option><option value="ingredient">Ingredient</option><option value="supply">Supply</option></select></div>
+        <div class="form-group"><label>Unit of Measure</label><input type="text" id="itemUnit" placeholder="bags, lbs, rolls..." /></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group"><label>Unit Cost <span class="text-muted">(per unit)</span></label><div class="input-prefix"><input type="number" id="itemUnitCost" placeholder="0.00" step="0.0001" min="0" /></div></div>
+        <div class="form-group"><label>Low Stock Alert Threshold</label><input type="number" id="itemThreshold" value="10" min="0" /></div>
+      </div>
+      <div class="form-group"><label>Starting Quantity</label><input type="number" id="itemStartQty" value="0" min="0" /></div>
+      <div class="form-group"><label>Notes (optional)</label><input type="text" id="itemNotes" placeholder="Supplier, spec, etc." /></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('itemModal')">Cancel</button><button class="btn btn-primary" onclick="saveItem()">Save Item</button></div>
+  </div>
+</div>
+
+<!-- MODAL: BOM -->
+<div class="modal-overlay" id="bomModal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><span class="modal-title">Bill of Materials</span><button class="modal-close" onclick="closeModal('bomModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Shopify Product / Variant</label><select id="bomProduct"><option value="">Loading products...</option></select></div>
+      <div class="divider"></div>
+      <div class="flex items-center justify-between mb-16">
+        <span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">Components</span>
+        <button class="btn btn-ghost btn-sm" onclick="addBomRow()">+ Add Component</button>
+      </div>
+      <div class="bom-row bom-row-header"><span>Inventory Item</span><span>Qty Used</span><span>Unit</span><span></span></div>
+      <div id="bomRows"></div>
+      <div class="divider"></div>
+      <div class="form-group"><label>Notes (optional)</label><input type="text" id="bomNotes" placeholder="e.g. per 1lb portion" /></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('bomModal')">Cancel</button><button class="btn btn-primary" onclick="saveBom()">Save BOM</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Receive -->
+<div class="modal-overlay" id="receiveModal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Receive Stock</span><button class="modal-close" onclick="closeModal('receiveModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Item</label><select id="receiveModalItem"><option value="">Select item...</option></select></div>
+      <div class="form-group"><label>Quantity</label>
+        <div class="number-input-row">
+          <button class="number-btn" onclick="adjustQty('receiveModalQty', -1)">−</button>
+          <input type="number" id="receiveModalQty" value="1" min="1" style="width:80px;">
+          <button class="number-btn" onclick="adjustQty('receiveModalQty', 1)">+</button>
+        </div>
+      </div>
+      <div class="form-group"><label>Unit Cost <span class="text-muted">(for COGS)</span></label><div class="input-prefix"><input type="number" id="receiveModalCost" placeholder="0.00" step="0.0001" /></div></div>
+      <div class="form-group"><label>Notes</label><input type="text" id="receiveModalNotes" placeholder="PO #, supplier, etc." /></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('receiveModal')">Cancel</button><button class="btn btn-primary" onclick="receiveStockModal()">Record Receipt</button></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG (browser-only, no sensitive data)
+// ═══════════════════════════════════════
+let config = JSON.parse(localStorage.getItem('nh_config') || '{}');
+
+// In-memory state (loaded from Worker KV on init)
+let state = { items: [], boms: [], log: [], purchases: [], syncedOrders: [], cogsOrders: [], recentOrders: [], shopifyProducts: [] };
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+  if (config.proxy && config.store && config.token) {
+    await initApp();
+  } else {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    document.getElementById('setupScreen').style.display = 'flex';
+  }
+});
+
+async function initApp() {
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = 'flex';
+  document.getElementById('storeLabel').textContent = config.store;
+  document.getElementById('storeBadgeText').textContent = config.store;
+  document.getElementById('webhookUrl').textContent = `${config.proxy}/webhook/orders`;
+
+  try {
+    await loadServerState();
+    await loadShopifyProducts(); // best-effort, may fail silently
+    renderAll();
+    toast('Connected', 'success');
+  } catch(e) {
+    toast('Failed to load data: ' + e.message, 'error');
+  }
+
+  document.getElementById('loadingOverlay').classList.add('hidden');
+
+  // Auto-refresh every 60s
+  setInterval(async () => {
+    await loadServerState();
+    renderAll();
+  }, 60000);
+}
+
+// ═══════════════════════════════════════
+// SERVER API
+// ═══════════════════════════════════════
+async function api(path, method = 'GET', body = null) {
+  const opts = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Store': config.store,
+      'X-Shopify-Token': config.token
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(`${config.proxy}${path}`, opts);
+  if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`);
+  return res.json();
+}
+
+async function loadServerState() {
+  const data = await api('/api/state');
+  state.items = data.items || [];
+  state.boms = data.boms || [];
+  state.log = data.log || [];
+  state.purchases = data.purchases || [];
+  state.syncedOrders = data.syncedOrders || [];
+  state.cogsOrders = data.cogsOrders || [];
+}
+
+async function loadShopifyProducts() {
+  // Best-effort fetch from Shopify; silently fails if token invalid (most features work without it)
+  try {
+    const productsRes = await fetch(`${config.proxy}/shopify?path=${encodeURIComponent('products.json?limit=250&fields=id,title,variants')}`, {
+      headers: { 'X-Shopify-Store': config.store, 'X-Shopify-Token': config.token }
+    });
+    if (productsRes.ok) {
+      const data = await productsRes.json();
+      state.shopifyProducts = [];
+      (data.products || []).forEach(p => {
+        if (p.variants && p.variants.length > 1) {
+          p.variants.forEach(v => {
+            state.shopifyProducts.push({ id: `${p.id}_${v.id}`, productId: p.id, variantId: v.id, title: `${p.title} — ${v.title}`, sku: v.sku });
+          });
+        } else {
+          state.shopifyProducts.push({ id: `${p.id}`, productId: p.id, variantId: p.variants?.[0]?.id, title: p.title, sku: p.variants?.[0]?.sku });
+        }
+      });
+    }
+
+    const ordersRes = await fetch(`${config.proxy}/shopify?path=${encodeURIComponent('orders.json?limit=50&status=any&fields=id,name,created_at,total_price,line_items,financial_status')}`, {
+      headers: { 'X-Shopify-Store': config.store, 'X-Shopify-Token': config.token }
+    });
+    if (ordersRes.ok) {
+      const ordersData = await ordersRes.json();
+      state.recentOrders = ordersData.orders || [];
+    }
+
+    renderBomProductSelect();
+  } catch(e) {
+    // Silent failure — token may be invalid; dashboard still works for COGS/inventory
+    console.warn('Shopify direct calls failed (this is OK if using webhook-only flow):', e.message);
+  }
+}
+
+async function refreshData() {
+  const btn = document.querySelector('[onclick="refreshData()"]');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+  try {
+    await loadServerState();
+    await loadShopifyProducts();
+    renderAll();
+    toast('Refreshed', 'success');
+  } catch(e) {
+    toast('Refresh failed', 'error');
+  }
+  btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Refresh`;
+  btn.disabled = false;
+}
+
+// ═══════════════════════════════════════
+// SETUP
+// ═══════════════════════════════════════
+function saveSetup() {
+  const store = document.getElementById('setupStore').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const token = document.getElementById('setupToken').value.trim();
+  const proxy = document.getElementById('setupProxy').value.trim().replace(/\/$/, '');
+  if (!store || !token || !proxy) { toast('Fill in all fields', 'error'); return; }
+  config = { store, token, proxy };
+  localStorage.setItem('nh_config', JSON.stringify(config));
+  initApp();
+}
+
+function saveSettingsForm() {
+  config.store = document.getElementById('settingsStore').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+  config.token = document.getElementById('settingsToken').value.trim();
+  config.proxy = document.getElementById('settingsProxy').value.trim().replace(/\/$/, '');
+  localStorage.setItem('nh_config', JSON.stringify(config));
+  document.getElementById('storeLabel').textContent = config.store;
+  document.getElementById('storeBadgeText').textContent = config.store;
+  document.getElementById('webhookUrl').textContent = `${config.proxy}/webhook/orders`;
+  toast('Settings saved', 'success');
+}
+
+function resetApp() {
+  if (!confirm('Delete all local config?')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+async function migrateFromLocalStorage() {
+  const old = localStorage.getItem('nh_inventory');
+  if (!old) { toast('No local data found', 'error'); return; }
+  try {
+    const data = JSON.parse(old);
+    await api('/api/migrate', 'POST', data);
+    await loadServerState();
+    renderAll();
+    toast('Data migrated to server successfully!', 'success');
+  } catch(e) {
+    toast('Migration failed: ' + e.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════
+// ITEMS CRUD
+// ═══════════════════════════════════════
+function openItemModal(id) {
+  if (id) {
+    const item = state.items.find(i => i.id === id);
+    document.getElementById('itemModalTitle').textContent = 'Edit Item';
+    document.getElementById('itemEditId').value = id;
+    document.getElementById('itemName').value = item.name;
+    document.getElementById('itemCategory').value = item.category;
+    document.getElementById('itemUnit').value = item.unit;
+    document.getElementById('itemUnitCost').value = item.unitCost != null ? item.unitCost : '';
+    document.getElementById('itemThreshold').value = item.threshold;
+    document.getElementById('itemStartQty').value = item.qty;
+    document.getElementById('itemNotes').value = item.notes || '';
+  } else {
+    document.getElementById('itemModalTitle').textContent = 'New Inventory Item';
+    document.getElementById('itemEditId').value = '';
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemCategory').value = 'packaging';
+    document.getElementById('itemUnit').value = '';
+    document.getElementById('itemUnitCost').value = '';
+    document.getElementById('itemThreshold').value = '10';
+    document.getElementById('itemStartQty').value = '0';
+    document.getElementById('itemNotes').value = '';
+  }
+  document.getElementById('itemModal').classList.add('open');
+}
+
+async function saveItem() {
+  const name = document.getElementById('itemName').value.trim();
+  if (!name) { toast('Enter a name', 'error'); return; }
+
+  const editId = document.getElementById('itemEditId').value;
+  const unitCostRaw = document.getElementById('itemUnitCost').value;
+  const unitCost = unitCostRaw === '' ? null : parseFloat(unitCostRaw);
+  const data = {
+    name,
+    category: document.getElementById('itemCategory').value,
+    unit: document.getElementById('itemUnit').value.trim() || 'units',
+    unitCost: unitCost != null && !isNaN(unitCost) && unitCost >= 0 ? unitCost : null,
+    threshold: parseFloat(document.getElementById('itemThreshold').value) || 10,
+    qty: parseFloat(document.getElementById('itemStartQty').value) || 0,
+    notes: document.getElementById('itemNotes').value.trim()
+  };
+
+  if (editId) {
+    const idx = state.items.findIndex(i => i.id === editId);
+    if (idx > -1) state.items[idx] = { ...state.items[idx], ...data };
+  } else {
+    state.items.push({ id: Date.now().toString(), createdAt: new Date().toISOString(), ...data });
+  }
+
+  await api('/api/items', 'POST', state.items);
+  await loadServerState();
+  renderAll();
+  closeModal('itemModal');
+  toast(editId ? 'Item updated' : 'Item added', 'success');
+}
+
+async function deleteItem(id) {
+  if (!confirm('Delete this item?')) return;
+  state.items = state.items.filter(i => i.id !== id);
+  state.boms.forEach(b => { b.components = b.components.filter(c => c.itemId !== id); });
+  await api('/api/items', 'POST', state.items);
+  await api('/api/boms', 'POST', state.boms);
+  await loadServerState();
+  renderAll();
+  toast('Item deleted', 'success');
+}
+
+// ═══════════════════════════════════════
+// BOM CRUD
+// ═══════════════════════════════════════
+function openBomModal(id) {
+  document.getElementById('bomRows').innerHTML = '';
+  document.getElementById('bomNotes').value = '';
+  renderBomProductSelect();
+  if (id) {
+    const bom = state.boms.find(b => b.id === id);
+    document.getElementById('bomProduct').value = bom.productKey;
+    bom.components.forEach(c => addBomRow(c));
+    document.getElementById('bomNotes').value = bom.notes || '';
+  } else {
+    addBomRow();
+  }
+  document.getElementById('bomModal').classList.add('open');
+}
+
+function renderBomProductSelect() {
+  const sel = document.getElementById('bomProduct');
+  sel.innerHTML = '<option value="">Select product...</option>';
+  state.shopifyProducts.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.title + (p.sku ? ` (${p.sku})` : '');
+    sel.appendChild(opt);
+  });
+}
+
+function addBomRow(data) {
+  const container = document.getElementById('bomRows');
+  const row = document.createElement('div');
+  row.className = 'bom-row';
+  const itemOpts = state.items.map(i => `<option value="${i.id}" ${data?.itemId === i.id ? 'selected' : ''}>${i.name} (${i.unit})</option>`).join('');
+  row.innerHTML = `
+    <select class="bom-item-select">${itemOpts || '<option value="">No items defined</option>'}</select>
+    <input type="number" class="bom-qty" value="${data?.qty || 1}" min="0.01" step="0.01" style="text-align:center;">
+    <div class="bom-unit-label" style="color:var(--text3);font-size:11px;"></div>
+    <button class="btn btn-ghost btn-sm btn-danger" onclick="this.closest('.bom-row').remove()">✕</button>
+  `;
+  const sel = row.querySelector('.bom-item-select');
+  const unitLabel = row.querySelector('.bom-unit-label');
+  const updateUnit = () => { const item = state.items.find(i => i.id === sel.value); unitLabel.textContent = item?.unit || ''; };
+  sel.addEventListener('change', updateUnit);
+  updateUnit();
+  container.appendChild(row);
+}
+
+async function saveBom() {
+  const productKey = document.getElementById('bomProduct').value;
+  if (!productKey) { toast('Select a product', 'error'); return; }
+  const rows = document.querySelectorAll('#bomRows .bom-row');
+  const components = [];
+  rows.forEach(row => {
+    const itemId = row.querySelector('.bom-item-select').value;
+    const qty = parseFloat(row.querySelector('.bom-qty').value);
+    if (itemId && qty > 0) components.push({ itemId, qty });
+  });
+  if (components.length === 0) { toast('Add at least one component', 'error'); return; }
+  const product = state.shopifyProducts.find(p => p.id === productKey);
+  const existing = state.boms.findIndex(b => b.productKey === productKey);
+  const bom = { id: existing > -1 ? state.boms[existing].id : Date.now().toString(), productKey, productTitle: product?.title || productKey, components, notes: document.getElementById('bomNotes').value.trim(), updatedAt: new Date().toISOString() };
+  if (existing > -1) state.boms[existing] = bom; else state.boms.push(bom);
+  await api('/api/boms', 'POST', state.boms);
+  await loadServerState();
+  renderAll();
+  closeModal('bomModal');
+  toast('BOM saved', 'success');
+}
+
+async function deleteBom(id) {
+  if (!confirm('Delete this BOM?')) return;
+  state.boms = state.boms.filter(b => b.id !== id);
+  await api('/api/boms', 'POST', state.boms);
+  await loadServerState();
+  renderAll();
+  toast('BOM deleted', 'success');
+}
+
+// ═══════════════════════════════════════
+// RECEIVE STOCK
+// ═══════════════════════════════════════
+function openReceiveModal(itemId) {
+  populateItemSelects();
+  document.getElementById('receiveModalItem').value = itemId || '';
+  document.getElementById('receiveModalQty').value = 1;
+  document.getElementById('receiveModalCost').value = '';
+  document.getElementById('receiveModalNotes').value = '';
+  document.getElementById('receiveModal').classList.add('open');
+}
+
+async function receiveStockModal() {
+  const itemId = document.getElementById('receiveModalItem').value;
+  const qty = parseFloat(document.getElementById('receiveModalQty').value);
+  const unitCost = parseFloat(document.getElementById('receiveModalCost').value) || 0;
+  const notes = document.getElementById('receiveModalNotes').value.trim();
+  if (!itemId) { toast('Select an item', 'error'); return; }
+  if (!qty || qty <= 0) { toast('Enter a valid quantity', 'error'); return; }
+  await api('/api/receive', 'POST', { itemId, qty, unitCost, notes });
+  await loadServerState();
+  renderAll();
+  closeModal('receiveModal');
+  toast('Stock received', 'success');
+}
+
+async function receiveStock() {
+  const itemId = document.getElementById('receiveItem').value;
+  const qty = parseFloat(document.getElementById('receiveQty').value);
+  const unitCost = parseFloat(document.getElementById('receiveCost').value) || 0;
+  const notes = document.getElementById('receiveNotes').value.trim();
+  if (!itemId) { toast('Select an item', 'error'); return; }
+  if (!qty || qty <= 0) { toast('Enter a valid quantity', 'error'); return; }
+  await api('/api/receive', 'POST', { itemId, qty, unitCost, notes });
+  await loadServerState();
+  renderAll();
+  toast('Stock received', 'success');
+  document.getElementById('receiveQty').value = 1;
+  document.getElementById('receiveCost').value = '';
+  document.getElementById('receiveNotes').value = '';
+}
+
+// ═══════════════════════════════════════
+// WEEKLY SUMMARY
+// ═══════════════════════════════════════
+async function triggerWeeklySummary() {
+  try {
+    const result = await api('/api/summary', 'POST');
+    toast('Summary sent!', 'success');
+    console.log(result.summary);
+  } catch(e) {
+    toast('Failed to send summary', 'error');
+  }
+}
+
+// ═══════════════════════════════════════
+// LOG
+// ═══════════════════════════════════════
+async function clearLog() {
+  if (!confirm('Clear all activity logs?')) return;
+  await api('/api/log', 'DELETE');
+  await loadServerState();
+  renderLog();
+  toast('Log cleared', 'success');
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function renderAll() {
+  renderStats();
+  renderAlerts();
+  renderCriticalTable();
+  renderRecentActivity();
+  renderStockTable();
+  renderItemsTable();
+  renderBomList();
+  renderLog();
+  renderOrdersTable();
+  renderFinancials();
+  populateItemSelects();
+}
+
+function renderStats() {
+  const low = state.items.filter(i => i.qty <= i.threshold && i.qty > 0).length;
+  const out = state.items.filter(i => i.qty <= 0).length;
+  document.getElementById('statTotal').textContent = state.items.length;
+  document.getElementById('statLow').textContent = low;
+  document.getElementById('statOut').textContent = out;
+  document.getElementById('statOrders').textContent = state.syncedOrders.length;
+  document.getElementById('statLowCard').className = 'stat-card ' + (low > 0 ? 'warn' : '');
+  document.getElementById('statOutCard').className = 'stat-card ' + (out > 0 ? 'danger' : '');
+}
+
+function renderAlerts() {
+  const out = state.items.filter(i => i.qty <= 0);
+  const low = state.items.filter(i => i.qty > 0 && i.qty <= i.threshold);
+  let html = '';
+  if (out.length) html += `<div class="alert-strip">⚠ Out of stock: ${out.map(i => i.name).join(', ')}</div>`;
+  if (low.length) html += `<div class="alert-strip" style="background:rgba(212,168,67,0.08);border-color:rgba(212,168,67,0.2);color:var(--yellow);">↓ Low stock: ${low.map(i => `${i.name} (${i.qty} left)`).join(', ')}</div>`;
+  document.getElementById('alertsSection').innerHTML = html;
+}
+
+function renderCriticalTable() {
+  const critical = state.items.filter(i => i.qty <= i.threshold).sort((a,b) => a.qty - b.qty).slice(0, 6);
+  document.getElementById('criticalTable').innerHTML = critical.length === 0
+    ? `<tr><td colspan="3"><div class="empty" style="padding:24px;"><div class="empty-icon">✅</div><div class="empty-text">All stock levels OK</div></div></td></tr>`
+    : critical.map(item => `<tr><td><div class="item-name">${item.name}</div><div class="item-sku">${item.category}</div></td><td>${renderStockBar(item)}</td><td><span class="badge ${item.qty<=0?'badge-red':'badge-yellow'}">${item.qty<=0?'Out':'Low'}</span></td></tr>`).join('');
+}
+
+function renderRecentActivity() {
+  const recent = state.log.slice(0, 5);
+  document.getElementById('recentActivity').innerHTML = recent.length === 0
+    ? '<div class="empty" style="padding:32px 0;"><div class="empty-icon">📋</div><div class="empty-text">No activity yet</div></div>'
+    : recent.map(renderLogEntry).join('');
+}
+
+function renderStockBar(item) {
+  const pct = item.threshold > 0 ? Math.min(100, (item.qty / (item.threshold * 3)) * 100) : 50;
+  const color = item.qty <= 0 ? 'var(--red)' : item.qty <= item.threshold ? 'var(--yellow)' : 'var(--green)';
+  const qty = item.qty % 1 === 0 ? item.qty : item.qty.toFixed(1);
+  return `<div class="stock-bar-wrap"><div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${color};"></div></div><span class="stock-qty" style="color:${color};">${qty}</span></div>`;
+}
+
+function renderStockTable() {
+  const search = document.getElementById('stockSearch')?.value?.toLowerCase() || '';
+  const filtered = state.items.filter(i => !search || i.name.toLowerCase().includes(search) || i.category.toLowerCase().includes(search));
+  document.getElementById('stockTable').innerHTML = filtered.length === 0
+    ? `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📦</div><div class="empty-text">${state.items.length===0?'No items yet.':'No matching items'}</div></div></td></tr>`
+    : filtered.map(item => {
+      const status = item.qty<=0?'badge-red':item.qty<=item.threshold?'badge-yellow':'badge-green';
+      const statusText = item.qty<=0?'Out of Stock':item.qty<=item.threshold?'Low Stock':'In Stock';
+      return `<tr><td><div class="item-name">${item.name}</div><div class="item-sku">${item.notes||''}</div></td><td><span class="tag">${item.category}</span></td><td>${renderStockBar(item)}</td><td style="color:var(--text3);">${item.threshold} ${item.unit}</td><td><span class="badge ${status}">${statusText}</span></td><td><div class="flex gap-8"><button class="btn btn-ghost btn-sm" onclick="openReceiveModal('${item.id}')">+ Stock</button><button class="btn btn-ghost btn-sm" onclick="openItemModal('${item.id}')">Edit</button></div></td></tr>`;
+    }).join('');
+}
+
+function renderItemsTable() {
+  document.getElementById('itemsTable').innerHTML = state.items.length === 0
+    ? `<tr><td colspan="6"><div class="empty"><div class="empty-icon">📦</div><div class="empty-text">No items yet.</div></div></td></tr>`
+    : state.items.map(item => `<tr><td><div class="item-name">${item.name}</div></td><td><span class="tag">${item.category}</span></td><td style="color:var(--text3);">${item.unit}</td><td style="color:var(--text2);">${item.unitCost!=null && item.unitCost>=0 ?'$'+Number(item.unitCost).toFixed(4):'—'}</td><td style="color:var(--text3);">${item.threshold} ${item.unit}</td><td><div class="flex gap-8"><button class="btn btn-ghost btn-sm" onclick="openItemModal('${item.id}')">Edit</button><button class="btn btn-ghost btn-sm btn-danger" onclick="deleteItem('${item.id}')">Delete</button></div></td></tr>`).join('');
+}
+
+function renderBomList() {
+  const container = document.getElementById('bomList');
+  if (state.boms.length === 0) { container.innerHTML = '<div class="empty"><div class="empty-icon">🔗</div><div class="empty-text">No BOMs defined yet.</div></div>'; return; }
+  container.innerHTML = state.boms.map(bom => {
+    const components = bom.components.map(c => { const item = state.items.find(i => i.id === c.itemId); return item ? `<span class="tag">${c.qty} ${item.unit} ${item.name}</span>` : ''; }).join(' ');
+    return `<div class="card mb-16"><div class="card-header"><div><div style="font-weight:500;color:var(--text);">${bom.productTitle}</div>${bom.notes?`<div style="font-size:11px;color:var(--text3);margin-top:2px;">${bom.notes}</div>`:''}</div><div class="flex gap-8"><button class="btn btn-ghost btn-sm" onclick="openBomModal('${bom.id}')">Edit</button><button class="btn btn-ghost btn-sm btn-danger" onclick="deleteBom('${bom.id}')">Delete</button></div></div><div style="padding:14px 20px;display:flex;flex-wrap:wrap;gap:6px;"><span style="font-size:11px;color:var(--text3);margin-right:4px;">Per unit consumes:</span>${components||'<span style="color:var(--text3);font-size:11px;">No components</span>'}</div></div>`;
+  }).join('');
+}
+
+function renderLogEntry(entry) {
+  const icons = { in: '↑', out: '↓', adj: '~' };
+  const date = new Date(entry.ts);
+  const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  return `<div class="log-entry"><div class="log-icon ${entry.type}">${icons[entry.type]}</div><div style="flex:1;">${entry.message}</div><div class="log-time">${timeStr}</div></div>`;
+}
+
+function renderLog() {
+  document.getElementById('logList').innerHTML = state.log.length === 0
+    ? '<div class="empty" style="padding:40px 0;"><div class="empty-icon">📋</div><div class="empty-text">No activity yet</div></div>'
+    : state.log.map(renderLogEntry).join('');
+}
+
+function renderOrdersTable() {
+  // Fall back to cogsOrders if recentOrders is empty (no Shopify direct access)
+  const source = state.recentOrders.length > 0 ? state.recentOrders : (state.cogsOrders || []).slice(0, 50).map(c => ({
+    id: c.orderId, name: c.orderName, created_at: c.createdAt,
+    line_items: (c.lineItems || []).map(li => ({ quantity: li.quantity, name: li.productTitle })),
+    total_price: c.totalCost,
+    _isFromCogs: true
+  }));
+
+  document.getElementById('ordersTable').innerHTML = source.length === 0
+    ? `<tr><td colspan="5"><div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">No orders yet.</div></div></td></tr>`
+    : source.slice(0, 50).map(order => {
+      const processed = state.syncedOrders.includes(String(order.id));
+      const items = (order.line_items||[]).map(li => `${li.quantity}× ${li.name}`).join(', ');
+      const totalLabel = order._isFromCogs ? `$${parseFloat(order.total_price||0).toFixed(2)} cogs` : `$${parseFloat(order.total_price||0).toFixed(2)}`;
+      return `<tr><td><span style="color:var(--accent);font-weight:500;">${order.name}</span></td><td style="color:var(--text3);">${new Date(order.created_at).toLocaleDateString()}</td><td style="font-size:11px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${items}</td><td>${totalLabel}</td><td><span class="badge ${processed?'badge-green':'badge-gray'}">${processed?'Done':'Pending'}</span></td></tr>`;
+    }).join('');
+}
+
+async function renderFinancials() {
+  const days = document.getElementById('finDateRange')?.value;
+
+  // Always render inventory value from local state
+  let totalValue = 0;
+  const valueRows = state.items.map(item => {
+    const cost = item.unitCost || 0;
+    const value = (item.qty || 0) * cost;
+    totalValue += value;
+    return { item, cost, value };
+  }).sort((a,b) => b.value - a.value);
+
+  document.getElementById('finInventoryValue').textContent = '$' + totalValue.toFixed(2);
+  document.getElementById('finValueTable').innerHTML = valueRows.length === 0
+    ? `<tr><td colspan="4"><div class="empty" style="padding:24px;">No items yet</div></td></tr>`
+    : valueRows.map(r => `<tr><td><div class="item-name">${r.item.name}</div><div class="item-sku">${r.item.category}</div></td><td style="color:var(--text2);">${r.item.qty||0} ${r.item.unit}</td><td style="color:var(--text2);">${r.cost>0?'$'+r.cost.toFixed(4):'—'}</td><td style="color:var(--accent);font-weight:500;">${r.cost>0?'$'+r.value.toFixed(2):'—'}</td></tr>`).join('');
+
+  // Fetch COGS from worker endpoint
+  try {
+    const cogsData = await api(`/api/cogs?days=${days}`);
+    document.getElementById('finCOGS').textContent = '$' + (cogsData.totalCogs || 0).toFixed(2);
+    document.getElementById('finUnitsConsumed').textContent = (cogsData.totalUnits || 0).toFixed(1);
+    document.getElementById('finAvgCost').textContent = '$' + (cogsData.avgOrderCost || 0).toFixed(2);
+
+    const cogsEntries = (cogsData.byProduct || []);
+    document.getElementById('finCOGSTable').innerHTML = cogsEntries.length === 0
+      ? `<tr><td colspan="3"><div class="empty" style="padding:24px;">No COGS recorded yet for this period</div></td></tr>`
+      : cogsEntries.map(e => `<tr><td><div class="item-name">${e.title}</div></td><td style="color:var(--text2);">${e.units}</td><td style="color:var(--accent);font-weight:500;">$${e.cost.toFixed(2)}</td></tr>`).join('');
+  } catch(e) {
+    console.warn('Failed to fetch COGS:', e.message);
+    document.getElementById('finCOGS').textContent = '$0.00';
+    document.getElementById('finUnitsConsumed').textContent = '0';
+    document.getElementById('finAvgCost').textContent = '$0.00';
+    document.getElementById('finCOGSTable').innerHTML = `<tr><td colspan="3"><div class="empty" style="padding:24px;">COGS data unavailable</div></td></tr>`;
+  }
+
+  // Purchase history (always local)
+  const cutoff = (days && days !== 'all') ? new Date(Date.now() - days * 86400000) : null;
+  const purchases = (state.purchases||[]).filter(p => !cutoff || new Date(p.ts) >= cutoff);
+  document.getElementById('finPurchaseTable').innerHTML = purchases.length === 0
+    ? `<tr><td colspan="6"><div class="empty" style="padding:24px;">No purchase history yet. Add unit costs when receiving stock.</div></td></tr>`
+    : purchases.map(p => `<tr><td style="color:var(--text3);">${new Date(p.ts).toLocaleDateString()}</td><td><div class="item-name">${p.itemName}</div></td><td style="color:var(--text2);">${p.qty}</td><td style="color:var(--text2);">${p.unitCost>0?'$'+p.unitCost.toFixed(4):'—'}</td><td style="color:var(--accent);">${p.totalCost>0?'$'+p.totalCost.toFixed(2):'—'}</td><td style="color:var(--text3);font-size:11px;">${p.notes||''}</td></tr>`).join('');
+}
+
+function exportFinancials() {
+  const days = document.getElementById('finDateRange')?.value;
+  const cutoff = days === 'all' ? null : new Date(Date.now() - days * 86400000);
+  let csv = 'Type,Date,Item/Product,Qty,Unit Cost,Total Cost,Notes\n';
+  state.items.forEach(item => { const value = (item.qty||0)*(item.unitCost||0); csv += `Inventory Value,,${item.name},${item.qty||0},${(item.unitCost||0).toFixed(4)},${value.toFixed(2)},\n`; });
+  (state.purchases||[]).filter(p => !cutoff || new Date(p.ts) >= cutoff).forEach(p => { csv += `Purchase,${new Date(p.ts).toLocaleDateString()},${p.itemName},${p.qty},${p.unitCost.toFixed(4)},${p.totalCost.toFixed(2)},"${p.notes||''}"\n`; });
+  (state.cogsOrders||[]).filter(c => !cutoff || new Date(c.createdAt) >= cutoff).forEach(c => { csv += `COGS,${new Date(c.createdAt).toLocaleDateString()},${c.orderName},,,${(c.totalCost||0).toFixed(2)},"order ${c.orderId}"\n`; });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `nh-financials-${new Date().toISOString().split('T')[0]}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported', 'success');
+}
+
+// ═══════════════════════════════════════
+// NAV + UTILITIES
+// ═══════════════════════════════════════
+const pageTitles = { dashboard:'Dashboard', stock:'Stock Levels', receive:'Receive Stock', bom:'Bill of Materials', items:'Inventory Items', financials:'Financials', log:'Activity Log', orders:'Recent Orders', settings:'Settings' };
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  document.querySelector(`.nav-item[onclick="showPage('${name}')"]`)?.classList.add('active');
+  document.getElementById('pageTitle').textContent = pageTitles[name];
+  if (name === 'settings') {
+    document.getElementById('settingsStore').value = config.store || '';
+    document.getElementById('settingsToken').value = config.token || '';
+    document.getElementById('settingsProxy').value = config.proxy || '';
+    document.getElementById('webhookUrl').textContent = `${config.proxy}/webhook/orders`;
+  }
+  if (name === 'receive') populateItemSelects();
+  if (name === 'financials') renderFinancials();
+}
+
+function populateItemSelects() {
+  ['receiveItem', 'receiveModalItem'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const val = sel.value;
+    sel.innerHTML = '<option value="">Select item...</option>';
+    state.items.forEach(i => { const opt = document.createElement('option'); opt.value = i.id; opt.textContent = `${i.name} (${i.qty} ${i.unit})`; sel.appendChild(opt); });
+    if (val) sel.value = val;
+  });
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+function adjustQty(inputId, delta) {
+  const input = document.getElementById(inputId);
+  input.value = Math.max(1, (parseFloat(input.value) || 0) + delta);
+}
+
+function toast(message, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${message}</span>`;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+</script>
+</body>
+</html>
