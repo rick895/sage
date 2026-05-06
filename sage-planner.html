@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plan your dog's meals — Natural Hounds</title>
+<title>Calculate your plan — Natural Hounds</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,25 +26,16 @@
   html, body { margin: 0; padding: 0; }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--nh-cream);
+    background: transparent;
     color: var(--nh-text);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
-  .header {
-    padding: 24px 24px 0;
-    text-align: center;
-  }
-  .brand {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 18px;
-    letter-spacing: 0.5px;
-    color: var(--nh-black);
-    text-decoration: none;
-    display: inline-block;
-  }
   .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 24px 48px;
+  }
     max-width: 720px;
     margin: 0 auto;
     padding: 32px 24px 64px;
@@ -463,13 +454,9 @@
 </head>
 <body>
 
-<header class="header">
-  <a href="https://www.naturalhounds.com" class="brand">Natural Hounds</a>
-</header>
-
 <main class="container">
-  <h1>Plan your dog's meals</h1>
-  <p class="lede">Tell us about your pup. We'll show how much they need, what it costs, and what to order.</p>
+  <h1>Calculate how much food your pup needs</h1>
+  <p class="lede">Tell us about your dog. We'll show how much they need, what it'll cost, and what to order.</p>
 
   <div id="dogs-container"></div>
 
@@ -628,6 +615,7 @@
         <div class="field">
           <label class="field-label">Protein restrictions</label>
           <div class="pills" data-group="allergies" data-multi="true">
+            <button class="pill" data-value="none" data-none>No restrictions</button>
             <button class="pill" data-value="chicken">No chicken/turkey</button>
             <button class="pill" data-value="beef">No beef</button>
             <button class="pill" data-value="pork">No pork</button>
@@ -689,10 +677,21 @@
       group.querySelectorAll('.pill').forEach(pill => {
         pill.addEventListener('click', () => {
           if (multi) {
+            const isNone = pill.hasAttribute('data-none');
             const pressed = pill.getAttribute('aria-pressed') === 'true';
-            pill.setAttribute('aria-pressed', !pressed);
-            if (!pressed) dog.allergies.add(pill.dataset.value);
-            else dog.allergies.delete(pill.dataset.value);
+            if (isNone) {
+              // Clicking "No restrictions" — clear everything else, toggle this one
+              group.querySelectorAll('.pill').forEach(p => p.setAttribute('aria-pressed', 'false'));
+              pill.setAttribute('aria-pressed', !pressed);
+              dog.allergies.clear();
+            } else {
+              // Clicking an actual restriction — deselect "No restrictions" first
+              const noneBtn = group.querySelector('[data-none]');
+              if (noneBtn) noneBtn.setAttribute('aria-pressed', 'false');
+              pill.setAttribute('aria-pressed', !pressed);
+              if (!pressed) dog.allergies.add(pill.dataset.value);
+              else dog.allergies.delete(pill.dataset.value);
+            }
           } else {
             group.querySelectorAll('.pill').forEach(p => p.setAttribute('aria-pressed', 'false'));
             pill.setAttribute('aria-pressed', 'true');
@@ -831,11 +830,29 @@
     return { items, split };
   }
 
+  // Sends cart items to the parent Shopify page (which does the actual cart add).
+  // Returns a Promise that resolves on success or rejects on error/timeout.
   function addToCart(allItems) {
-    return fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ items: allItems })
+    return new Promise((resolve, reject) => {
+      const onMessage = (e) => {
+        if (!e.data || !e.data.type) return;
+        if (e.data.type === 'sage:cartSuccess') {
+          window.removeEventListener('message', onMessage);
+          clearTimeout(timeout);
+          resolve();
+        } else if (e.data.type === 'sage:cartError') {
+          window.removeEventListener('message', onMessage);
+          clearTimeout(timeout);
+          reject(new Error(e.data.message || 'Cart add failed'));
+        }
+      };
+      window.addEventListener('message', onMessage);
+      // 10-second timeout in case parent never responds (e.g. running standalone)
+      const timeout = setTimeout(() => {
+        window.removeEventListener('message', onMessage);
+        reject(new Error('Timeout — no parent response'));
+      }, 10000);
+      window.parent.postMessage({ type: 'sage:addToCart', items: allItems }, '*');
     });
   }
 
@@ -998,7 +1015,7 @@
           }
           await addToCart(allItems);
           showToast('Added to cart!');
-          setTimeout(() => { window.location.href = '/cart'; }, 800);
+          // Parent page handles redirect to /cart
         } catch (err) {
           addBtn.disabled = false;
           addBtn.textContent = 'Add my plan to cart';
@@ -1009,6 +1026,27 @@
   });
 
   addDog();
+
+  // ─── IFRAME HEIGHT REPORTING ──────────────────────────────────────
+  // If embedded in an iframe on a Shopify page, report height so parent
+  // can resize the iframe to fit content (no internal scrollbar).
+  function reportHeight() {
+    if (window.parent === window) return; // not in iframe
+    const height = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.offsetHeight
+    );
+    window.parent.postMessage({ type: 'sage:resize', height: height }, '*');
+  }
+  // Report on load and whenever DOM changes (results render, etc.)
+  if (window.parent !== window) {
+    window.addEventListener('load', reportHeight);
+    const observer = new MutationObserver(reportHeight);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    window.addEventListener('resize', reportHeight);
+  }
 })();
 </script>
 </body>
