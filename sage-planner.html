@@ -1091,25 +1091,30 @@
   const LEAD_ENDPOINT = 'https://sage-proxy.rick-026.workers.dev/lead';
 
   function buildPlanSummary(validResults) {
-    // Build a clean, human-readable summary using each dog's CURRENT selection
+    // Build a clean, human-readable summary using each dog's recommended plan.
+    // (Recipe/size selection happens on the box product page now, not here.)
     const dogs = validResults.map(({ dog, result, num }) => {
-      const sel = dog.selection || { recipe: result.mixCandidates[0], size: result.bestBox };
-      const selectedPrice = boxTotalPrice(sel.size, result.usingLambOnly);
-      const recipeLabel = sel.recipe === 'mix'
-        ? `Variety mix (${result.mixCandidates.join('+')})`
-        : `${sel.recipe} Recipe`;
+      const recipeLabel = result.mixCandidates.length === 1
+        ? `${result.mixCandidates[0]} Recipe`
+        : `Variety mix (${result.mixCandidates.join('+')})`;
+      const recommendedPrice = result.costs[result.bestBox];
+      // Daily oz averaged across recommended recipes (matches what's shown in UI)
+      const dailyOz = result.mixCandidates.reduce(
+        (sum, r) => sum + (1 / result.mixCandidates.length) * result.allBreakdown[r].oz,
+        0
+      );
       return {
         number: num,
         weight: dog.weight,
         activity: dog.activity,
         allergies: Array.from(dog.allergies),
-        recommendedMix: result.mixCandidates,
+        mix: result.mixCandidates,
         recommendedBox: result.bestBox,
-        chosenRecipe: sel.recipe,
-        chosenBox: sel.size,
         chosenLabel: recipeLabel,
-        chosenPrice: +selectedPrice.toFixed(2),
-        lbsPerMonth: +result.mixLbsPerMonth.toFixed(1)
+        chosenBox: result.bestBox,
+        chosenPrice: +recommendedPrice.toFixed(2),
+        lbsPerMonth: +result.mixLbsPerMonth.toFixed(1),
+        dailyOz: +dailyOz.toFixed(1)
       };
     });
     const lines = dogs.map(d => {
