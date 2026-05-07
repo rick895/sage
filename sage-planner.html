@@ -1174,25 +1174,17 @@
     const dailyOz = result.mixCandidates.reduce((sum, r) => sum + (1/result.mixCandidates.length) * result.allBreakdown[r].oz, 0);
     const sizes = ['5lb', '10lb', '20lb', '30lb'];
 
-    // Initialize selection on dog if not set
-    if (!dog.selection) {
-      dog.selection = {
-        recipe: pickRecommendedRecipe(dog, result.allowed),
-        size: result.bestBox,
-        recommendedRecipe: pickRecommendedRecipe(dog, result.allowed),
-        recommendedSize: result.bestBox
-      };
-    }
-
     let breakdownHTML = '';
     for (const r of ['Original', 'Beef', 'Pork', 'Lamb']) {
       const data = result.allBreakdown[r];
+      const inMix = result.mixCandidates.includes(r);
       const ozLabel = data.oz === null ? '—' : data.oz.toFixed(1) + ' oz';
       const lbLabel = data.lbsPerMonth === null ? '—' : data.lbsPerMonth.toFixed(1) + ' lb';
       breakdownHTML += `
-        <div class="recipe-card ${!data.allowed ? 'dimmed' : ''}">
+        <div class="recipe-card ${inMix ? 'in-mix' : ''} ${!data.allowed ? 'dimmed' : ''}">
           <div class="recipe-name">
             <span>${r}</span>
+            ${inMix ? '<span class="recipe-badge">In mix</span>' : ''}
             ${!data.allowed ? '<span class="recipe-badge excluded">Excluded</span>' : ''}
           </div>
           <div class="recipe-row"><span>Per day</span><span>${ozLabel}</span></div>
@@ -1200,70 +1192,23 @@
         </div>`;
     }
 
-    // Recipe options for the builder
-    const recipes = ['Original', 'Beef', 'Pork', 'Lamb'];
-    let recipeOptsHTML = '';
-    for (const r of recipes) {
-      const allowed = result.allowed.includes(r);
-      const isSelected = dog.selection.recipe === r;
-      const isRecommended = r === dog.selection.recommendedRecipe;
-      recipeOptsHTML += `
-        <button type="button" class="builder-opt"
-          data-dog="${dog.id}"
-          data-pick="recipe"
-          data-value="${r}"
-          ${!allowed ? 'disabled' : ''}
-          aria-pressed="${isSelected}">
-          ${isRecommended && allowed ? '<span class="best-tag">Best</span>' : ''}
-          ${r}
-        </button>`;
-    }
-    // "Mix it up" option — only show if 2+ allowed recipes
-    if (result.mixCandidates.length >= 2) {
-      const isSelected = dog.selection.recipe === 'mix';
-      recipeOptsHTML += `
-        <button type="button" class="builder-opt"
-          data-dog="${dog.id}"
-          data-pick="recipe"
-          data-value="mix"
-          aria-pressed="${isSelected}">
-          Mix it up
-          <span class="opt-sub">${result.mixCandidates.join(' + ')}</span>
-        </button>`;
-    }
-
-    // Size options for the builder
-    let sizeOptsHTML = '';
+    const prices = result.usingLambOnly ? PRICES_LAMB : PRICES_STANDARD;
+    let tierHTML = '';
     for (const s of sizes) {
-      const isSelected = dog.selection.size === s;
-      const isRecommended = s === dog.selection.recommendedSize;
-      const price = boxTotalPrice(s, result.usingLambOnly);
-      sizeOptsHTML += `
-        <button type="button" class="builder-opt"
-          data-dog="${dog.id}"
-          data-pick="size"
-          data-value="${s}"
-          aria-pressed="${isSelected}">
-          ${isRecommended ? '<span class="best-tag">Best fit</span>' : ''}
-          ${s}
-          <span class="opt-sub">$${price.toFixed(0)}</span>
-        </button>`;
+      const cost = result.costs[s];
+      const isBest = s === result.bestBox;
+      tierHTML += `
+        <div class="tier-row ${isBest ? 'best' : ''}">
+          <span>${s} box ($${prices[s].perLb.toFixed(2)}/lb)</span>
+          <span>$${cost.toFixed(0)}/mo${isBest ? ' ←' : ''}</span>
+        </div>`;
     }
 
-    // Selection summary line
-    const selectedPrice = boxTotalPrice(dog.selection.size, result.usingLambOnly);
-    const days = dog.selection.recipe === 'mix'
-      ? durationForMix(result, dog.selection.size)
-      : durationForChoice(result, dog.selection.recipe, dog.selection.size);
-    const durationLabel = days === null ? '' : (days >= 30
-      ? `lasts about ${Math.round(days / 30)} month${Math.round(days/30) !== 1 ? 's' : ''}`
-      : `lasts about ${Math.round(days)} days`);
-
-    const onlyOriginalSelected = dog.selection.recipe === 'Original';
-    const heavyDogNote = result.heavyDog;
+    const mixDescription = result.mixCandidates.join(' / ');
+    const onlyOriginal = result.mixCandidates.length === 1 && result.mixCandidates[0] === 'Original';
 
     return `
-      <div class="dog-result" data-dog-result="${dog.id}">
+      <div class="dog-result">
         <div class="dog-result-header">Dog ${num}</div>
         <div class="dog-result-sub">${dog.weight} lbs · ${dog.activity}</div>
         <div class="summary-strip">
@@ -1280,86 +1225,40 @@
             <div class="summary-value">${result.bestBox}</div>
           </div>
         </div>
-
-        <div class="builder">
-          <div class="builder-section">
-            <span class="builder-label">Recipe</span>
-            <div class="builder-options">${recipeOptsHTML}</div>
-          </div>
-          <div class="builder-section">
-            <span class="builder-label">Box size</span>
-            <div class="builder-options">${sizeOptsHTML}</div>
-          </div>
-          <div class="selection-summary">
-            <span class="label">${dog.selection.recipe === 'mix' ? 'Variety mix' : dog.selection.recipe + ' Recipe'} · ${dog.selection.size} box${durationLabel ? ' · ' + durationLabel : ''}</span>
-            <span class="price">$${selectedPrice.toFixed(2)}</span>
-          </div>
+        <div class="mix-card">
+          <div class="mix-label">Recommended mix</div>
+          <div class="mix-title">${mixDescription}</div>
+          <div class="mix-detail">${
+            result.usingLambOnly
+              ? `With other proteins excluded, Lamb is the option. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> at <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
+              : `Even split across ${result.mixCandidates.length} recipe${result.mixCandidates.length > 1 ? 's' : ''} gives variety and balanced nutrition. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> total — <strong>${result.bestBox} box</strong> at about <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
+          }</div>
         </div>
-
-        ${onlyOriginalSelected ? `<div class="note disclaimer">Heads up: Original is our lowest-calorie recipe, so dogs need a bit more volume per day. Mixing in Beef or Pork would lower the cost — and dogs love the variety.</div>` : ''}
-        ${heavyDogNote ? `<div class="note disclaimer">For dogs over 120 lbs, our Beef and Lamb feeding charts cap out. Call <strong>${PHONE}</strong> if you'd like to discuss a custom plan.</div>` : ''}
-
-        <details style="margin-bottom: 16px;">
-          <summary style="cursor: pointer; font-size: 13px; color: var(--nh-slate); padding: 8px 0;">See how much of each recipe ${dog.weight === 1 ? '' : 'your dog'} would need</summary>
-          <div class="recipe-grid" style="margin-top: 12px;">${breakdownHTML}</div>
-        </details>
+        ${onlyOriginal ? `<div class="note disclaimer">Heads up: Original is our lowest-calorie recipe, so dogs need a bit more volume per day. If cost matters, mixing in Beef or Pork would lower the monthly cost — and dogs love the variety.</div>` : ''}
+        ${result.heavyDog ? `<div class="note disclaimer">For dogs over 120 lbs, our Beef and Lamb feeding charts cap out, so we've recommended Original and Pork. Call <strong>${PHONE}</strong> if you'd like to discuss a custom plan.</div>` : ''}
+        <div class="price-tiers">
+          <div class="tier-title">Cost by box size</div>
+          ${tierHTML}
+        </div>
+        <div class="recipe-grid">${breakdownHTML}</div>
       </div>`;
   }
 
   // ─── EVENTS ───────────────────────────────────────────────────────
   document.getElementById('add-dog').addEventListener('click', addDog);
 
-  document.getElementById('calc').addEventListener('click', () => {
-    // Reset all dogs' selections so calc re-derives from scratch
-    for (const d of dogs) d.selection = null;
+  // Map our box size labels to Shopify product handles
+  const BOX_PRODUCT_HANDLES = {
+    '5lb':  'the-5lbs-box',
+    '10lb': 'the-10lbs-box',
+    '20lb': 'the-20lbs-box',
+    '30lb': 'the-30lbs-box'
+  };
+  const SHOPIFY_BASE = 'https://shop.naturalhounds.com';
 
+  document.getElementById('calc').addEventListener('click', () => {
     const results = dogs.map((d, i) => ({ dog: d, result: calcDog(d), num: i + 1 }));
     const validResults = results.filter(r => !r.result.tooHeavy && !r.result.allExcluded);
-
-    function totalSelectedCost() {
-      return validResults.reduce((sum, r) => {
-        return sum + boxTotalPrice(r.dog.selection.size, r.result.usingLambOnly);
-      }, 0);
-    }
-
-    function updateCombinedAndCta() {
-      // Update combined total card if multi-dog
-      const combinedEl = document.querySelector('.combined-value');
-      if (combinedEl) {
-        combinedEl.textContent = `$${totalSelectedCost().toFixed(0)} total · ${validResults.length} dog${validResults.length > 1 ? 's' : ''}`;
-      }
-      // Update Add to Cart button label
-      const addBtnEl = document.getElementById('add-to-cart-btn');
-      if (addBtnEl) {
-        addBtnEl.textContent = `Add to cart · $${totalSelectedCost().toFixed(2)}`;
-      }
-    }
-
-    function rerenderDog(dogId) {
-      const r = results.find(x => x.dog.id === dogId);
-      if (!r) return;
-      const old = document.querySelector(`[data-dog-result="${dogId}"]`);
-      if (!old) return;
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = renderDogResult(r.dog, r.result, r.num);
-      const fresh = wrapper.firstElementChild;
-      old.replaceWith(fresh);
-      wireBuilderClicks(fresh, r);
-      updateCombinedAndCta();
-    }
-
-    function wireBuilderClicks(scopeEl, r) {
-      scopeEl.querySelectorAll('.builder-opt').forEach(btn => {
-        if (btn.disabled) return;
-        btn.addEventListener('click', () => {
-          const pick = btn.dataset.pick; // 'recipe' or 'size'
-          const value = btn.dataset.value;
-          r.dog.selection[pick] = value;
-          rerenderDog(r.dog.id);
-        });
-      });
-    }
-
     const totalMonthly = validResults.reduce((sum, r) => sum + r.result.monthlyCost, 0);
     const showBulkTrigger = totalMonthly >= BULK_THRESHOLD || dogs.length >= 2;
     const allCanCheckout = results.every(r => !r.result.tooHeavy && !r.result.allExcluded);
@@ -1367,10 +1266,9 @@
     let html = '';
 
     if (dogs.length > 1 && validResults.length > 0) {
-      // Render with placeholder; will update after first render
       html += `<div class="combined-card">
-        <div class="combined-label">Order total</div>
-        <div class="combined-value">…</div>
+        <div class="combined-label">Combined monthly cost</div>
+        <div class="combined-value">$${totalMonthly.toFixed(0)}/mo across ${validResults.length} dog${validResults.length > 1 ? 's' : ''}</div>
       </div>`;
     }
 
@@ -1410,9 +1308,16 @@
     }
 
     if (allCanCheckout && validResults.length > 0) {
+      // For multi-dog, just route to the largest recommended box (they'll need to make multiple orders).
+      // For single-dog, route to that dog's recommended box size.
+      const recommendedSizes = validResults.map(r => r.result.bestBox);
+      const sizeOrder = ['5lb', '10lb', '20lb', '30lb'];
+      const largestRec = sizeOrder.filter(s => recommendedSizes.includes(s)).pop() || '10lb';
+      const handle = BOX_PRODUCT_HANDLES[largestRec];
+      const buildUrl = `${SHOPIFY_BASE}/products/${handle}`;
       html += `<div class="ctas">
         <a class="cta" href="${STARTER_PACK_URL}">Try $12.99 starter pack first</a>
-        <button class="cta primary" id="add-to-cart-btn">Add to cart</button>
+        <a class="cta primary" href="${buildUrl}">Build my ${largestRec} box →</a>
       </div>`;
     }
 
@@ -1423,44 +1328,11 @@
     resultsEl.classList.remove('hidden');
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Wire up builder click handlers for each dog
-    for (const r of results) {
-      if (r.result.tooHeavy || r.result.allExcluded) continue;
-      const dogEl = document.querySelector(`[data-dog-result="${r.dog.id}"]`);
-      if (dogEl) wireBuilderClicks(dogEl, r);
-    }
-
-    // Initial total render
-    updateCombinedAndCta();
-
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
         resultsEl.classList.add('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
-
-    const addBtn = document.getElementById('add-to-cart-btn');
-    if (addBtn) {
-      addBtn.addEventListener('click', async () => {
-        const originalLabel = addBtn.textContent;
-        addBtn.disabled = true;
-        addBtn.textContent = 'Adding...';
-        try {
-          const allItems = [];
-          for (const r of validResults) {
-            const { items } = buildCartItems(r.result, r.dog.selection);
-            allItems.push(...items);
-          }
-          await addToCart(allItems);
-          showToast('Added to cart!');
-          // Parent page handles redirect to /cart
-        } catch (err) {
-          addBtn.disabled = false;
-          addBtn.textContent = originalLabel;
-          showToast('Something went wrong. Please try again.');
-        }
       });
     }
 
