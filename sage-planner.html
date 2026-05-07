@@ -95,6 +95,19 @@
     margin-bottom: 10px;
     letter-spacing: 0.02em;
   }
+  .field-hint {
+    font-size: 12px;
+    color: var(--nh-text-muted);
+    line-height: 1.5;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--nh-slate-soft);
+    border-radius: 8px;
+  }
+  .field-hint strong {
+    color: var(--nh-black);
+    font-weight: 600;
+  }
   .pills {
     display: flex;
     gap: 8px;
@@ -598,11 +611,12 @@
           <div class="dog-title">Dog 1</div>
         </div>
         <div class="field">
-          <label class="field-label">Weight</label>
+          <label class="field-label">Ideal weight</label>
           <div class="weight-row">
             <input type="range" min="3" max="150" value="45" step="1" data-input="weight">
             <span class="weight-out" data-out="weight">45 lbs</span>
           </div>
+          <div class="field-hint">Enter your dog's <strong>ideal</strong> weight, not their current weight. If they need to lose or gain, this targets where they should be — feeding the ideal amount is how they get there.</div>
         </div>
         <div class="field">
           <label class="field-label">Activity level</label>
@@ -978,7 +992,7 @@
       html += `<div class="note">${dogs.length >= 2 ? 'With multiple dogs' : 'For a pup this size'}, it's worth a quick call — we have <strong>bulk pricing</strong> that isn't on the site that could save you a chunk. Call <strong>${PHONE}</strong> (Tues–Sat 10–6, Sun 10–3).</div>`;
     }
 
-    html += `<div class="note disclaimer">This is a starting point. Our recommendations tend to run a bit high, so your pup may need a few oz less per day. Monitor weight the first 1–2 weeks and adjust from there. These amounts assume Natural Hounds is the only food.</div>`;
+    html += `<div class="note disclaimer">This is a starting point. Our recommendations tend to run a bit high, so your pup may need a few oz less per day. Monitor weight the first 1–2 weeks and adjust from there. These amounts assume Natural Hounds is the only food — and don't forget treats add up too. If weight loss is a goal, cutting back on treats often makes the biggest difference.</div>`;
 
     if (allCanCheckout && validResults.length > 0) {
       html += `<div class="ctas">
