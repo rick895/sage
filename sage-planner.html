@@ -1315,9 +1315,10 @@
       const largestRec = sizeOrder.filter(s => recommendedSizes.includes(s)).pop() || '10lb';
       const handle = BOX_PRODUCT_HANDLES[largestRec];
       const buildUrl = `${SHOPIFY_BASE}/products/${handle}`;
+      // target="_top" breaks out of the iframe so it loads in the parent Shopify page
       html += `<div class="ctas">
-        <a class="cta" href="${STARTER_PACK_URL}">Try $12.99 starter pack first</a>
-        <a class="cta primary" href="${buildUrl}">Build my ${largestRec} box →</a>
+        <a class="cta" href="${STARTER_PACK_URL}" target="_top">Try $12.99 starter pack first</a>
+        <a class="cta primary" href="${buildUrl}" target="_top">Build my ${largestRec} box →</a>
       </div>`;
     }
 
