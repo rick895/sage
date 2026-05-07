@@ -435,6 +435,77 @@
     padding: 4px 8px;
   }
   .reset:hover { color: var(--nh-black); }
+
+  /* Lead capture forms */
+  .capture {
+    background: white;
+    border: 1px solid var(--nh-border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .capture.bulk {
+    background: var(--nh-blue-soft);
+    border-color: var(--nh-blue);
+  }
+  .capture-title {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--nh-black);
+    margin-bottom: 4px;
+  }
+  .capture-sub {
+    font-size: 13px;
+    color: var(--nh-text-muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .capture-form {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .capture-input {
+    flex: 1;
+    min-width: 160px;
+    padding: 11px 14px;
+    border: 1px solid var(--nh-border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    background: white;
+    color: var(--nh-text);
+    outline: none;
+  }
+  .capture-input:focus { border-color: var(--nh-slate); }
+  .capture-submit {
+    padding: 11px 20px;
+    background: var(--nh-black);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+    transition: opacity 0.15s;
+  }
+  .capture-submit:hover { opacity: 0.85; }
+  .capture-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .capture-fine {
+    font-size: 11px;
+    color: var(--nh-text-muted);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+  .capture-success {
+    font-size: 14px;
+    color: var(--nh-success);
+    font-weight: 500;
+    padding: 8px 0;
+  }
   .toast {
     position: fixed;
     bottom: 24px;
@@ -870,6 +941,57 @@
     });
   }
 
+  // ─── LEAD SUBMISSION ──────────────────────────────────────────────
+  const LEAD_ENDPOINT = 'https://sage-proxy.rick-026.workers.dev/lead';
+
+  function buildPlanSummary(validResults, totalMonthly) {
+    // Build a clean, human-readable summary of the plan + structured data
+    const dogs = validResults.map(({ dog, result, num }) => ({
+      number: num,
+      weight: dog.weight,
+      activity: dog.activity,
+      allergies: Array.from(dog.allergies),
+      mix: result.mixCandidates,
+      lbsPerMonth: +result.mixLbsPerMonth.toFixed(1),
+      bestBox: result.bestBox,
+      monthlyCost: +result.monthlyCost.toFixed(0)
+    }));
+    const lines = dogs.map(d => {
+      const allergies = d.allergies.length ? ` (excl. ${d.allergies.join(', ')})` : '';
+      return `Dog ${d.number}: ${d.weight}lb ${d.activity}${allergies} → ${d.mix.join('/')} mix, ${d.lbsPerMonth}lb/mo in a ${d.bestBox} box · ~$${d.monthlyCost}/mo`;
+    });
+    return {
+      dogs,
+      totalMonthlyCost: +totalMonthly.toFixed(0),
+      totalDogs: dogs.length,
+      summaryText: lines.join('\n')
+    };
+  }
+
+  async function submitLead({ phone, name, formType, reason, results, totalMonthly }) {
+    const summary = buildPlanSummary(results, totalMonthly);
+    const tags = ['planner-lead'];
+    if (formType === 'bulk') tags.push('bulk-eligible');
+    if (summary.totalDogs >= 2) tags.push('multi-dog');
+    const payload = {
+      phone,
+      name: name || null,
+      formType, // 'save' or 'bulk'
+      reason,   // 'multi-dog' or 'high-volume' for bulk
+      tags,
+      source: 'feeding-planner',
+      sourceUrl: window.location.href || 'https://shop.naturalhounds.com/pages/calculate-your-plan',
+      plan: summary
+    };
+    const res = await fetch(LEAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Lead submit failed: ' + res.status);
+    return res.json();
+  }
+
   function showToast(msg, ms=2200) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -989,10 +1111,35 @@
     }
 
     if (showBulkTrigger && validResults.length > 0) {
-      html += `<div class="note">${dogs.length >= 2 ? 'With multiple dogs' : 'For a pup this size'}, it's worth a quick call — we have <strong>bulk pricing</strong> that isn't on the site that could save you a chunk. Call <strong>${PHONE}</strong> (Tues–Sat 10–6, Sun 10–3).</div>`;
+      const reason = dogs.length >= 2 ? 'multi-dog' : 'high-volume';
+      html += `
+        <div class="capture bulk" id="capture-bulk">
+          <div class="capture-title">Save more with bulk pricing</div>
+          <div class="capture-sub">${dogs.length >= 2 ? 'With multiple dogs' : 'For a pup this size'}, you qualify for unpublished bulk pricing that could save you a chunk. Drop your number and we'll text you a custom quote within an hour.</div>
+          <form class="capture-form" data-lead-form="bulk" data-reason="${reason}">
+            <input class="capture-input" type="text" name="name" placeholder="Your name (optional)">
+            <input class="capture-input" type="tel" name="phone" placeholder="Phone number" required>
+            <button class="capture-submit" type="submit">Get my quote</button>
+          </form>
+          <div class="capture-fine">Tues–Sat 10–6, Sun 10–3. We'll never spam you.</div>
+        </div>`;
     }
 
     html += `<div class="note disclaimer">This is a starting point. Our recommendations tend to run a bit high, so your pup may need a few oz less per day. Monitor weight the first 1–2 weeks and adjust from there. These amounts assume Natural Hounds is the only food — and don't forget treats add up too. If weight loss is a goal, cutting back on treats often makes the biggest difference.</div>`;
+
+    if (validResults.length > 0) {
+      html += `
+        <div class="capture" id="capture-save">
+          <div class="capture-title">Save this plan to your phone</div>
+          <div class="capture-sub">Want a quick reference? We'll text you the recipe mix, daily amount, and monthly cost — perfect for when you're ready to come back and order.</div>
+          <form class="capture-form" data-lead-form="save">
+            <input class="capture-input" type="text" name="name" placeholder="Your name (optional)">
+            <input class="capture-input" type="tel" name="phone" placeholder="Phone number" required>
+            <button class="capture-submit" type="submit">Send it</button>
+          </form>
+          <div class="capture-fine">One text and that's it. We won't blow up your phone.</div>
+        </div>`;
+    }
 
     if (allCanCheckout && validResults.length > 0) {
       html += `<div class="ctas">
@@ -1037,6 +1184,33 @@
         }
       });
     }
+
+    // Wire up lead capture forms
+    document.querySelectorAll('[data-lead-form]').forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formType = form.dataset.leadForm; // 'save' or 'bulk'
+        const reason = form.dataset.reason || null;
+        const phoneInput = form.querySelector('input[name="phone"]');
+        const nameInput = form.querySelector('input[name="name"]');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const phone = phoneInput.value.trim();
+        const name = nameInput ? nameInput.value.trim() : '';
+        if (!phone) return;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        try {
+          await submitLead({ phone, name, formType, reason, results: validResults, totalMonthly });
+          form.parentElement.innerHTML = `
+            <div class="capture-title">Got it ✓</div>
+            <div class="capture-success">${formType === 'bulk' ? "We'll text you within the hour with your quote." : "Sent! Check your phone — your plan is on the way."}</div>`;
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = formType === 'bulk' ? 'Get my quote' : 'Send it';
+          showToast('Something went wrong. Please try again.');
+        }
+      });
+    });
   });
 
   addDog();
