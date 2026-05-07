@@ -506,6 +506,106 @@
     font-weight: 500;
     padding: 8px 0;
   }
+
+  /* Order builder */
+  .builder {
+    background: var(--nh-slate-soft);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    margin-top: 4px;
+  }
+  .builder-section {
+    margin-bottom: 14px;
+  }
+  .builder-section:last-of-type {
+    margin-bottom: 0;
+  }
+  .builder-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--nh-slate);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .builder-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .builder-opt {
+    flex: 1 1 auto;
+    min-width: 80px;
+    background: white;
+    border: 1px solid var(--nh-border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--nh-text);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.15s;
+    position: relative;
+    line-height: 1.3;
+  }
+  .builder-opt:hover:not(:disabled) {
+    border-color: var(--nh-slate);
+  }
+  .builder-opt[aria-pressed="true"] {
+    background: var(--nh-blue-soft);
+    border-color: var(--nh-blue);
+    border-width: 2px;
+    padding: 9px 13px;
+  }
+  .builder-opt:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .builder-opt .opt-sub {
+    display: block;
+    font-size: 11px;
+    color: var(--nh-text-muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  .builder-opt[aria-pressed="true"] .opt-sub {
+    color: var(--nh-slate);
+  }
+  .best-tag {
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    background: var(--nh-blue);
+    color: var(--nh-black);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .selection-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 14px;
+    margin-top: 14px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    font-size: 14px;
+  }
+  .selection-summary .label {
+    color: var(--nh-slate);
+  }
+  .selection-summary .price {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--nh-black);
+  }
   .toast {
     position: fixed;
     bottom: 24px;
@@ -902,17 +1002,63 @@
   }
 
   // ─── ADD TO CART ──────────────────────────────────────────────────
-  function buildCartItems(result) {
-    const variants = FRESH_BOX_VARIANTS[result.bestBox];
-    const totalPacks = BOX_PACKS[result.bestBox].count;
-    const split = splitPacks(totalPacks, result.mixCandidates, result.allBreakdown);
+
+  // Pick the best single recipe for this dog (used as default in builder)
+  function pickRecommendedRecipe(dog, allowed) {
+    // Active dogs → Beef (protein-dense, energy)
+    if (dog.activity === 'Active' && allowed.includes('Beef')) return 'Beef';
+    // Default → Original (turkey, well-tolerated, the flagship)
+    if (allowed.includes('Original')) return 'Original';
+    // Fallbacks
+    if (allowed.includes('Beef')) return 'Beef';
+    if (allowed.includes('Pork')) return 'Pork';
+    return allowed[0];
+  }
+
+  // For a single recipe + size, calculate how long that box lasts based on
+  // dog's actual oz/day for that recipe
+  function durationForChoice(result, recipe, size) {
+    const breakdown = result.allBreakdown[recipe];
+    if (!breakdown || !breakdown.oz) return null;
+    const totalLbs = parseInt(size); // 5/10/20/30
+    const lbsPerDay = breakdown.oz / 16;
+    const days = totalLbs / lbsPerDay;
+    return days;
+  }
+
+  // For a "mix" choice, calculate using the mix lbs/month
+  function durationForMix(result, size) {
+    const totalLbs = parseInt(size);
+    const lbsPerDay = result.mixLbsPerMonth / 30;
+    return totalLbs / lbsPerDay;
+  }
+
+  // Get total box price for a given size (Standard pricing unless Lamb)
+  function boxTotalPrice(size, isLamb) {
+    const prices = isLamb ? PRICES_LAMB : PRICES_STANDARD;
+    return prices[size].perLb * parseInt(size);
+  }
+
+  function buildCartItems(result, selection) {
+    const size = selection.size;
+    const variants = FRESH_BOX_VARIANTS[size];
+    const totalPacks = BOX_PACKS[size].count;
     const items = [];
-    for (const recipe of result.mixCandidates) {
-      if (split[recipe] > 0) {
-        items.push({ id: variants[recipe], quantity: split[recipe] });
+
+    if (selection.recipe === 'mix') {
+      // Mix uses auto-split across allowed recipes
+      const split = splitPacks(totalPacks, result.mixCandidates, result.allBreakdown);
+      for (const recipe of result.mixCandidates) {
+        if (split[recipe] > 0) {
+          items.push({ id: variants[recipe], quantity: split[recipe] });
+        }
       }
+      return { items, split };
+    } else {
+      // Single recipe — all packs of that one
+      items.push({ id: variants[selection.recipe], quantity: totalPacks });
+      return { items, split: { [selection.recipe]: totalPacks } };
     }
-    return { items, split };
   }
 
   // Sends cart items to the parent Shopify page (which does the actual cart add).
@@ -944,32 +1090,43 @@
   // ─── LEAD SUBMISSION ──────────────────────────────────────────────
   const LEAD_ENDPOINT = 'https://sage-proxy.rick-026.workers.dev/lead';
 
-  function buildPlanSummary(validResults, totalMonthly) {
-    // Build a clean, human-readable summary of the plan + structured data
-    const dogs = validResults.map(({ dog, result, num }) => ({
-      number: num,
-      weight: dog.weight,
-      activity: dog.activity,
-      allergies: Array.from(dog.allergies),
-      mix: result.mixCandidates,
-      lbsPerMonth: +result.mixLbsPerMonth.toFixed(1),
-      bestBox: result.bestBox,
-      monthlyCost: +result.monthlyCost.toFixed(0)
-    }));
+  function buildPlanSummary(validResults) {
+    // Build a clean, human-readable summary using each dog's CURRENT selection
+    const dogs = validResults.map(({ dog, result, num }) => {
+      const sel = dog.selection || { recipe: result.mixCandidates[0], size: result.bestBox };
+      const selectedPrice = boxTotalPrice(sel.size, result.usingLambOnly);
+      const recipeLabel = sel.recipe === 'mix'
+        ? `Variety mix (${result.mixCandidates.join('+')})`
+        : `${sel.recipe} Recipe`;
+      return {
+        number: num,
+        weight: dog.weight,
+        activity: dog.activity,
+        allergies: Array.from(dog.allergies),
+        recommendedMix: result.mixCandidates,
+        recommendedBox: result.bestBox,
+        chosenRecipe: sel.recipe,
+        chosenBox: sel.size,
+        chosenLabel: recipeLabel,
+        chosenPrice: +selectedPrice.toFixed(2),
+        lbsPerMonth: +result.mixLbsPerMonth.toFixed(1)
+      };
+    });
     const lines = dogs.map(d => {
       const allergies = d.allergies.length ? ` (excl. ${d.allergies.join(', ')})` : '';
-      return `Dog ${d.number}: ${d.weight}lb ${d.activity}${allergies} → ${d.mix.join('/')} mix, ${d.lbsPerMonth}lb/mo in a ${d.bestBox} box · ~$${d.monthlyCost}/mo`;
+      return `Dog ${d.number}: ${d.weight}lb ${d.activity}${allergies} → ${d.chosenLabel}, ${d.chosenBox} box · $${d.chosenPrice} (need ~${d.lbsPerMonth}lb/mo)`;
     });
+    const totalCost = dogs.reduce((sum, d) => sum + d.chosenPrice, 0);
     return {
       dogs,
-      totalMonthlyCost: +totalMonthly.toFixed(0),
+      totalMonthlyCost: +totalCost.toFixed(2),
       totalDogs: dogs.length,
       summaryText: lines.join('\n')
     };
   }
 
-  async function submitLead({ phone, name, formType, reason, results, totalMonthly }) {
-    const summary = buildPlanSummary(results, totalMonthly);
+  async function submitLead({ phone, name, formType, reason, results }) {
+    const summary = buildPlanSummary(results);
     const tags = ['planner-lead'];
     if (formType === 'bulk') tags.push('bulk-eligible');
     if (summary.totalDogs >= 2) tags.push('multi-dog');
@@ -1017,17 +1174,25 @@
     const dailyOz = result.mixCandidates.reduce((sum, r) => sum + (1/result.mixCandidates.length) * result.allBreakdown[r].oz, 0);
     const sizes = ['5lb', '10lb', '20lb', '30lb'];
 
+    // Initialize selection on dog if not set
+    if (!dog.selection) {
+      dog.selection = {
+        recipe: pickRecommendedRecipe(dog, result.allowed),
+        size: result.bestBox,
+        recommendedRecipe: pickRecommendedRecipe(dog, result.allowed),
+        recommendedSize: result.bestBox
+      };
+    }
+
     let breakdownHTML = '';
     for (const r of ['Original', 'Beef', 'Pork', 'Lamb']) {
       const data = result.allBreakdown[r];
-      const inMix = result.mixCandidates.includes(r);
       const ozLabel = data.oz === null ? '—' : data.oz.toFixed(1) + ' oz';
       const lbLabel = data.lbsPerMonth === null ? '—' : data.lbsPerMonth.toFixed(1) + ' lb';
       breakdownHTML += `
-        <div class="recipe-card ${inMix ? 'in-mix' : ''} ${!data.allowed ? 'dimmed' : ''}">
+        <div class="recipe-card ${!data.allowed ? 'dimmed' : ''}">
           <div class="recipe-name">
             <span>${r}</span>
-            ${inMix ? '<span class="recipe-badge">In mix</span>' : ''}
             ${!data.allowed ? '<span class="recipe-badge excluded">Excluded</span>' : ''}
           </div>
           <div class="recipe-row"><span>Per day</span><span>${ozLabel}</span></div>
@@ -1035,23 +1200,70 @@
         </div>`;
     }
 
-    const prices = result.usingLambOnly ? PRICES_LAMB : PRICES_STANDARD;
-    let tierHTML = '';
-    for (const s of sizes) {
-      const cost = result.costs[s];
-      const isBest = s === result.bestBox;
-      tierHTML += `
-        <div class="tier-row ${isBest ? 'best' : ''}">
-          <span>${s} box ($${prices[s].perLb.toFixed(2)}/lb)</span>
-          <span>$${cost.toFixed(0)}/mo${isBest ? ' ←' : ''}</span>
-        </div>`;
+    // Recipe options for the builder
+    const recipes = ['Original', 'Beef', 'Pork', 'Lamb'];
+    let recipeOptsHTML = '';
+    for (const r of recipes) {
+      const allowed = result.allowed.includes(r);
+      const isSelected = dog.selection.recipe === r;
+      const isRecommended = r === dog.selection.recommendedRecipe;
+      recipeOptsHTML += `
+        <button type="button" class="builder-opt"
+          data-dog="${dog.id}"
+          data-pick="recipe"
+          data-value="${r}"
+          ${!allowed ? 'disabled' : ''}
+          aria-pressed="${isSelected}">
+          ${isRecommended && allowed ? '<span class="best-tag">Best</span>' : ''}
+          ${r}
+        </button>`;
+    }
+    // "Mix it up" option — only show if 2+ allowed recipes
+    if (result.mixCandidates.length >= 2) {
+      const isSelected = dog.selection.recipe === 'mix';
+      recipeOptsHTML += `
+        <button type="button" class="builder-opt"
+          data-dog="${dog.id}"
+          data-pick="recipe"
+          data-value="mix"
+          aria-pressed="${isSelected}">
+          Mix it up
+          <span class="opt-sub">${result.mixCandidates.join(' + ')}</span>
+        </button>`;
     }
 
-    const mixDescription = result.mixCandidates.join(' / ');
-    const onlyOriginal = result.mixCandidates.length === 1 && result.mixCandidates[0] === 'Original';
+    // Size options for the builder
+    let sizeOptsHTML = '';
+    for (const s of sizes) {
+      const isSelected = dog.selection.size === s;
+      const isRecommended = s === dog.selection.recommendedSize;
+      const price = boxTotalPrice(s, result.usingLambOnly);
+      sizeOptsHTML += `
+        <button type="button" class="builder-opt"
+          data-dog="${dog.id}"
+          data-pick="size"
+          data-value="${s}"
+          aria-pressed="${isSelected}">
+          ${isRecommended ? '<span class="best-tag">Best fit</span>' : ''}
+          ${s}
+          <span class="opt-sub">$${price.toFixed(0)}</span>
+        </button>`;
+    }
+
+    // Selection summary line
+    const selectedPrice = boxTotalPrice(dog.selection.size, result.usingLambOnly);
+    const days = dog.selection.recipe === 'mix'
+      ? durationForMix(result, dog.selection.size)
+      : durationForChoice(result, dog.selection.recipe, dog.selection.size);
+    const durationLabel = days === null ? '' : (days >= 30
+      ? `lasts about ${Math.round(days / 30)} month${Math.round(days/30) !== 1 ? 's' : ''}`
+      : `lasts about ${Math.round(days)} days`);
+
+    const onlyOriginalSelected = dog.selection.recipe === 'Original';
+    const heavyDogNote = result.heavyDog;
 
     return `
-      <div class="dog-result">
+      <div class="dog-result" data-dog-result="${dog.id}">
         <div class="dog-result-header">Dog ${num}</div>
         <div class="dog-result-sub">${dog.weight} lbs · ${dog.activity}</div>
         <div class="summary-strip">
@@ -1068,22 +1280,29 @@
             <div class="summary-value">${result.bestBox}</div>
           </div>
         </div>
-        <div class="mix-card">
-          <div class="mix-label">Recommended mix</div>
-          <div class="mix-title">${mixDescription}</div>
-          <div class="mix-detail">${
-            result.usingLambOnly
-              ? `With other proteins excluded, Lamb is the option. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> at <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
-              : `Even split across ${result.mixCandidates.length} recipe${result.mixCandidates.length > 1 ? 's' : ''} gives variety and balanced nutrition. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> total — <strong>${result.bestBox} box</strong> at about <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
-          }</div>
+
+        <div class="builder">
+          <div class="builder-section">
+            <span class="builder-label">Recipe</span>
+            <div class="builder-options">${recipeOptsHTML}</div>
+          </div>
+          <div class="builder-section">
+            <span class="builder-label">Box size</span>
+            <div class="builder-options">${sizeOptsHTML}</div>
+          </div>
+          <div class="selection-summary">
+            <span class="label">${dog.selection.recipe === 'mix' ? 'Variety mix' : dog.selection.recipe + ' Recipe'} · ${dog.selection.size} box${durationLabel ? ' · ' + durationLabel : ''}</span>
+            <span class="price">$${selectedPrice.toFixed(2)}</span>
+          </div>
         </div>
-        ${onlyOriginal ? `<div class="note disclaimer">Heads up: Original is our lowest-calorie recipe, so dogs need a bit more volume per day. If cost matters, mixing in Beef or Pork would lower the monthly cost — and dogs love the variety.</div>` : ''}
-        ${result.heavyDog ? `<div class="note disclaimer">For dogs over 120 lbs, our Beef and Lamb feeding charts cap out, so we've recommended Original and Pork. Call <strong>${PHONE}</strong> if you'd like to discuss a custom plan.</div>` : ''}
-        <div class="price-tiers">
-          <div class="tier-title">Cost by box size</div>
-          ${tierHTML}
-        </div>
-        <div class="recipe-grid">${breakdownHTML}</div>
+
+        ${onlyOriginalSelected ? `<div class="note disclaimer">Heads up: Original is our lowest-calorie recipe, so dogs need a bit more volume per day. Mixing in Beef or Pork would lower the cost — and dogs love the variety.</div>` : ''}
+        ${heavyDogNote ? `<div class="note disclaimer">For dogs over 120 lbs, our Beef and Lamb feeding charts cap out. Call <strong>${PHONE}</strong> if you'd like to discuss a custom plan.</div>` : ''}
+
+        <details style="margin-bottom: 16px;">
+          <summary style="cursor: pointer; font-size: 13px; color: var(--nh-slate); padding: 8px 0;">See how much of each recipe ${dog.weight === 1 ? '' : 'your dog'} would need</summary>
+          <div class="recipe-grid" style="margin-top: 12px;">${breakdownHTML}</div>
+        </details>
       </div>`;
   }
 
@@ -1091,8 +1310,56 @@
   document.getElementById('add-dog').addEventListener('click', addDog);
 
   document.getElementById('calc').addEventListener('click', () => {
+    // Reset all dogs' selections so calc re-derives from scratch
+    for (const d of dogs) d.selection = null;
+
     const results = dogs.map((d, i) => ({ dog: d, result: calcDog(d), num: i + 1 }));
     const validResults = results.filter(r => !r.result.tooHeavy && !r.result.allExcluded);
+
+    function totalSelectedCost() {
+      return validResults.reduce((sum, r) => {
+        return sum + boxTotalPrice(r.dog.selection.size, r.result.usingLambOnly);
+      }, 0);
+    }
+
+    function updateCombinedAndCta() {
+      // Update combined total card if multi-dog
+      const combinedEl = document.querySelector('.combined-value');
+      if (combinedEl) {
+        combinedEl.textContent = `$${totalSelectedCost().toFixed(0)} total · ${validResults.length} dog${validResults.length > 1 ? 's' : ''}`;
+      }
+      // Update Add to Cart button label
+      const addBtnEl = document.getElementById('add-to-cart-btn');
+      if (addBtnEl) {
+        addBtnEl.textContent = `Add to cart · $${totalSelectedCost().toFixed(2)}`;
+      }
+    }
+
+    function rerenderDog(dogId) {
+      const r = results.find(x => x.dog.id === dogId);
+      if (!r) return;
+      const old = document.querySelector(`[data-dog-result="${dogId}"]`);
+      if (!old) return;
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = renderDogResult(r.dog, r.result, r.num);
+      const fresh = wrapper.firstElementChild;
+      old.replaceWith(fresh);
+      wireBuilderClicks(fresh, r);
+      updateCombinedAndCta();
+    }
+
+    function wireBuilderClicks(scopeEl, r) {
+      scopeEl.querySelectorAll('.builder-opt').forEach(btn => {
+        if (btn.disabled) return;
+        btn.addEventListener('click', () => {
+          const pick = btn.dataset.pick; // 'recipe' or 'size'
+          const value = btn.dataset.value;
+          r.dog.selection[pick] = value;
+          rerenderDog(r.dog.id);
+        });
+      });
+    }
+
     const totalMonthly = validResults.reduce((sum, r) => sum + r.result.monthlyCost, 0);
     const showBulkTrigger = totalMonthly >= BULK_THRESHOLD || dogs.length >= 2;
     const allCanCheckout = results.every(r => !r.result.tooHeavy && !r.result.allExcluded);
@@ -1100,9 +1367,10 @@
     let html = '';
 
     if (dogs.length > 1 && validResults.length > 0) {
+      // Render with placeholder; will update after first render
       html += `<div class="combined-card">
-        <div class="combined-label">Combined monthly cost</div>
-        <div class="combined-value">$${totalMonthly.toFixed(0)}/mo across ${validResults.length} dog${validResults.length > 1 ? 's' : ''}</div>
+        <div class="combined-label">Order total</div>
+        <div class="combined-value">…</div>
       </div>`;
     }
 
@@ -1144,7 +1412,7 @@
     if (allCanCheckout && validResults.length > 0) {
       html += `<div class="ctas">
         <a class="cta" href="${STARTER_PACK_URL}">Try $12.99 starter pack first</a>
-        <button class="cta primary" id="add-to-cart-btn">Add my plan to cart</button>
+        <button class="cta primary" id="add-to-cart-btn">Add to cart</button>
       </div>`;
     }
 
@@ -1154,6 +1422,16 @@
     resultsEl.innerHTML = html;
     resultsEl.classList.remove('hidden');
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Wire up builder click handlers for each dog
+    for (const r of results) {
+      if (r.result.tooHeavy || r.result.allExcluded) continue;
+      const dogEl = document.querySelector(`[data-dog-result="${r.dog.id}"]`);
+      if (dogEl) wireBuilderClicks(dogEl, r);
+    }
+
+    // Initial total render
+    updateCombinedAndCta();
 
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
@@ -1166,12 +1444,13 @@
     const addBtn = document.getElementById('add-to-cart-btn');
     if (addBtn) {
       addBtn.addEventListener('click', async () => {
+        const originalLabel = addBtn.textContent;
         addBtn.disabled = true;
         addBtn.textContent = 'Adding...';
         try {
           const allItems = [];
           for (const r of validResults) {
-            const { items } = buildCartItems(r.result);
+            const { items } = buildCartItems(r.result, r.dog.selection);
             allItems.push(...items);
           }
           await addToCart(allItems);
@@ -1179,7 +1458,7 @@
           // Parent page handles redirect to /cart
         } catch (err) {
           addBtn.disabled = false;
-          addBtn.textContent = 'Add my plan to cart';
+          addBtn.textContent = originalLabel;
           showToast('Something went wrong. Please try again.');
         }
       });
@@ -1200,7 +1479,7 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
         try {
-          await submitLead({ phone, name, formType, reason, results: validResults, totalMonthly });
+          await submitLead({ phone, name, formType, reason, results: validResults });
           form.parentElement.innerHTML = `
             <div class="capture-title">Got it ✓</div>
             <div class="capture-success">${formType === 'bulk' ? "We'll text you within the hour with your quote." : "Sent! Check your phone — your plan is on the way."}</div>`;
