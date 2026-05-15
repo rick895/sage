@@ -981,6 +981,10 @@
 <script>
 const state = { weightLbs: null, restriction: null, startMode: null, topRecipe: null };
 
+let chatHistory = [];
+let chatInitialized = false;
+let isChatTyping = false;
+
 const CHARTS = {
   original: [
     {max:5,n:3.8},{max:10,n:6.4},{max:15,n:8.7},{max:20,n:10.8},{max:30,n:14.6},
