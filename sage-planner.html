@@ -34,10 +34,6 @@
   .container {
     max-width: 720px;
     margin: 0 auto;
-    padding: 24px 24px 48px;
-  }
-    max-width: 720px;
-    margin: 0 auto;
     padding: 32px 24px 64px;
   }
   h1 {
@@ -52,8 +48,22 @@
   .lede {
     font-size: 16px;
     color: var(--nh-text-muted);
-    margin: 0 0 32px;
+    margin: 0 0 16px;
     max-width: 520px;
+  }
+  .sampler-shortcut {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--nh-slate);
+    text-decoration: none;
+    border-bottom: 1px solid var(--nh-border);
+    padding-bottom: 2px;
+    margin: 0 0 28px;
+    transition: all 0.15s;
+  }
+  .sampler-shortcut:hover {
+    color: var(--nh-black);
+    border-color: var(--nh-slate);
   }
   .dog-block {
     background: white;
@@ -207,9 +217,7 @@
   }
   .calc-btn:hover { opacity: 0.85; }
   .calc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .results {
-    margin-top: 32px;
-  }
+  .results { margin-top: 32px; }
   .results.hidden { display: none; }
   .combined-card {
     background: var(--nh-blue-soft);
@@ -302,6 +310,41 @@
     line-height: 1.6;
   }
   .mix-detail strong { color: var(--nh-black); font-weight: 600; }
+
+  /* Premium Plus callout — sits under each dog's mix card */
+  .premium-plus {
+    background: white;
+    border: 1px solid var(--nh-blue);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .premium-plus-text {
+    flex: 1;
+    min-width: 200px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--nh-text);
+  }
+  .premium-plus-text strong {
+    color: var(--nh-black);
+    font-weight: 600;
+  }
+  .premium-plus-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--nh-black);
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--nh-black);
+    padding-bottom: 1px;
+  }
+  .premium-plus-link:hover { opacity: 0.7; }
+
   .price-tiers {
     background: var(--nh-slate-soft);
     border-radius: 12px;
@@ -507,105 +550,6 @@
     padding: 8px 0;
   }
 
-  /* Order builder */
-  .builder {
-    background: var(--nh-slate-soft);
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-bottom: 16px;
-    margin-top: 4px;
-  }
-  .builder-section {
-    margin-bottom: 14px;
-  }
-  .builder-section:last-of-type {
-    margin-bottom: 0;
-  }
-  .builder-label {
-    display: block;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--nh-slate);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 8px;
-  }
-  .builder-options {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .builder-opt {
-    flex: 1 1 auto;
-    min-width: 80px;
-    background: white;
-    border: 1px solid var(--nh-border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    cursor: pointer;
-    font-family: inherit;
-    color: var(--nh-text);
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    transition: all 0.15s;
-    position: relative;
-    line-height: 1.3;
-  }
-  .builder-opt:hover:not(:disabled) {
-    border-color: var(--nh-slate);
-  }
-  .builder-opt[aria-pressed="true"] {
-    background: var(--nh-blue-soft);
-    border-color: var(--nh-blue);
-    border-width: 2px;
-    padding: 9px 13px;
-  }
-  .builder-opt:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  .builder-opt .opt-sub {
-    display: block;
-    font-size: 11px;
-    color: var(--nh-text-muted);
-    font-weight: 400;
-    margin-top: 2px;
-  }
-  .builder-opt[aria-pressed="true"] .opt-sub {
-    color: var(--nh-slate);
-  }
-  .best-tag {
-    position: absolute;
-    top: -8px;
-    right: 8px;
-    background: var(--nh-blue);
-    color: var(--nh-black);
-    font-size: 9px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 999px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .selection-summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding-top: 14px;
-    margin-top: 14px;
-    border-top: 1px solid rgba(0,0,0,0.08);
-    font-size: 14px;
-  }
-  .selection-summary .label {
-    color: var(--nh-slate);
-  }
-  .selection-summary .price {
-    font-family: 'Fraunces', serif;
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--nh-black);
-  }
   .toast {
     position: fixed;
     bottom: 24px;
@@ -641,6 +585,10 @@
 <main class="container">
   <h1>Calculate how much food your pup needs</h1>
   <p class="lede">Tell us about your dog. We'll show how much they need, what it'll cost, and what to order.</p>
+
+  <a href="/pages/try-a-starter-pack" class="sampler-shortcut" target="_top">
+    Just want to try it? $12.99 starter pack &rarr;
+  </a>
 
   <div id="dogs-container"></div>
 
@@ -721,7 +669,6 @@
         [150,{Lazy:23.0,Normal:27.7,Active:30.5}]
       ]
     },
-    // Lamb uses Beef chart (identical calorie density)
     Lamb: {
       cal_per_oz: 48,
       max_weight: 120,
@@ -736,7 +683,6 @@
     Lamb: 'lamb'
   };
 
-  // Pricing
   const PRICES_STANDARD = {
     '5lb':  { perLb: 10.59, label: '5lb box', totalLbs: 5 },
     '10lb': { perLb: 7.49,  label: '10lb box', totalLbs: 10 },
@@ -750,7 +696,6 @@
     '30lb': { perLb: 8.67,  label: '30lb box', totalLbs: 30 }
   };
 
-  // Pack counts per box size (5lb=5×1lb, others=2lb packs)
   const BOX_PACKS = {
     '5lb':  { count: 5,  packSize: 1 },
     '10lb': { count: 5,  packSize: 2 },
@@ -758,7 +703,6 @@
     '30lb': { count: 15, packSize: 2 }
   };
 
-  // Shopify fresh box variant IDs (recipe-as-variant)
   const FRESH_BOX_VARIANTS = {
     '5lb':  { Original: 47809254686938, Beef: 47809254719706, Pork: 47809254752474, Lamb: 47809254785242 },
     '10lb': { Original: 47809276707034, Beef: 47809276739802, Pork: 47809276772570, Lamb: 47809276805338 },
@@ -766,7 +710,10 @@
     '30lb': { Original: 47809282343130, Beef: 47809282375898, Pork: 47809282408666, Lamb: 47809282441434 }
   };
 
-  const STARTER_PACK_URL = '/products/fresh-starter-pack';
+  // Sampler URL — points to the wizard page, not the raw product
+  const STARTER_PACK_URL = '/pages/try-a-starter-pack';
+  // Premium Plus membership URL
+  const PREMIUM_PLUS_URL = 'https://shop.naturalhounds.com/collections/premium-membership/products/premium-membership-copy';
   const PHONE = '631-760-7850';
   const BULK_THRESHOLD = 260;
 
@@ -865,12 +812,10 @@
             const isNone = pill.hasAttribute('data-none');
             const pressed = pill.getAttribute('aria-pressed') === 'true';
             if (isNone) {
-              // Clicking "No restrictions" — clear everything else, toggle this one
               group.querySelectorAll('.pill').forEach(p => p.setAttribute('aria-pressed', 'false'));
               pill.setAttribute('aria-pressed', !pressed);
               dog.allergies.clear();
             } else {
-              // Clicking an actual restriction — deselect "No restrictions" first
               const noneBtn = group.querySelector('[data-none]');
               if (noneBtn) noneBtn.setAttribute('aria-pressed', 'false');
               pill.setAttribute('aria-pressed', !pressed);
@@ -912,23 +857,19 @@
       allBreakdown[r] = { oz, lbsPerMonth, allowed: allowed.includes(r) };
     }
 
-    // Mix: prefer Original/Beef/Pork. Lamb only if it's the only allowed.
     const standardCandidates = ['Original', 'Beef', 'Pork'].filter(r => allowed.includes(r));
     const mixCandidates = standardCandidates.length > 0 ? standardCandidates : allowed;
     const usingLambOnly = mixCandidates.length === 1 && mixCandidates[0] === 'Lamb';
 
-    // Weighted-avg lbs/month if eating an even split of mix recipes
     const share = 1 / mixCandidates.length;
     let mixLbsPerMonth = 0;
     for (const r of mixCandidates) {
       if (allBreakdown[r].lbsPerMonth === null) {
-        // Beef/Lamb capped at 120lb — fall back to Original or Pork
         return calcDogWithoutBeefLamb(dog);
       }
       mixLbsPerMonth += share * allBreakdown[r].lbsPerMonth;
     }
 
-    // Pick smallest box that fits monthly need
     const sizes = ['5lb', '10lb', '20lb', '30lb'];
     let bestBox = '30lb';
     for (const s of sizes) {
@@ -954,8 +895,6 @@
   }
 
   function calcDogWithoutBeefLamb(dog) {
-    // Edge case: heavy dog (>120lb) where Beef/Lamb chart caps out
-    // Use Original + Pork only
     const allowed = ['Original', 'Pork'].filter(r => !dog.allergies.has(ALLERGENS[r]));
     if (allowed.length === 0) return { allExcluded: true };
     const allBreakdown = {};
@@ -987,13 +926,9 @@
     };
   }
 
-  // ─── PACK SPLITTER ────────────────────────────────────────────────
-  // Distributes total packs across N recipes as evenly as possible.
-  // Extra pack goes to the recipe with highest oz/day (volume need).
   function splitPacks(totalPacks, recipes, allBreakdown) {
     const base = Math.floor(totalPacks / recipes.length);
     const extra = totalPacks % recipes.length;
-    // Sort recipes by oz/day descending so volume-heaviest gets extra
     const sorted = [...recipes].sort((a,b) => allBreakdown[b].oz - allBreakdown[a].oz);
     const split = {};
     for (const r of recipes) split[r] = base;
@@ -1001,39 +936,28 @@
     return split;
   }
 
-  // ─── ADD TO CART ──────────────────────────────────────────────────
-
-  // Pick the best single recipe for this dog (used as default in builder)
   function pickRecommendedRecipe(dog, allowed) {
-    // Active dogs → Beef (protein-dense, energy)
     if (dog.activity === 'Active' && allowed.includes('Beef')) return 'Beef';
-    // Default → Original (turkey, well-tolerated, the flagship)
     if (allowed.includes('Original')) return 'Original';
-    // Fallbacks
     if (allowed.includes('Beef')) return 'Beef';
     if (allowed.includes('Pork')) return 'Pork';
     return allowed[0];
   }
 
-  // For a single recipe + size, calculate how long that box lasts based on
-  // dog's actual oz/day for that recipe
   function durationForChoice(result, recipe, size) {
     const breakdown = result.allBreakdown[recipe];
     if (!breakdown || !breakdown.oz) return null;
-    const totalLbs = parseInt(size); // 5/10/20/30
+    const totalLbs = parseInt(size);
     const lbsPerDay = breakdown.oz / 16;
-    const days = totalLbs / lbsPerDay;
-    return days;
+    return totalLbs / lbsPerDay;
   }
 
-  // For a "mix" choice, calculate using the mix lbs/month
   function durationForMix(result, size) {
     const totalLbs = parseInt(size);
     const lbsPerDay = result.mixLbsPerMonth / 30;
     return totalLbs / lbsPerDay;
   }
 
-  // Get total box price for a given size (Standard pricing unless Lamb)
   function boxTotalPrice(size, isLamb) {
     const prices = isLamb ? PRICES_LAMB : PRICES_STANDARD;
     return prices[size].perLb * parseInt(size);
@@ -1046,7 +970,6 @@
     const items = [];
 
     if (selection.recipe === 'mix') {
-      // Mix uses auto-split across allowed recipes
       const split = splitPacks(totalPacks, result.mixCandidates, result.allBreakdown);
       for (const recipe of result.mixCandidates) {
         if (split[recipe] > 0) {
@@ -1055,14 +978,11 @@
       }
       return { items, split };
     } else {
-      // Single recipe — all packs of that one
       items.push({ id: variants[selection.recipe], quantity: totalPacks });
       return { items, split: { [selection.recipe]: totalPacks } };
     }
   }
 
-  // Sends cart items to the parent Shopify page (which does the actual cart add).
-  // Returns a Promise that resolves on success or rejects on error/timeout.
   function addToCart(allItems) {
     return new Promise((resolve, reject) => {
       const onMessage = (e) => {
@@ -1078,7 +998,6 @@
         }
       };
       window.addEventListener('message', onMessage);
-      // 10-second timeout in case parent never responds (e.g. running standalone)
       const timeout = setTimeout(() => {
         window.removeEventListener('message', onMessage);
         reject(new Error('Timeout — no parent response'));
@@ -1091,14 +1010,11 @@
   const LEAD_ENDPOINT = 'https://sage-proxy.rick-026.workers.dev/lead';
 
   function buildPlanSummary(validResults) {
-    // Build a clean, human-readable summary using each dog's recommended plan.
-    // (Recipe/size selection happens on the box product page now, not here.)
     const dogs = validResults.map(({ dog, result, num }) => {
       const recipeLabel = result.mixCandidates.length === 1
         ? `${result.mixCandidates[0]} Recipe`
         : `Variety mix (${result.mixCandidates.join('+')})`;
       const recommendedPrice = result.costs[result.bestBox];
-      // Daily oz averaged across recommended recipes (matches what's shown in UI)
       const dailyOz = result.mixCandidates.reduce(
         (sum, r) => sum + (1 / result.mixCandidates.length) * result.allBreakdown[r].oz,
         0
@@ -1138,8 +1054,8 @@
     const payload = {
       phone,
       name: name || null,
-      formType, // 'save' or 'bulk'
-      reason,   // 'multi-dog' or 'high-volume' for bulk
+      formType,
+      reason,
       tags,
       source: 'feeding-planner',
       sourceUrl: window.location.href || 'https://shop.naturalhounds.com/pages/calculate-your-plan',
@@ -1212,6 +1128,15 @@
     const mixDescription = result.mixCandidates.join(' / ');
     const onlyOriginal = result.mixCandidates.length === 1 && result.mixCandidates[0] === 'Original';
 
+    // Premium Plus callout shown for every dog — applies to any quantity purchase
+    const premiumPlusHTML = `
+      <div class="premium-plus">
+        <div class="premium-plus-text">
+          <strong>Premium Plus members</strong> get our best price ($4.83/lb &mdash; same as the 30lb box) on any quantity, even 1lb and 2lb packs.
+        </div>
+        <a class="premium-plus-link" href="${PREMIUM_PLUS_URL}" target="_top">Learn more &rarr;</a>
+      </div>`;
+
     return `
       <div class="dog-result">
         <div class="dog-result-header">Dog ${num}</div>
@@ -1236,10 +1161,11 @@
           <div class="mix-detail">${
             result.usingLambOnly
               ? `With other proteins excluded, Lamb is the option. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> at <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
-              : `Even split across ${result.mixCandidates.length} recipe${result.mixCandidates.length > 1 ? 's' : ''} gives variety and balanced nutrition. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> total — <strong>${result.bestBox} box</strong> at about <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
+              : `Even split across ${result.mixCandidates.length} recipe${result.mixCandidates.length > 1 ? 's' : ''} gives variety and balanced nutrition. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> total &mdash; <strong>${result.bestBox} box</strong> at about <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
           }</div>
         </div>
-        ${onlyOriginal ? `<div class="note disclaimer">Heads up: Original is our lowest-calorie recipe, so dogs need a bit more volume per day. If cost matters, mixing in Beef or Pork would lower the monthly cost — and dogs love the variety.</div>` : ''}
+        ${premiumPlusHTML}
+        ${onlyOriginal ? `<div class="note disclaimer">Heads up: Original is our lowest-calorie recipe, so dogs need a bit more volume per day. If cost matters, mixing in Beef or Pork would lower the monthly cost &mdash; and dogs love the variety.</div>` : ''}
         ${result.heavyDog ? `<div class="note disclaimer">For dogs over 120 lbs, our Beef and Lamb feeding charts cap out, so we've recommended Original and Pork. Call <strong>${PHONE}</strong> if you'd like to discuss a custom plan.</div>` : ''}
         <div class="price-tiers">
           <div class="tier-title">Cost by box size</div>
@@ -1252,7 +1178,6 @@
   // ─── EVENTS ───────────────────────────────────────────────────────
   document.getElementById('add-dog').addEventListener('click', addDog);
 
-  // Map our box size labels to Shopify product handles
   const BOX_PRODUCT_HANDLES = {
     '5lb':  'the-5lbs-box',
     '10lb': 'the-10lbs-box',
@@ -1313,14 +1238,11 @@
     }
 
     if (allCanCheckout && validResults.length > 0) {
-      // For multi-dog, just route to the largest recommended box (they'll need to make multiple orders).
-      // For single-dog, route to that dog's recommended box size.
       const recommendedSizes = validResults.map(r => r.result.bestBox);
       const sizeOrder = ['5lb', '10lb', '20lb', '30lb'];
       const largestRec = sizeOrder.filter(s => recommendedSizes.includes(s)).pop() || '10lb';
       const handle = BOX_PRODUCT_HANDLES[largestRec];
       const buildUrl = `${SHOPIFY_BASE}/products/${handle}`;
-      // target="_top" breaks out of the iframe so it loads in the parent Shopify page
       html += `<div class="ctas">
         <a class="cta" href="${STARTER_PACK_URL}" target="_top">Try $12.99 starter pack first</a>
         <a class="cta primary" href="${buildUrl}" target="_top">Build my ${largestRec} box →</a>
@@ -1342,11 +1264,10 @@
       });
     }
 
-    // Wire up lead capture forms
     document.querySelectorAll('[data-lead-form]').forEach(form => {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formType = form.dataset.leadForm; // 'save' or 'bulk'
+        const formType = form.dataset.leadForm;
         const reason = form.dataset.reason || null;
         const phoneInput = form.querySelector('input[name="phone"]');
         const nameInput = form.querySelector('input[name="name"]');
@@ -1373,10 +1294,8 @@
   addDog();
 
   // ─── IFRAME HEIGHT REPORTING ──────────────────────────────────────
-  // If embedded in an iframe on a Shopify page, report height so parent
-  // can resize the iframe to fit content (no internal scrollbar).
   function reportHeight() {
-    if (window.parent === window) return; // not in iframe
+    if (window.parent === window) return;
     const height = Math.max(
       document.body.scrollHeight,
       document.documentElement.scrollHeight,
@@ -1385,7 +1304,6 @@
     );
     window.parent.postMessage({ type: 'sage:resize', height: height }, '*');
   }
-  // Report on load and whenever DOM changes (results render, etc.)
   if (window.parent !== window) {
     window.addEventListener('load', reportHeight);
     const observer = new MutationObserver(reportHeight);
