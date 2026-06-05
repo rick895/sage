@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Plus Feeding Calculator | Natural Hounds</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-primary: #2d5a3d;
+      --color-accent: #d4a574;
+      --color-light-bg: #f9f7f4;
+      --color-card-bg: #ffffff;
+      --color-text-dark: #2c2c2c;
+      --color-text-light: #6b6b6b;
+      --color-border: #e8e4df;
+      --color-success: #4a7c59;
+      --color-warning: #d4a574;
+      --spacing-xs: 0.5rem;
+      --spacing-sm: 1rem;
+      --spacing-md: 1.5rem;
+      --spacing-lg: 2rem;
+      --spacing-xl: 3rem;
+      --spacing-2xl: 4rem;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: var(--color-light-bg);
+      color: var(--color-text-dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--spacing-lg);
+    }
+
+    /* Header Section */
+    .header {
+      text-align: center;
+      margin-bottom: var(--spacing-2xl);
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-sm);
+      letter-spacing: -0.3px;
+    }
+
+    .header .subheader {
+      font-size: 1rem;
+      color: var(--color-text-light);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* Calculator Section */
+    .calculator-card {
+      background: var(--color-card-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+      border: 1px solid var(--color-border);
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: var(--spacing-sm);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--color-text-dark);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-md);
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-helper {
+      font-size: 0.85rem;
+      color: var(--color-text-light);
+      margin-top: 0.25rem;
+    }
+
+    /* Feeding Style Selector */
+    .feeding-style-section {
+      margin-bottom: var(--spacing-xl);
+      animation: fadeInUp 0.6s ease-out 0.15s both;
+    }
+
+    .feeding-style-label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .feeding-style-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+    }
+
+    @media (max-width: 640px) {
+      .feeding-style-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feeding-style-btn {
+      padding: var(--spacing-md);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-card-bg);
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-dark);
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .feeding-style-btn:hover {
+      border-color: var(--color-primary);
+      background: rgba(45, 90, 61, 0.03);
+    }
+
+    .feeding-style-btn.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: white;
+    }
+
+    /* Results Section */
+    .results-section {
+      background: var(--color-card-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+      border: 1px solid var(--color-border);
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+      display: none;
+    }
+
+    .results-section.active {
+      display: block;
+    }
+
+    .results-header {
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .results-header h2 {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .results-header p {
+      font-size: 0.9rem;
+      color: var(--color-text-light);
+    }
+
+    .feeding-amounts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    @media (max-width: 640px) {
+      .feeding-amounts {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .amount-card {
+      background: linear-gradient(135deg, rgba(45, 90, 61, 0.05) 0%, rgba(212, 165, 116, 0.05) 100%);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .amount-card .label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .amount-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .amount-card .unit {
+      font-size: 0.9rem;
+      color: var(--color-text-light);
+      margin-top: var(--spacing-xs);
+    }
+
+    /* Benefits Section */
+    .benefits-section {
+      animation: fadeInUp 0.6s ease-out 0.25s both;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-xs);
+      text-align: center;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+      text-align: center;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spacing-md);
+    }
+
+    @media (max-width: 1024px) {
+      .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .benefit-card {
+      background: var(--color-card-bg);
+      padding: var(--spacing-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .benefit-card:hover {
+      border-color: var(--color-accent);
+      box-shadow: 0 4px 12px rgba(212, 165, 116, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .benefit-icon {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .benefit-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .benefit-card p {
+      font-size: 0.85rem;
+      color: var(--color-text-light);
+      line-height: 1.5;
+    }
+
+    /* Flexible Options Section */
+    .options-section {
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .options-header {
+      text-align: center;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .options-header h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .options-header p {
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-md);
+    }
+
+    @media (max-width: 640px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .option-card {
+      background: var(--color-card-bg);
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      transition: all 0.3s;
+    }
+
+    .option-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 16px rgba(45, 90, 61, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .option-number {
+      display: inline-block;
+      background: var(--color-primary);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 32px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-sm);
+      font-size: 0.9rem;
+    }
+
+    .option-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .option-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-light);
+      line-height: 1.6;
+    }
+
+    /* Feeding Methods Section */
+    .methods-section {
+      animation: fadeInUp 0.6s ease-out 0.35s both;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .methods-header {
+      text-align: center;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .methods-header h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .methods-header p {
+      font-size: 0.95rem;
+      color: var(--color-text-light);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+    }
+
+    @media (max-width: 768px) {
+      .methods-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .method-card {
+      background: linear-gradient(135deg, rgba(45, 90, 61, 0.03) 0%, rgba(212, 165, 116, 0.03) 100%);
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .method-card:hover {
+      border-color: var(--color-accent);
+      box-shadow: 0 4px 12px rgba(45, 90, 61, 0.1);
+    }
+
+    .method-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .method-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .method-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-light);
+      line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--color-primary) 0%, #3d6f4f 100%);
+      color: white;
+      padding: var(--spacing-2xl);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      animation: fadeInUp 0.6s ease-out 0.4s both;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .cta-section h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .cta-section p {
+      font-size: 1rem;
+      margin-bottom: var(--spacing-lg);
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+
+    .button-group {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      padding: 0.875rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .button-primary {
+      background: var(--color-accent);
+      color: var(--color-text-dark);
+    }
+
+    .button-primary:hover {
+      background: #c29460;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(212, 165, 116, 0.3);
+    }
+
+    .button-secondary {
+      background: white;
+      color: var(--color-primary);
+      border: 2px solid white;
+    }
+
+    .button-secondary:hover {
+      background: transparent;
+      color: white;
+    }
+
+    .cta-section .button-secondary:hover {
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Helper Classes */
+    .hidden {
+      display: none;
+    }
+
+    .note {
+      background: rgba(212, 165, 116, 0.1);
+      padding: var(--spacing-md);
+      border-left: 4px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      margin-top: var(--spacing-md);
+      font-size: 0.9rem;
+      color: var(--color-text-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <h1>Premium Plus Feeding Calculator</h1>
+      <p class="subheader">
+        Calculate exactly how much your dog needs and see how Premium Plus gives you the flexibility to purchase any amount of food at our best pricing.
+      </p>
+    </header>
+
+    <!-- Calculator Card -->
+    <div class="calculator-card">
+      <div class="form-group">
+        <label for="dogName">Your Dog's Name</label>
+        <input type="text" id="dogName" placeholder="e.g., Max" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dogWeight">Current Weight (lbs)</label>
+          <input type="number" id="dogWeight" placeholder="e.g., 50" min="1" step="0.1" />
+          <span class="form-helper">Your dog's current weight</span>
+        </div>
+        <div class="form-group">
+          <label for="activityLevel">Activity Level</label>
+          <select id="activityLevel">
+            <option value="">Select activity level</option>
+            <option value="sedentary">Sedentary (Low activity)</option>
+            <option value="moderate">Moderate (Normal activity)</option>
+            <option value="active">Active (High activity / Exercise)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Feeding Style Selector -->
+      <div class="feeding-style-section">
+        <label class="feeding-style-label">How Do You Want To Feed?</label>
+        <div class="feeding-style-grid">
+          <button type="button" class="feeding-style-btn active" data-style="100">
+            100% Fresh Feeding
+          </button>
+          <button type="button" class="feeding-style-btn" data-style="50">
+            50% Fresh + Current Food
+          </button>
+          <button type="button" class="feeding-style-btn" data-style="25">
+            25% Fresh Topper
+          </button>
+        </div>
+        <p class="form-helper" style="text-align: center; margin-top: var(--spacing-md);">
+          Don't worry about committing to 100% fresh—start with what works for you.
+        </p>
+      </div>
+
+      <div style="margin-top: var(--spacing-lg); text-align: center;">
+        <button type="button" class="button button-primary" id="calculateBtn" style="width: 100%; padding: 1rem;">
+          Calculate My Dog's Plan
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section" id="resultsSection">
+      <div class="results-header">
+        <h2 id="resultsTitle">Your Dog's Plan</h2>
+        <p id="resultsSubtitle"></p>
+      </div>
+
+      <div class="feeding-amounts">
+        <div class="amount-card">
+          <div class="label">Daily</div>
+          <div class="value" id="dailyAmount">0</div>
+          <div class="unit">lbs</div>
+        </div>
+        <div class="amount-card">
+          <div class="label">Weekly</div>
+          <div class="value" id="weeklyAmount">0</div>
+          <div class="unit">lbs</div>
+        </div>
+        <div class="amount-card">
+          <div class="label">Monthly</div>
+          <div class="value" id="monthlyAmount">0</div>
+          <div class="unit">lbs</div>
+        </div>
+      </div>
+
+      <div class="note" id="styleNote"></div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="benefits-section">
+      <h2 class="section-title">Why Premium Plus Makes Feeding Easier</h2>
+      <p class="section-subtitle">Unlock the full value of your membership</p>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">🏆</div>
+          <h3>Best Food Pricing</h3>
+          <p>Get our best food pricing on every purchase</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">📦</div>
+          <h3>No Minimum Purchases</h3>
+          <p>Buy only what you need when you need it</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🎨</div>
+          <h3>Mix Any Recipes</h3>
+          <p>Combine recipes however you'd like</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🎁</div>
+          <h3>20% Off Treats & Chews</h3>
+          <p>Savings on all treats and chews</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🚚</div>
+          <h3>50% Off Delivery</h3>
+          <p>Lower delivery costs whenever you order</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">💚</div>
+          <h3>Expert Support</h3>
+          <p>Guidance from our nutrition team</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🔄</div>
+          <h3>Flexible Ordering</h3>
+          <p>Change amounts or pause anytime</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">⭐</div>
+          <h3>Priority Access</h3>
+          <p>First access to seasonal recipes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flexible Purchase Options -->
+    <div class="options-section" id="optionsSection" style="display: none;">
+      <div class="options-header">
+        <h2>You Don't Need To Buy A Full Month At Once</h2>
+        <p>Premium Plus lets you purchase whatever amount works best for you and your dog.</p>
+      </div>
+
+      <div class="options-grid" id="optionsGrid">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- Feeding Methods -->
+    <div class="methods-section">
+      <div class="methods-header">
+        <h2>Most Customers Feed One Of These Ways</h2>
+        <p>There's no "right" way—find what works best for your dog and your routine.</p>
+      </div>
+
+      <div class="methods-grid">
+        <div class="method-card">
+          <div class="method-icon">🌿</div>
+          <h3>100% Fresh Feeding</h3>
+          <p>Feed Natural Hounds as the complete diet for maximum nutrition and freshness</p>
+        </div>
+        <div class="method-card">
+          <div class="method-icon">🔄</div>
+          <h3>Hybrid Feeding</h3>
+          <p>Mix Natural Hounds with your current food to transition or stretch your budget</p>
+        </div>
+        <div class="method-card">
+          <div class="method-icon">✨</div>
+          <h3>Fresh Topper</h3>
+          <p>Add fresh food on top of your dog's current meal for a nutrition boost</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+      <h2>Ready For Your Next Batch?</h2>
+      <p>
+        With Premium Plus you can order exactly what you need today—whether that's a few pounds, 
+        a full box, or anything in between.
+      </p>
+      <div class="button-group">
+        <button class="button button-primary" id="shopBtn">
+          Shop Fresh Food
+        </button>
+        <button class="button button-secondary" id="benefitsBtn">
+          View Premium Plus Benefits
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Feeding calculation logic based on activity level and dog weight
+    const CALORIE_MULTIPLIERS = {
+      sedentary: 1.2,
+      moderate: 1.4,
+      active: 1.8
+    };
+
+    const CALORIE_BASE = 10; // Base calories per pound of dog weight
+    const CALORIES_PER_LB_FOOD = 500; // Approximate calories per pound of fresh dog food
+
+    let selectedFeedingStyle = 100;
+    let calculatedMonthlyAmount = 0;
+
+    // Feeding style buttons
+    document.querySelectorAll('.feeding-style-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.feeding-style-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        selectedFeedingStyle = parseInt(this.dataset.style);
+      });
+    });
+
+    // Calculate button
+    document.getElementById('calculateBtn').addEventListener('click', function() {
+      const dogName = document.getElementById('dogName').value || 'Your Dog';
+      const dogWeight = parseFloat(document.getElementById('dogWeight').value);
+      const activityLevel = document.getElementById('activityLevel').value;
+
+      if (!dogWeight || !activityLevel) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      // Calculate daily caloric needs
+      const baseDailyCalories = dogWeight * CALORIE_BASE;
+      const activityMultiplier = CALORIE_MULTIPLIERS[activityLevel];
+      const dailyCalories = baseDailyCalories * activityMultiplier;
+
+      // Convert calories to pounds of food
+      const dailyFoodAmount = dailyCalories / CALORIES_PER_LB_FOOD;
+      
+      // Apply feeding style multiplier
+      const adjustedDailyAmount = (dailyFoodAmount * selectedFeedingStyle) / 100;
+      
+      // Calculate weekly and monthly
+      const weeklyAmount = adjustedDailyAmount * 7;
+      const monthlyAmount = adjustedDailyAmount * 30;
+
+      calculatedMonthlyAmount = monthlyAmount;
+
+      // Update results
+      document.getElementById('resultsTitle').textContent = `${dogName}'s Plan`;
+      
+      let subtitleText = `${dogWeight} lbs • ${activityLevel.charAt(0).toUpperCase() + activityLevel.slice(1)} activity`;
+      if (selectedFeedingStyle !== 100) {
+        subtitleText += ` • ${selectedFeedingStyle}% fresh feeding`;
+      }
+      document.getElementById('resultsSubtitle').textContent = subtitleText;
+
+      document.getElementById('dailyAmount').textContent = adjustedDailyAmount.toFixed(1);
+      document.getElementById('weeklyAmount').textContent = weeklyAmount.toFixed(1);
+      document.getElementById('monthlyAmount').textContent = monthlyAmount.toFixed(1);
+
+      // Update style note
+      const styleNotes = {
+        100: `${dogName} thrives on 100% fresh feeding. You'll need ${monthlyAmount.toFixed(0)} lbs per month.`,
+        50: `${dogName} is on a 50/50 hybrid diet. You'll need ${monthlyAmount.toFixed(0)} lbs of fresh food per month.`,
+        25: `${dogName} gets fresh food as a topper. You'll need ${monthlyAmount.toFixed(0)} lbs per month to supplement their current diet.`
+      };
+      document.getElementById('styleNote').textContent = styleNotes[selectedFeedingStyle];
+
+      // Show results and options
+      document.getElementById('resultsSection').classList.add('active');
+      populateFlexibleOptions(monthlyAmount);
+      document.getElementById('optionsSection').style.display = 'block';
+
+      // Scroll to results
+      setTimeout(() => {
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    });
+
+    function populateFlexibleOptions(monthlyAmount) {
+      const options = generateOptions(monthlyAmount);
+      const grid = document.getElementById('optionsGrid');
+      grid.innerHTML = '';
+
+      options.forEach((option, index) => {
+        const card = document.createElement('div');
+        card.className = 'option-card';
+        card.innerHTML = `
+          <div class="option-number">${index + 1}</div>
+          <h3>${option.title}</h3>
+          <p>${option.description}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function generateOptions(monthlyAmount) {
+      const rounded = Math.round(monthlyAmount);
+      const half = Math.round(monthlyAmount / 2);
+      const third = Math.round(monthlyAmount / 3);
+      const weekly = Math.round(monthlyAmount / 4);
+
+      return [
+        {
+          title: `Single ${rounded}-lb Order`,
+          description: `Order your full month's supply in one purchase. Keep it fresh in the freezer.`
+        },
+        {
+          title: `Two ${half}-lb Orders`,
+          description: `Split across two weeks. Order mid-month to stay fresh and rotate recipes.`
+        },
+        {
+          title: `Weekly ${weekly}-lb Orders`,
+          description: `Order ${weekly}-12 lbs each week for maximum freshness and flexibility.`
+        },
+        {
+          title: `Mix & Match Approach`,
+          description: `Order different amounts and recipes based on what's available or on sale.`
+        }
+      ];
+    }
+
+    // CTA buttons
+    document.getElementById('shopBtn').addEventListener('click', function() {
+      // Use postMessage for Shopify cart integration
+      window.parent.postMessage({
+        type: 'sage:shopNow'
+      }, '*');
+      
+      // Fallback: navigate to products
+      window.location.href = '/collections/fresh-food';
+    });
+
+    document.getElementById('benefitsBtn').addEventListener('click', function() {
+      // Navigate to Premium Plus benefits page
+      window.location.href = '/pages/premium-plus-benefits';
+    });
+
+    // Listen for parent window messages (Shopify cart integration)
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'sage:cartSuccess') {
+        console.log('Cart updated successfully');
+      }
+    });
+
+    // Resize iframe for parent window
+    function notifyParent() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({
+        type: 'sage:resize',
+        height: height
+      }, '*');
+    }
+
+    // Notify parent on load and after interactions
+    window.addEventListener('load', notifyParent);
+    document.getElementById('calculateBtn').addEventListener('click', () => {
+      setTimeout(notifyParent, 100);
+    });
+
+    // Handle keyboard events on feeding style buttons
+    document.querySelectorAll('.feeding-style-btn').forEach(btn => {
+      btn.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') this.click();
+      });
+    });
+  </script>
+</body>
+</html>
