@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Plus FAQ — Natural Hounds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nh-blue: #9fd1ff;
+    --nh-blue-soft: #e8f3ff;
+    --nh-slate: #536479;
+    --nh-slate-soft: #f5f7fa;
+    --nh-black: #111111;
+    --nh-cream: #fdf9f3;
+    --nh-border: #e6e2da;
+    --nh-text: #2a2a2a;
+    --nh-text-muted: #6b6b6b;
+    --nh-success: #2d6a4f;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--nh-cream);
+    color: var(--nh-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 500;
+    color: var(--nh-slate);
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    font-size: 16px;
+    color: var(--nh-text-muted);
+    margin: 0;
+  }
+
+  .intro-card {
+    background: var(--nh-blue-soft);
+    border: 1px solid var(--nh-blue);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 48px;
+  }
+
+  .intro-card p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--nh-text);
+  }
+
+  .intro-card strong {
+    color: var(--nh-slate);
+    font-weight: 700;
+  }
+
+  .faq-section {
+    margin-bottom: 40px;
+  }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--nh-black);
+    margin: 0 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--nh-border);
+  }
+
+  .faq-item {
+    margin-bottom: 20px;
+    background: white;
+    border: 1px solid var(--nh-border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .faq-question {
+    padding: 18px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    background: white;
+    border: none;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--nh-black);
+    text-align: left;
+    transition: background 0.2s;
+    width: 100%;
+  }
+
+  .faq-question:hover {
+    background: var(--nh-slate-soft);
+  }
+
+  .faq-toggle {
+    font-size: 20px;
+    color: var(--nh-slate);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  .faq-item.open .faq-toggle {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  .faq-item.open .faq-answer {
+    padding: 20px;
+    max-height: 1000px;
+  }
+
+  .faq-answer p {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--nh-text-muted);
+  }
+
+  .faq-answer p:last-child {
+    margin-bottom: 0;
+  }
+
+  .faq-answer strong {
+    color: var(--nh-black);
+    font-weight: 600;
+  }
+
+  .highlight {
+    background: var(--nh-blue-soft);
+    padding: 16px;
+    border-left: 4px solid var(--nh-blue);
+    border-radius: 6px;
+    margin: 12px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .highlight strong {
+    color: var(--nh-black);
+    font-weight: 600;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+
+  .pricing-item {
+    background: var(--nh-slate-soft);
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .pricing-item strong {
+    display: block;
+    color: var(--nh-black);
+    margin-bottom: 4px;
+  }
+
+  .pricing-item span {
+    color: var(--nh-text-muted);
+  }
+
+  .cta-section {
+    background: var(--nh-black);
+    color: white;
+    padding: 32px 24px;
+    border-radius: 14px;
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  .cta-section h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+
+  .cta-section p {
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 20px;
+    opacity: 0.95;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--nh-blue);
+    color: var(--nh-black);
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .cta-btn:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 640px) {
+    h1 { font-size: 32px; }
+    .container { padding: 32px 16px; }
+    .pricing-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Premium Plus FAQ</h1>
+    <p class="tagline">Everything you need to know about your membership</p>
+  </header>
+
+  <div class="intro-card">
+    <p><strong>You're all set.</strong> Premium Plus is active on your account. This page explains how to use it, how pricing works, and answers common questions about flexibility, ordering, and getting the most from your membership.</p>
+  </div>
+
+  <!-- ABOUT PREMIUM PLUS -->
+  <div class="faq-section">
+    <h2 class="section-title">About Premium Plus</h2>
+
+    <div class="faq-item open">
+      <button class="faq-question">
+        <span>What is Premium Plus?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>Premium Plus gives you the best price on any amount you buy.</strong></p>
+        <p>You get the 30lb box rate ($4.83/lb) even if you order 1 lb, 5 lbs, or anything in between. No minimums, no subscriptions—just the lowest price every time you order, so you can keep costs down while feeding exactly what your dog needs.</p>
+        <p><strong>You also get:</strong></p>
+        <ul style="margin: 12px 0; padding-left: 20px; color: var(--nh-text-muted); font-size: 14px;">
+          <li>20% off treats and chews</li>
+          <li>50% off delivery</li>
+          <li>Mix any recipes however you want</li>
+          <li>Order whenever you're ready (no auto-ship)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>What are the benefits?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>Best pricing:</strong> $4.83/lb on any quantity—same as our largest box size.</p>
+        <p><strong>No minimums:</strong> Order 1 lb, 5 lbs, or 30 lbs. No required order sizes.</p>
+        <p><strong>Flexible scheduling:</strong> Order whenever you're ready. No subscriptions, no auto-shipments.</p>
+        <p><strong>Mix any recipes:</strong> Combine Original, Beef, Pork, and Lamb however you'd like.</p>
+        <p><strong>20% off treats:</strong> Discounted chews and treats when you order food.</p>
+        <p><strong>50% off delivery:</strong> Free or discounted shipping on orders $75+.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>Did I pay for this?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>No.</strong> We added Premium Plus to your account for free when you came back. It's our way of saying thanks and making sure you get the best pricing on food.</p>
+        <p>Enjoy the member rates and benefits—no monthly charge, no hidden fees.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDERING & PRICING -->
+  <div class="faq-section">
+    <h2 class="section-title">Ordering & Pricing</h2>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>How do I place an order?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>Online:</strong> Go to our shop and add food to your cart the same way you would normally. Your Premium Plus discount applies automatically at checkout—you don't need to enter a code or do anything special. Choose your box size, select recipes, and check out.</p>
+        <p><strong>In store:</strong> Visit one of our locations (Babylon, Port Jefferson, or Huntington). Just give the employee your email at checkout and your Premium Plus discount applies instantly.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>Can I order less than a full box?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>Yes.</strong> One of the best parts of Premium Plus is that you're not locked into box sizes.</p>
+        <p>You can order 1–5 lbs loose, or combine a small box with loose pounds. All at $4.83/lb.</p>
+        <p><strong>Example:</strong> If your dog needs 45 lbs/month, you could order:</p>
+        <ul style="margin: 12px 0; padding-left: 20px; color: var(--nh-text-muted); font-size: 14px;">
+          <li>30 lb box + 15 lbs loose</li>
+          <li>Three 10 lb boxes + 15 lbs loose</li>
+          <li>10 lbs each week</li>
+          <li>Whatever makes sense for your life</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>What's the pricing for different box sizes?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>All box sizes are $4.83/lb for Premium Plus members.</strong></p>
+        <div class="pricing-grid">
+          <div class="pricing-item">
+            <strong>5 lb box</strong>
+            <span>$24.15</span>
+          </div>
+          <div class="pricing-item">
+            <strong>10 lb box</strong>
+            <span>$48.30</span>
+          </div>
+          <div class="pricing-item">
+            <strong>20 lb box</strong>
+            <span>$96.60</span>
+          </div>
+          <div class="pricing-item">
+            <strong>30 lb box</strong>
+            <span>$144.90</span>
+          </div>
+        </div>
+        <p>Loose food (1–5 lbs) is also $4.83/lb.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>Is there a minimum order?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>No.</strong> You can order as little as 1 lb. There are no order minimums with Premium Plus.</p>
+        <p>Shipping on orders under $75 is discounted 50% for members (usually $8–12).</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>Do I get a discount on loose food?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>Yes.</strong> Loose food (1–5 lbs) is the same $4.83/lb as all other quantities.</p>
+        <p>Non-members pay more for loose food. As a member, you get the best rate on any amount.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLEXIBILITY & SCHEDULING -->
+  <div class="faq-section">
+    <h2 class="section-title">Flexibility & Scheduling</h2>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>Do I have to order on a schedule?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>No.</strong> Premium Plus has no subscription or auto-shipment. You order whenever you want.</p>
+        <p>Order weekly, monthly, or whenever your dog's food is running low. It's completely up to you.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>Can I mix recipes in one order?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>Yes.</strong> You can mix Original, Beef, Pork, and Lamb however you like in a single order.</p>
+        <p>Many dogs benefit from variety, and your member pricing applies to the entire order.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>Can I pause or cancel anytime?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>Yes.</strong> Since there's no subscription, you simply don't place an order. Your membership stays active.</p>
+        <p>If you want to formally cancel, you can do that anytime in your account settings. No penalties or questions asked.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>What if I don't know how much to order?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Start with our feeding calculator to get a personalized amount for your dog's weight and activity level.</p>
+        <p>Once you know the monthly amount, you can order however you want to split it up. Monitor your dog's weight over 1–2 weeks and adjust as needed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRACTICAL QUESTIONS -->
+  <div class="faq-section">
+    <h2 class="section-title">Practical Questions</h2>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>How long does food last in the freezer?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Our fresh food stays good in the freezer for up to 6 months, so you can stock up if you want. Thaw in the fridge overnight before feeding.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>What if my dog doesn't like a recipe?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Most dogs love rotating through recipes. If your dog doesn't like something, try mixing it with a favorite recipe or contact us at <strong>631-760-7850</strong> and we'll help you troubleshoot or adjust your mix.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>How does shipping work?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Orders ship 2–3 times per week. Most arrive within 1–2 days on Long Island, 2–3 days to the NYC area.</p>
+        <p>Premium Plus members get <strong>50% off shipping</strong> on all orders.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>Can I combine Premium Plus with a store credit?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p><strong>Yes.</strong> Store credit applies to your order, and your Premium Plus member pricing applies on top. You get both benefits.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question">
+        <span>What if I have more questions?</span>
+        <span class="faq-toggle">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Call us at <strong>631-760-7850</strong>. We're available Tues–Sat 10–6, Sun 10–3. We're happy to help with anything.</p>
+        <p>Or email us and we'll get back to you within 24 hours.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-section">
+    <h2>Ready to order?</h2>
+    <p>Use our feeding calculator to find the right amount for your dog, then place your first order.</p>
+    <a href="/pages/calculate-your-plan" class="cta-btn">Go to calculator →</a>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.faq-question').forEach(button => {
+    button.addEventListener('click', () => {
+      const item = button.parentElement;
+      item.classList.toggle('open');
+    });
+  });
+</script>
+
+</body>
+</html>
