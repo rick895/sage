@@ -491,6 +491,59 @@
     background: var(--nh-blue-soft);
     border-color: var(--nh-blue);
   }
+  /* Relocated "custom quote" capture — sits inside the dog result, under the mix card */
+  .capture.quote {
+    background: var(--nh-blue-soft);
+    border-color: var(--nh-blue);
+  }
+  /* Shared high-contrast dark card for the lead form (save + bulk variants) so it
+     stands apart from the surrounding pale-blue panels. */
+  .capture.hero {
+    background: var(--nh-black);
+    border: 1px solid var(--nh-black);
+    padding: 24px 22px;
+    box-shadow: 0 14px 36px rgba(17,17,17,0.20);
+  }
+  .capture-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--nh-black);
+    background: var(--nh-blue);
+    padding: 5px 11px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .capture.hero .capture-title { color: #fff; font-size: 20px; }
+  .capture.hero .capture-sub { color: rgba(255,255,255,0.72); }
+  .capture.hero .capture-input { background: #fff; border-color: transparent; }
+  .capture.hero .capture-submit { background: var(--nh-blue); color: var(--nh-black); }
+  .capture.hero .capture-submit:hover { opacity: 0.9; }
+  .capture.hero .capture-fine { color: rgba(255,255,255,0.5); }
+  .capture.hero .capture-success { color: #9fe6c4; }
+  .capture-list {
+    list-style: none;
+    margin: 4px 0 14px;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .capture-list li {
+    font-size: 13px;
+    color: var(--nh-text);
+    padding-left: 22px;
+    position: relative;
+    line-height: 1.4;
+  }
+  .capture-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--nh-success);
+    font-weight: 700;
+  }
   .capture-title {
     font-family: 'Fraunces', serif;
     font-size: 17px;
@@ -1046,10 +1099,10 @@
     };
   }
 
-  async function submitLead({ phone, name, formType, reason, results }) {
+  async function submitLead({ phone, name, formType, reason, results, bulkEligible }) {
     const summary = buildPlanSummary(results);
     const tags = ['planner-lead'];
-    if (formType === 'bulk') tags.push('bulk-eligible');
+    if (formType === 'bulk' || bulkEligible) tags.push('bulk-eligible');
     if (summary.totalDogs >= 2) tags.push('multi-dog');
     const payload = {
       phone,
@@ -1078,7 +1131,8 @@
   }
 
   // ─── RENDER ───────────────────────────────────────────────────────
-  function renderDogResult(dog, result, num) {
+  function renderDogResult(dog, result, num, capture) {
+    capture = capture || {};
     if (result.tooHeavy) {
       return `<div class="dog-result">
         <div class="dog-result-header">Dog ${num} (${dog.weight} lbs)</div>
@@ -1137,6 +1191,53 @@
         <a class="premium-plus-link" href="${PREMIUM_PLUS_URL}" target="_top">Learn more &rarr;</a>
       </div>`;
 
+    // Relocated lead capture — rendered once, on the first valid dog,
+    // immediately under the Recommended Mix card and above Cost by box size.
+    // Pull the dog's actual numbers into the copy so it reads like claiming a
+    // result that already exists, not filling out a lead form.
+    const personalLine = capture.multi
+      ? `We'll send every dog's plan and your $${(capture.totalMonthly || 0).toFixed(0)}/month total straight to your phone — so it's there when you're ready to order. No screenshot, no hunting for this page again.`
+      : `We'll send your dog's full plan — ${dailyOz.toFixed(1)} oz a day, about $${result.monthlyCost.toFixed(0)}/month — straight to your phone, so it's there when you're ready to order. No screenshot, no hunting for this page again.`;
+
+    const smsConsent = `<div class="capture-fine">By submitting, you agree to receive SMS messages from Natural Hounds with your feeding plan and occasional order updates. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help. View our <a href="/policies/privacy-policy" target="_top" style="color:inherit;text-decoration:underline;">Privacy Policy</a>.</div>`;
+
+    let captureHTML = '';
+    if (capture.attach && capture.bulkEligible) {
+      // High-value visitor (2+ dogs, or a monthly total over the bulk threshold).
+      // Sends formType 'bulk' so the Worker fires the urgent callback flow:
+      // 🚨 email, "callback within the hour" note, and the bulk SMS closing.
+      const bulkLine = capture.multi
+        ? `With multiple dogs, you qualify for unpublished bulk pricing that brings your per-pound cost down.`
+        : `A pup this size puts you in our bulk pricing tier — unpublished rates that bring your per-pound cost down.`;
+      captureHTML = `
+      <div class="capture quote hero">
+        <div class="capture-eyebrow">★ Bulk pricing unlocked</div>
+        <div class="capture-title">You qualify for bulk pricing</div>
+        <div class="capture-sub">${bulkLine} Drop your number and we'll text you a custom quote — usually within the hour.</div>
+        <form class="capture-form" data-lead-form="bulk" data-reason="${capture.reason || 'high-volume'}" data-bulk-eligible="1">
+          <input class="capture-input" type="tel" name="phone" placeholder="Phone number" required autocomplete="tel">
+          <input class="capture-input" type="text" name="name" placeholder="Your name (optional)">
+          <button class="capture-submit" type="submit">Get my custom quote &rarr;</button>
+        </form>
+        ${smsConsent}
+        <div class="capture-fine" style="margin-top:6px;">We'll text you your quote, not spam you.</div>
+      </div>`;
+    } else if (capture.attach) {
+      captureHTML = `
+      <div class="capture quote hero">
+        <div class="capture-eyebrow">✓ Your plan's ready</div>
+        <div class="capture-title">Text yourself this plan</div>
+        <div class="capture-sub">${personalLine}</div>
+        <form class="capture-form" data-lead-form="save" data-reason="${capture.reason || 'save'}" data-bulk-eligible="">
+          <input class="capture-input" type="tel" name="phone" placeholder="Phone number" required autocomplete="tel">
+          <input class="capture-input" type="text" name="name" placeholder="Your name (optional)">
+          <button class="capture-submit" type="submit">Text me my plan &rarr;</button>
+        </form>
+        ${smsConsent}
+        <div class="capture-fine" style="margin-top:6px;">One text and that's it. No spam, ever.</div>
+      </div>`;
+    }
+
     return `
       <div class="dog-result">
         <div class="dog-result-header">Dog ${num}</div>
@@ -1152,7 +1253,7 @@
           </div>
           <div class="summary-card">
             <div class="summary-label">Best fit</div>
-            <div class="summary-value">${result.bestBox}</div>
+            <div class="summary-value">${result.bestBox} box</div>
           </div>
         </div>
         <div class="mix-card">
@@ -1164,6 +1265,7 @@
               : `Even split across ${result.mixCandidates.length} recipe${result.mixCandidates.length > 1 ? 's' : ''} gives variety and balanced nutrition. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> total &mdash; <strong>${result.bestBox} box</strong> at about <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
           }</div>
         </div>
+        ${captureHTML}
         ${premiumPlusHTML}
         ${onlyOriginal ? `<div class="note disclaimer">Heads up: Original is our lowest-calorie recipe, so dogs need a bit more volume per day. If cost matters, mixing in Beef or Pork would lower the monthly cost &mdash; and dogs love the variety.</div>` : ''}
         ${result.heavyDog ? `<div class="note disclaimer">For dogs over 120 lbs, our Beef and Lamb feeding charts cap out, so we've recommended Original and Pork. Call <strong>${PHONE}</strong> if you'd like to discuss a custom plan.</div>` : ''}
@@ -1202,42 +1304,19 @@
       </div>`;
     }
 
+    const firstValidNum = validResults.length ? validResults[0].num : null;
+    const captureReason = dogs.length >= 2 ? 'multi-dog' : (totalMonthly >= BULK_THRESHOLD ? 'high-volume' : 'save');
     for (const { dog, result, num } of results) {
-      html += renderDogResult(dog, result, num);
-    }
-
-    if (showBulkTrigger && validResults.length > 0) {
-      const reason = dogs.length >= 2 ? 'multi-dog' : 'high-volume';
-      html += `
-        <div class="capture bulk" id="capture-bulk">
-          <div class="capture-title">Save more with bulk pricing</div>
-          <div class="capture-sub">${dogs.length >= 2 ? 'With multiple dogs' : 'For a pup this size'}, you qualify for unpublished bulk pricing that could save you a chunk. Drop your number and we'll text you a custom quote within an hour.</div>
-          <form class="capture-form" data-lead-form="bulk" data-reason="${reason}">
-            <input class="capture-input" type="text" name="name" placeholder="Your name (optional)">
-            <input class="capture-input" type="tel" name="phone" placeholder="Phone number" required>
-            <button class="capture-submit" type="submit">Get my quote</button>
-          </form>
-          <div class="capture-fine">By submitting, you agree to receive SMS messages from Natural Hounds about your quote and order. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help. View our <a href="/policies/privacy-policy" target="_top" style="color:inherit;text-decoration:underline;">Privacy Policy</a>.</div>
-          <div class="capture-fine" style="margin-top:6px;">Tues–Sat 10–6, Sun 10–3. We'll never spam you.</div>
-        </div>`;
+      html += renderDogResult(dog, result, num, {
+        attach: num === firstValidNum,
+        bulkEligible: showBulkTrigger,
+        reason: captureReason,
+        multi: dogs.length > 1,
+        totalMonthly: totalMonthly
+      });
     }
 
     html += `<div class="note disclaimer">This is a starting point. Our recommendations tend to run a bit high, so your pup may need a few oz less per day. Monitor weight the first 1–2 weeks and adjust from there. These amounts assume Natural Hounds is the only food — and don't forget treats add up too. If weight loss is a goal, cutting back on treats often makes the biggest difference.</div>`;
-
-    if (validResults.length > 0) {
-      html += `
-        <div class="capture" id="capture-save">
-          <div class="capture-title">Save this plan to your phone</div>
-          <div class="capture-sub">Want a quick reference? We'll text you the recipe mix, daily amount, and monthly cost — perfect for when you're ready to come back and order.</div>
-          <form class="capture-form" data-lead-form="save">
-            <input class="capture-input" type="text" name="name" placeholder="Your name (optional)">
-            <input class="capture-input" type="tel" name="phone" placeholder="Phone number" required>
-            <button class="capture-submit" type="submit">Send it</button>
-          </form>
-          <div class="capture-fine">By submitting, you agree to receive SMS messages from Natural Hounds with your feeding plan and occasional order updates. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help. View our <a href="/policies/privacy-policy" target="_top" style="color:inherit;text-decoration:underline;">Privacy Policy</a>.</div>
-          <div class="capture-fine" style="margin-top:6px;">One text and that's it. We won't blow up your phone.</div>
-        </div>`;
-    }
 
     if (allCanCheckout && validResults.length > 0) {
       const recommendedSizes = validResults.map(r => r.result.bestBox);
@@ -1247,7 +1326,7 @@
       const buildUrl = `${SHOPIFY_BASE}/products/${handle}`;
       html += `<div class="ctas">
         <a class="cta" href="${STARTER_PACK_URL}" target="_top">Try $12.99 starter pack first</a>
-        <a class="cta primary" href="${buildUrl}" target="_top">Build my ${largestRec} box →</a>
+        <a class="cta primary" href="${SHOPIFY_BASE}/collections" target="_top">Back to shop →</a>
       </div>`;
     }
 
@@ -1276,17 +1355,22 @@
         const submitBtn = form.querySelector('button[type="submit"]');
         const phone = phoneInput.value.trim();
         const name = nameInput ? nameInput.value.trim() : '';
+        const bulkEligible = form.dataset.bulkEligible === '1';
         if (!phone) return;
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
         try {
-          await submitLead({ phone, name, formType, reason, results: validResults });
-          form.parentElement.innerHTML = `
-            <div class="capture-title">Got it ✓</div>
-            <div class="capture-success">${formType === 'bulk' ? "We'll text you within the hour with your quote." : "Sent! Check your phone — your plan is on the way."}</div>`;
+          await submitLead({ phone, name, formType, reason, results: validResults, bulkEligible });
+          form.parentElement.innerHTML = formType === 'bulk'
+            ? `
+            <div class="capture-title">&#10003; Got it — we'll text you shortly.</div>
+            <div class="capture-success">Keep an eye on your phone for your custom bulk pricing, usually within the hour.</div>`
+            : `
+            <div class="capture-title">&#10003; Your dog's plan has been sent.</div>
+            <div class="capture-success">You can always come back to this page, but now you'll have it saved on your phone.</div>`;
         } catch (err) {
           submitBtn.disabled = false;
-          submitBtn.textContent = formType === 'bulk' ? 'Get my quote' : 'Send it';
+          submitBtn.textContent = formType === 'bulk' ? 'Get my custom quote →' : 'Text me my plan →';
           showToast('Something went wrong. Please try again.');
         }
       });
