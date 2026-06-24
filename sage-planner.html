@@ -639,7 +639,7 @@
   <h1>Calculate how much food your pup needs</h1>
   <p class="lede">Tell us about your dog. We'll show how much they need, what it'll cost, and what to order.</p>
 
-  <a href="/pages/try-a-starter-pack" class="sampler-shortcut" target="_top">
+  <a href="https://shop.naturalhounds.com/pages/try-a-starter-pack" class="sampler-shortcut" target="_top">
     Just want to try it? $12.99 starter pack &rarr;
   </a>
 
@@ -764,7 +764,7 @@
   };
 
   // Sampler URL — points to the wizard page, not the raw product
-  const STARTER_PACK_URL = '/pages/try-a-starter-pack';
+  const STARTER_PACK_URL = 'https://shop.naturalhounds.com/pages/try-a-starter-pack';
   // Premium Plus membership URL
   const PREMIUM_PLUS_URL = 'https://shop.naturalhounds.com/collections/premium-membership/products/premium-membership-copy';
   const PHONE = '631-760-7850';
@@ -1199,7 +1199,7 @@
       ? `We'll send every dog's plan and your $${(capture.totalMonthly || 0).toFixed(0)}/month total straight to your phone — so it's there when you're ready to order. No screenshot, no hunting for this page again.`
       : `We'll send your dog's full plan — ${dailyOz.toFixed(1)} oz a day, about $${result.monthlyCost.toFixed(0)}/month — straight to your phone, so it's there when you're ready to order. No screenshot, no hunting for this page again.`;
 
-    const smsConsent = `<div class="capture-fine">By submitting, you agree to receive SMS messages from Natural Hounds with your feeding plan and occasional order updates. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help. View our <a href="/policies/privacy-policy" target="_top" style="color:inherit;text-decoration:underline;">Privacy Policy</a>.</div>`;
+    const smsConsent = `<div class="capture-fine">By submitting, you agree to receive SMS messages from Natural Hounds with your feeding plan and occasional order updates. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help. View our <a href="https://shop.naturalhounds.com/policies/privacy-policy" target="_top" style="color:inherit;text-decoration:underline;">Privacy Policy</a>.</div>`;
 
     let captureHTML = '';
     if (capture.attach && capture.bulkEligible) {
