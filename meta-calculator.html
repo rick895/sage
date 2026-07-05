@@ -728,7 +728,7 @@
 (function(){
   // ─── CONFIG ────────────────────────────────────────────────────────
   const CREDIT = { amount: 25, expiryDays: 14 };
-  const LEAD_ENDPOINT = 'https://hooks.zapier.com/hooks/catch/26783416/4u4ujt7/';
+  const LEAD_ENDPOINT = 'https://sage-proxy.rick-026.workers.dev/lead';
   const STARTER_PACK_URL = 'https://shop.naturalhounds.com/pages/try-a-starter-pack';
   const SHOPIFY_BASE = 'https://shop.naturalhounds.com';
   const PHONE = '631-760-7850';
@@ -1215,27 +1215,53 @@
     const tags = ['planner-lead', 'meta-retarget', 'credit-25'];
     if (bulkEligible) tags.push('bulk-eligible');
     if (summary.totalDogs >= 2) tags.push('multi-dog');
-    const payload = {
-      email,
-      phone,
-      name: name || null,
-      full_name: name || null,
-      formType: 'meta-credit',
+
+    // Build a FLAT set of fields so Zapier's Catch Hook exposes each one
+    // individually (nested objects arrive as one unusable blob).
+    const flat = {
+      email: email,
+      phone: phone,
+      full_name: name || '',
+      first_name: (name || '').split(/\s+/)[0] || '',
+      form_type: 'meta-credit',
       reason: bulkEligible ? (dogs.length >= 2 ? 'multi-dog' : 'high-volume') : 'credit-claim',
-      credit: { amount: CREDIT.amount, expiryDays: CREDIT.expiryDays },
-      eventId: eventId,
-      tags,
+      credit_amount: CREDIT.amount,
+      credit_expiry_days: CREDIT.expiryDays,
+      bulk_eligible: bulkEligible ? 'yes' : 'no',
+      event_id: eventId,
+      tags: tags.join(','),
       source: 'meta-feeding-planner',
-      sourceUrl: window.location.href || 'https://shop.naturalhounds.com/pages/get-your-plan',
-      plan: summary
+      source_url: window.location.href || 'https://shop.naturalhounds.com/pages/get-your-plan',
+      total_monthly: summary.totalMonthlyCost,
+      total_dogs: summary.totalDogs,
+      plan_summary: summary.summaryText
     };
+    // Per-dog fields, flattened (dog1_*, dog2_*, ...).
+    summary.dogs.forEach((d, i) => {
+      const n = i + 1;
+      flat['dog' + n + '_name']       = d.name || ('Dog ' + n);
+      flat['dog' + n + '_weight']     = d.weight;
+      flat['dog' + n + '_activity']   = d.activity;
+      flat['dog' + n + '_allergies']  = (d.allergies || []).join(',');
+      flat['dog' + n + '_mix']        = (d.mix || []).join('+');
+      flat['dog' + n + '_box']        = d.chosenBox;
+      flat['dog' + n + '_price']      = d.chosenPrice;
+      flat['dog' + n + '_daily_oz']   = d.dailyOz;
+      flat['dog' + n + '_lbs_month']  = d.lbsPerMonth;
+    });
+
+    // Send as form-encoded (application/x-www-form-urlencoded) so Zapier's
+    // Catch Hook parses each key into its own selectable field.
+    const form = new URLSearchParams();
+    Object.keys(flat).forEach(k => form.append(k, flat[k] == null ? '' : String(flat[k])));
+
     const res = await fetch(LEAD_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: form
     });
     if (!res.ok) throw new Error('Lead submit failed: ' + res.status);
-    return res.json();
+    // Zapier hooks reply with JSON; guard in case the body isn't JSON.
+    try { return await res.json(); } catch (e) { return {}; }
   }
 
   // ─── PIXEL ─────────────────────────────────────────────────────────
