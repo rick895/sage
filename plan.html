@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- BUILD: v4-standalone-logo -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get your dog's plan + $25 credit — Natural Hounds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nh-blue: #9fd1ff;
+    --nh-blue-soft: #e8f3ff;
+    --nh-slate: #536479;
+    --nh-slate-soft: #f5f7fa;
+    --nh-black: #111111;
+    --nh-cream: #fdf9f3;
+    --nh-border: #e6e2da;
+    --nh-text: #2a2a2a;
+    --nh-text-muted: #6b6b6b;
+    --nh-success: #2d6a4f;
+    --nh-success-soft: #e7f4ee;
+    --nh-warn-bg: #fff4d6;
+    --nh-warn-text: #6b4a00;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: transparent;
+    color: var(--nh-text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 20px 20px 64px;
+  }
+  .container.wide { max-width: 720px; }
+
+  /* ── Brand logo (standalone page header) */
+  .brand-logo {
+    display: block;
+    width: 100px;
+    height: 100px;
+    margin: 4px auto 18px;
+    border-radius: 50%;
+  }
+  @media (max-width: 540px) {
+    .brand-logo { width: 84px; height: 84px; margin-bottom: 14px; }
+  }
+
+  /* ── Credit ribbon (persistent) ─────────────────────────────── */
+  .credit-ribbon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--nh-black);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 10px 14px;
+    border-radius: 999px;
+    margin: 0 auto 22px;
+    width: fit-content;
+    max-width: 100%;
+  }
+  .credit-ribbon .chip {
+    background: var(--nh-blue);
+    color: var(--nh-black);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ── Progress ───────────────────────────────────────────────── */
+  .progress-track {
+    height: 4px;
+    background: var(--nh-border);
+    border-radius: 2px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--nh-black);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.35s ease;
+  }
+
+  /* ── Wizard steps ───────────────────────────────────────────── */
+  .step { display: none; animation: stepIn 0.3s ease; }
+  .step.active { display: block; }
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .step-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--nh-slate);
+    margin-bottom: 10px;
+  }
+  h1, .step-q {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--nh-black);
+    margin: 0 0 8px;
+  }
+  h1 { font-size: 32px; line-height: 1.12; }
+  .step-q { font-size: 26px; line-height: 1.18; }
+  .step-sub {
+    font-size: 15px;
+    color: var(--nh-text-muted);
+    margin: 0 0 24px;
+    line-height: 1.55;
+  }
+  .step-sub strong { color: var(--nh-black); font-weight: 600; }
+
+  .text-input {
+    width: 100%;
+    padding: 16px 18px;
+    border: 1.5px solid var(--nh-border);
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 17px;
+    color: var(--nh-text);
+    outline: none;
+    background: #fff;
+    margin-bottom: 16px;
+  }
+  .text-input:focus { border-color: var(--nh-black); }
+
+  .weight-block { margin-bottom: 8px; }
+  .weight-display {
+    font-family: 'Fraunces', serif;
+    font-size: 52px;
+    font-weight: 500;
+    color: var(--nh-black);
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .weight-display span { font-size: 20px; color: var(--nh-text-muted); }
+  .weight-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+  .step-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    border: 1.5px solid var(--nh-border);
+    background: #fff;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--nh-black);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    transition: all 0.12s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .step-btn:hover { border-color: var(--nh-black); background: var(--nh-blue-soft); }
+  .step-btn:active { transform: scale(0.94); }
+  .weight-num-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 120px;
+    justify-content: center;
+  }
+  .weight-input {
+    font-family: 'Fraunces', serif;
+    font-size: 52px;
+    font-weight: 500;
+    color: var(--nh-black);
+    text-align: center;
+    line-height: 1;
+    width: 110px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    outline: none;
+    background: transparent;
+    padding: 0;
+    -moz-appearance: textfield;
+  }
+  .weight-input:focus { border-bottom-color: var(--nh-blue); }
+  .weight-input::-webkit-outer-spin-button,
+  .weight-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .weight-unit { font-size: 20px; color: var(--nh-text-muted); font-family: 'Inter', sans-serif; }
+
+  .weight-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--nh-border);
+    border-radius: 3px;
+    outline: none;
+    margin: 22px 0 10px;
+  }
+  .weight-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    background: var(--nh-black);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 4px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .weight-slider::-moz-range-thumb {
+    width: 30px;
+    height: 30px;
+    background: var(--nh-black);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 4px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .weight-hint {
+    font-size: 12px;
+    color: var(--nh-text-muted);
+    line-height: 1.5;
+    padding: 10px 12px;
+    background: var(--nh-slate-soft);
+    border-radius: 10px;
+    margin-bottom: 16px;
+  }
+  .weight-hint strong { color: var(--nh-black); font-weight: 600; }
+
+  .choice-stack { display: grid; gap: 10px; margin-bottom: 16px; }
+  .choice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 16px 18px;
+    background: #fff;
+    border: 1.5px solid var(--nh-border);
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--nh-text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.12s;
+  }
+  .choice:hover { border-color: var(--nh-slate); }
+  .choice[aria-pressed="true"] {
+    border-color: var(--nh-black);
+    background: var(--nh-blue-soft);
+  }
+  .choice .desc {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--nh-text-muted);
+    margin-top: 2px;
+  }
+  .choice .check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--nh-border);
+    flex: none;
+    margin-left: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: transparent;
+  }
+  .choice[aria-pressed="true"] .check {
+    background: var(--nh-black);
+    border-color: var(--nh-black);
+    color: #fff;
+  }
+
+  .next-btn, .primary-btn {
+    width: 100%;
+    padding: 17px;
+    background: var(--nh-black);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+    transition: opacity 0.15s;
+  }
+  .next-btn:hover, .primary-btn:hover { opacity: 0.85; }
+  .next-btn:disabled, .primary-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .ghost-btn {
+    width: 100%;
+    padding: 15px;
+    background: none;
+    border: 1.5px solid var(--nh-border);
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--nh-text);
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 10px;
+  }
+  .ghost-btn:hover { border-color: var(--nh-slate); }
+  .back-link {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: var(--nh-text-muted);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 6px 0;
+    margin-bottom: 14px;
+  }
+  .back-link:hover { color: var(--nh-black); }
+
+  /* ── Calculating ────────────────────────────────────────────── */
+  .calc-screen { text-align: center; padding: 60px 0 40px; }
+  .paw-spin {
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    border: 4px solid var(--nh-border);
+    border-top-color: var(--nh-black);
+    margin: 0 auto 26px;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .paw-spin { animation-duration: 2.5s; }
+    .step { animation: none; }
+  }
+  .calc-msg {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    color: var(--nh-black);
+    min-height: 28px;
+  }
+  .calc-sub { font-size: 13px; color: var(--nh-text-muted); margin-top: 8px; }
+
+  /* ── Gate ───────────────────────────────────────────────────── */
+  .gate-teaser {
+    background: #fff;
+    border: 1px solid var(--nh-border);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .teaser-header {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    color: var(--nh-black);
+    margin-bottom: 14px;
+  }
+  .teaser-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .teaser-cell {
+    background: var(--nh-slate-soft);
+    border-radius: 10px;
+    padding: 12px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .teaser-label {
+    font-size: 11px;
+    color: var(--nh-slate);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  .teaser-value {
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    font-weight: 500;
+    color: var(--nh-black);
+  }
+  .teaser-cell.locked .teaser-value {
+    filter: blur(9px);
+    user-select: none;
+    pointer-events: none;
+  }
+  .lock-tag {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--nh-black);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .gate-card {
+    background: var(--nh-black);
+    border-radius: 18px;
+    padding: 26px 22px;
+    box-shadow: 0 16px 40px rgba(17,17,17,0.22);
+    margin-bottom: 14px;
+  }
+  .gate-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--nh-black);
+    background: var(--nh-blue);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .gate-title {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .gate-title .amt { color: var(--nh-blue); }
+  .gate-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.55;
+    margin-bottom: 18px;
+  }
+  .gate-list {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .gate-list li {
+    font-size: 14px;
+    color: rgba(255,255,255,0.9);
+    padding-left: 24px;
+    position: relative;
+    line-height: 1.45;
+  }
+  .gate-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--nh-blue);
+    font-weight: 700;
+  }
+  .gate-form { display: grid; gap: 10px; }
+  .gate-input {
+    width: 100%;
+    padding: 15px 16px;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    background: #fff;
+    color: var(--nh-text);
+    outline: none;
+  }
+  .gate-input:focus { box-shadow: 0 0 0 2px var(--nh-blue); }
+  .gate-input.invalid { box-shadow: 0 0 0 2px #e5484d; }
+  .gate-submit {
+    padding: 16px;
+    background: var(--nh-blue);
+    color: var(--nh-black);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+    transition: opacity 0.15s;
+  }
+  .gate-submit:hover { opacity: 0.9; }
+  .gate-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .gate-fine {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+  .gate-fine a { color: inherit; text-decoration: underline; }
+  .gate-error {
+    font-size: 13px;
+    color: #ffb3b6;
+    margin-top: 8px;
+    display: none;
+  }
+  .gate-error.show { display: block; }
+  .gate-trust {
+    text-align: center;
+    font-size: 12px;
+    color: var(--nh-text-muted);
+    line-height: 1.5;
+  }
+
+  /* ── Results (post-unlock) ──────────────────────────────────── */
+  .credit-banner {
+    background: var(--nh-success-soft);
+    border: 1px solid #bfe3d2;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+  .credit-banner-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    color: var(--nh-success);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .credit-banner-sub {
+    font-size: 13px;
+    color: var(--nh-text);
+    line-height: 1.55;
+  }
+  .credit-banner-sub strong { font-weight: 600; }
+
+  .results { }
+  .combined-card {
+    background: var(--nh-blue-soft);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .combined-label {
+    font-size: 12px;
+    color: var(--nh-slate);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .combined-value {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--nh-black);
+  }
+  .dog-result {
+    background: #fff;
+    border: 1px solid var(--nh-border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .dog-result-header {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--nh-black);
+    margin-bottom: 4px;
+  }
+  .dog-result-sub { font-size: 13px; color: var(--nh-text-muted); margin-bottom: 20px; }
+  .summary-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .summary-card { background: var(--nh-slate-soft); border-radius: 10px; padding: 14px 16px; }
+  .summary-label {
+    font-size: 11px; color: var(--nh-slate);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 4px; font-weight: 500;
+  }
+  .summary-value { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; color: var(--nh-black); }
+  .mix-card { background: var(--nh-blue-soft); border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; }
+  .mix-label {
+    font-size: 11px; color: var(--nh-slate);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 500; margin-bottom: 6px;
+  }
+  .mix-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; color: var(--nh-black); margin-bottom: 8px; }
+  .mix-detail { font-size: 14px; color: var(--nh-slate); line-height: 1.6; }
+  .mix-detail strong { color: var(--nh-black); font-weight: 600; }
+  .price-tiers { background: var(--nh-slate-soft); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+  .tier-title {
+    font-size: 11px; color: var(--nh-slate);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 12px; font-weight: 500;
+  }
+  .tier-row {
+    display: flex; justify-content: space-between;
+    padding: 8px 0; font-size: 14px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .tier-row:last-child { border-bottom: none; }
+  .tier-row.best { font-weight: 600; }
+  .tier-row.best span:last-child { color: var(--nh-success); }
+  .recipe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .recipe-card { background: #fff; border: 1px solid var(--nh-border); border-radius: 10px; padding: 14px 16px; }
+  .recipe-card.in-mix { border-color: var(--nh-blue); background: var(--nh-blue-soft); }
+  .recipe-card.dimmed { opacity: 0.45; }
+  .recipe-name {
+    font-size: 13px; font-weight: 600; color: var(--nh-black);
+    margin-bottom: 8px; display: flex; align-items: center;
+    justify-content: space-between; gap: 6px;
+  }
+  .recipe-badge {
+    font-size: 9px; background: var(--nh-blue); color: var(--nh-black);
+    padding: 2px 7px; border-radius: 999px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .recipe-badge.excluded { background: var(--nh-slate-soft); color: var(--nh-slate); }
+  .recipe-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--nh-text-muted); padding: 2px 0; }
+  .recipe-row span:last-child { color: var(--nh-text); font-weight: 500; }
+  .note {
+    font-size: 13px; color: var(--nh-warn-text);
+    padding: 14px 18px; background: var(--nh-warn-bg);
+    border-radius: 12px; margin-bottom: 16px; line-height: 1.55;
+  }
+  .note strong { font-weight: 600; }
+  .note.disclaimer { background: var(--nh-slate-soft); color: var(--nh-text-muted); }
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0 16px; }
+  .cta {
+    flex: 1; min-width: 200px;
+    padding: 15px 20px; border-radius: 12px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit; border: 1px solid var(--nh-border);
+    background: #fff; color: var(--nh-black);
+    transition: all 0.15s; text-align: center; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    letter-spacing: 0.02em;
+  }
+  .cta.primary { background: var(--nh-black); color: #fff; border-color: var(--nh-black); }
+  .cta:hover { border-color: var(--nh-slate); }
+  .cta.primary:hover { opacity: 0.85; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--nh-black); color: #fff;
+    padding: 12px 20px; border-radius: 999px;
+    font-size: 14px; font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; z-index: 1000;
+    max-width: calc(100vw - 40px);
+    text-align: center;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 540px) {
+    h1 { font-size: 27px; }
+    .step-q { font-size: 23px; }
+    .container { padding: 16px 16px 48px; }
+    .dog-result { padding: 18px; }
+    .summary-strip { grid-template-columns: 1fr 1fr; }
+    .summary-strip .summary-card:first-child { grid-column: span 2; }
+    .recipe-grid { grid-template-columns: 1fr 1fr; }
+    .cta { flex: 1 1 100%; }
+    .gate-title { font-size: 23px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="container" id="app">
+
+  <img class="brand-logo" src="https://rick895.github.io/sage/NaturalHounds.png" alt="Natural Hounds Dog Food Co." width="100" height="100">
+
+  <div class="credit-ribbon" id="ribbon">
+    <span class="chip">$25 CREDIT</span>
+    <span>waiting for you at the end</span>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+
+  <!-- Step: intro + dog name -->
+  <section class="step active" data-step="name">
+    <h1>Get <em style="font-style:normal; border-bottom:3px solid var(--nh-blue);">$25 in store credit</em> + your dog's exact feeding plan</h1>
+    <p class="step-sub">Answer 3 quick questions about your pup. We'll build their plan — exactly how much to feed and what it costs — and load <strong>$25 of credit</strong> onto your account to use on your first box.</p>
+    <label class="step-eyebrow" for="dog-name-input" id="name-label">What's your dog's name?</label>
+    <input class="text-input" type="text" id="dog-name-input" placeholder="e.g. Bella" autocomplete="off" maxlength="30">
+    <button class="next-btn" id="name-next">Start my plan →</button>
+  </section>
+
+  <!-- Step: weight -->
+  <section class="step" data-step="weight">
+    <button class="back-link" data-back="name">← Back</button>
+    <div class="step-eyebrow" id="weight-eyebrow">Question 1 of 3</div>
+    <div class="step-q" id="weight-q">What's Bella's ideal weight?</div>
+    <p class="step-sub">Use the buttons or type the exact weight.</p>
+    <div class="weight-block">
+      <div class="weight-stepper">
+        <button type="button" class="step-btn" id="weight-minus" aria-label="Decrease weight">−</button>
+        <div class="weight-num-wrap">
+          <input type="number" id="weight-input" class="weight-input" min="3" max="200" value="45" inputmode="numeric" aria-label="Weight in pounds">
+          <span class="weight-unit">lbs</span>
+        </div>
+        <button type="button" class="step-btn" id="weight-plus" aria-label="Increase weight">+</button>
+      </div>
+      <input class="weight-slider" type="range" min="3" max="150" value="45" step="1" id="weight-slider">
+    </div>
+    <div class="weight-hint">Use their <strong>ideal</strong> weight, not current. If they need to lose or gain, feeding for the ideal weight is how they get there.</div>
+    <button class="next-btn" data-next="activity">Next →</button>
+  </section>
+
+  <!-- Step: activity -->
+  <section class="step" data-step="activity">
+    <button class="back-link" data-back="weight">← Back</button>
+    <div class="step-eyebrow">Question 2 of 3</div>
+    <div class="step-q" id="activity-q">How active is Bella?</div>
+    <p class="step-sub">Be honest — this changes the numbers.</p>
+    <div class="choice-stack" id="activity-choices">
+      <button class="choice" data-value="Lazy">
+        <span>Lazy<span class="desc">Couch enthusiast. Short walks.</span></span>
+        <span class="check">✓</span>
+      </button>
+      <button class="choice" aria-pressed="true" data-value="Normal">
+        <span>Normal<span class="desc">Daily walks, regular play.</span></span>
+        <span class="check">✓</span>
+      </button>
+      <button class="choice" data-value="Active">
+        <span>Active<span class="desc">Runs, hikes, never stops moving.</span></span>
+        <span class="check">✓</span>
+      </button>
+    </div>
+    <button class="next-btn" data-next="allergies">Next →</button>
+  </section>
+
+  <!-- Step: restrictions -->
+  <section class="step" data-step="allergies">
+    <button class="back-link" data-back="activity">← Back</button>
+    <div class="step-eyebrow">Question 3 of 3</div>
+    <div class="step-q" id="allergy-q">Any proteins Bella can't have?</div>
+    <p class="step-sub">Select all that apply.</p>
+    <div class="choice-stack" id="allergy-choices">
+      <button class="choice" aria-pressed="true" data-value="none" data-none>
+        <span>No restrictions</span><span class="check">✓</span>
+      </button>
+      <button class="choice" data-value="chicken"><span>No chicken / turkey</span><span class="check">✓</span></button>
+      <button class="choice" data-value="beef"><span>No beef</span><span class="check">✓</span></button>
+      <button class="choice" data-value="pork"><span>No pork</span><span class="check">✓</span></button>
+      <button class="choice" data-value="lamb"><span>No lamb</span><span class="check">✓</span></button>
+    </div>
+    <button class="next-btn" id="allergies-next">See the plan →</button>
+  </section>
+
+  <!-- Step: another dog? -->
+  <section class="step" data-step="another">
+    <div class="step-q">Got another dog?</div>
+    <p class="step-sub">We'll build a plan for each pup — and multi-dog households qualify for bulk pricing on top of the $25 credit.</p>
+    <div class="choice-stack">
+      <button class="choice" id="add-another"><span>Yes, add another dog</span><span class="check">＋</span></button>
+    </div>
+    <button class="next-btn" id="finish-dogs">No, just calculate →</button>
+  </section>
+
+  <!-- Step: calculating -->
+  <section class="step" data-step="calculating">
+    <div class="calc-screen">
+      <div class="paw-spin"></div>
+      <div class="calc-msg" id="calc-msg">Reading the feeding charts…</div>
+      <div class="calc-sub">Built from our in-store feeding guidelines</div>
+    </div>
+  </section>
+
+  <!-- Step: gate -->
+  <section class="step" data-step="gate" id="gate-step"></section>
+
+  <!-- Step: results -->
+  <section class="step" data-step="results" id="results-step"></section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  // ─── CONFIG ────────────────────────────────────────────────────────
+  const CREDIT = { amount: 25, expiryDays: 14 };
+  const LEAD_ENDPOINT = 'https://hooks.zapier.com/hooks/catch/26783416/4u4ujt7/';
+  const STARTER_PACK_URL = 'https://shop.naturalhounds.com/pages/try-a-starter-pack';
+  const SHOPIFY_BASE = 'https://shop.naturalhounds.com';
+  const PHONE = '631-760-7850';
+  const BULK_THRESHOLD = 260;
+
+  // ─── FEEDING CHARTS (oz/day) — identical to main planner ──────────
+  const CHARTS = {
+    Original: {
+      cal_per_oz: 34,
+      brackets: [
+        [5, {Lazy:3.2, Normal:3.8, Active:4.2}],
+        [10,{Lazy:5.3, Normal:6.4, Active:7.1}],
+        [15,{Lazy:7.2, Normal:8.7, Active:9.6}],
+        [20,{Lazy:8.9, Normal:10.8,Active:11.9}],
+        [30,{Lazy:12.1,Normal:14.6,Active:16.1}],
+        [40,{Lazy:15.0,Normal:18.1,Active:19.9}],
+        [50,{Lazy:17.8,Normal:21.4,Active:23.6}],
+        [60,{Lazy:20.4,Normal:24.6,Active:27.0}],
+        [70,{Lazy:22.9,Normal:27.6,Active:30.3}],
+        [80,{Lazy:25.3,Normal:30.5,Active:33.5}],
+        [90,{Lazy:27.6,Normal:33.3,Active:36.6}],
+        [100,{Lazy:29.9,Normal:36.0,Active:39.6}],
+        [110,{Lazy:32.1,Normal:38.7,Active:42.6}],
+        [120,{Lazy:34.3,Normal:41.3,Active:45.5}],
+        [130,{Lazy:36.4,Normal:43.9,Active:48.3}],
+        [140,{Lazy:38.5,Normal:46.4,Active:51.0}],
+        [150,{Lazy:40.5,Normal:48.9,Active:53.7}]
+      ]
+    },
+    Beef: {
+      cal_per_oz: 48,
+      max_weight: 120,
+      brackets: [
+        [5, {Lazy:2.2, Normal:2.7, Active:3.0}],
+        [10,{Lazy:3.8, Normal:4.5, Active:5.0}],
+        [15,{Lazy:5.1, Normal:6.2, Active:6.8}],
+        [20,{Lazy:6.3, Normal:7.6, Active:8.4}],
+        [30,{Lazy:8.6, Normal:10.3,Active:11.4}],
+        [40,{Lazy:10.7,Normal:12.8,Active:14.1}],
+        [50,{Lazy:12.6,Normal:15.2,Active:16.7}],
+        [60,{Lazy:14.4,Normal:17.4,Active:19.1}],
+        [70,{Lazy:16.2,Normal:19.5,Active:21.5}],
+        [80,{Lazy:17.9,Normal:21.6,Active:23.8}],
+        [90,{Lazy:19.6,Normal:23.6,Active:25.9}],
+        [100,{Lazy:21.2,Normal:25.5,Active:28.1}],
+        [110,{Lazy:22.8,Normal:27.4,Active:30.2}],
+        [120,{Lazy:24.3,Normal:29.3,Active:32.2}]
+      ]
+    },
+    Pork: {
+      cal_per_oz: 60,
+      brackets: [
+        [5, {Lazy:1.8, Normal:2.2, Active:2.4}],
+        [10,{Lazy:3.0, Normal:3.6, Active:4.0}],
+        [15,{Lazy:4.1, Normal:4.9, Active:5.4}],
+        [20,{Lazy:5.1, Normal:6.1, Active:6.7}],
+        [30,{Lazy:6.9, Normal:8.3, Active:9.1}],
+        [40,{Lazy:8.5, Normal:10.3,Active:11.3}],
+        [50,{Lazy:10.1,Normal:12.2,Active:13.4}],
+        [60,{Lazy:11.6,Normal:13.9,Active:15.3}],
+        [70,{Lazy:13.0,Normal:15.6,Active:17.2}],
+        [80,{Lazy:14.3,Normal:17.3,Active:19.0}],
+        [90,{Lazy:15.7,Normal:18.9,Active:20.8}],
+        [100,{Lazy:17.0,Normal:20.4,Active:22.5}],
+        [110,{Lazy:18.2,Normal:21.9,Active:24.1}],
+        [120,{Lazy:19.4,Normal:23.4,Active:25.8}],
+        [130,{Lazy:20.6,Normal:24.9,Active:27.4}],
+        [140,{Lazy:21.8,Normal:26.3,Active:28.9}],
+        [150,{Lazy:23.0,Normal:27.7,Active:30.5}]
+      ]
+    },
+    Lamb: { cal_per_oz: 48, max_weight: 120, uses: 'Beef' }
+  };
+
+  const ALLERGENS = { Original: 'chicken', Beef: 'beef', Pork: 'pork', Lamb: 'lamb' };
+
+  const PRICES_STANDARD = {
+    '5lb':  { perLb: 10.59, label: '5lb box', totalLbs: 5 },
+    '10lb': { perLb: 7.49,  label: '10lb box', totalLbs: 10 },
+    '20lb': { perLb: 5.49,  label: '20lb box', totalLbs: 20 },
+    '30lb': { perLb: 4.83,  label: '30lb box', totalLbs: 30 }
+  };
+  const PRICES_LAMB = {
+    '5lb':  { perLb: 14.60, label: '5lb box', totalLbs: 5 },
+    '10lb': { perLb: 10.00, label: '10lb box', totalLbs: 10 },
+    '20lb': { perLb: 8.70,  label: '20lb box', totalLbs: 20 },
+    '30lb': { perLb: 8.67,  label: '30lb box', totalLbs: 30 }
+  };
+
+  const BOX_PRODUCT_HANDLES = {
+    '5lb':  'the-5lbs-box',
+    '10lb': 'the-10lbs-box',
+    '20lb': 'the-20lbs-box',
+    '30lb': 'the-30lbs-box'
+  };
+
+  // ─── STATE ─────────────────────────────────────────────────────────
+  const dogs = [];
+  let currentDog = null;
+  let results = null;
+  let validResults = null;
+  let totalMonthly = 0;
+
+  const STEP_ORDER = ['name','weight','activity','allergies','another','calculating','gate','results'];
+  const PROGRESS_MAP = { name: 8, weight: 30, activity: 52, allergies: 74, another: 82, calculating: 92, gate: 97, results: 100 };
+
+  function el(id){ return document.getElementById(id); }
+  function esc(s){
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function goTo(step) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    const target = document.querySelector(`[data-step="${step}"]`);
+    if (target) target.classList.add('active');
+    el('progress').style.width = (PROGRESS_MAP[step] || 0) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    reportHeight();
+  }
+
+  function newDog(name) {
+    const dog = { name: name, weight: 45, activity: 'Normal', allergies: new Set() };
+    dogs.push(dog);
+    currentDog = dog;
+    resetDogInputs();
+    personalize();
+  }
+
+  function resetDogInputs() {
+    el('weight-slider').value = 45;
+    el('weight-input').value = 45;
+    document.querySelectorAll('#activity-choices .choice').forEach(c =>
+      c.setAttribute('aria-pressed', c.dataset.value === 'Normal' ? 'true' : 'false'));
+    document.querySelectorAll('#allergy-choices .choice').forEach(c =>
+      c.setAttribute('aria-pressed', c.hasAttribute('data-none') ? 'true' : 'false'));
+  }
+
+  function personalize() {
+    const n = esc(currentDog.name || 'your dog');
+    const qn = currentDog.name ? esc(currentDog.name) + "'s" : "your dog's";
+    el('weight-q').textContent = `What's ${currentDog.name ? currentDog.name + "'s" : "your dog's"} ideal weight?`;
+    el('activity-q').textContent = `How active is ${currentDog.name || 'your dog'}?`;
+    el('allergy-q').textContent = `Any proteins ${currentDog.name || 'your dog'} can't have?`;
+    if (dogs.length > 1) {
+      el('weight-eyebrow').textContent = `Dog ${dogs.length} · Question 1 of 3`;
+    } else {
+      el('weight-eyebrow').textContent = 'Question 1 of 3';
+    }
+  }
+
+  // ─── WIZARD WIRING ─────────────────────────────────────────────────
+  let quizStarted = false;
+  el('name-next').addEventListener('click', () => {
+    const name = el('dog-name-input').value.trim();
+    newDog(name);
+    goTo('weight');
+    if (!quizStarted) {
+      quizStarted = true;
+      firePixel('InitiateCheckout', { content_name: 'feeding-plan-quiz-start' });
+    }
+  });
+  el('dog-name-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') el('name-next').click();
+  });
+
+  var WEIGHT_MIN = 3, WEIGHT_MAX = 200;
+  function setWeight(v, fromInput) {
+    v = Math.round(Number(v));
+    if (isNaN(v)) v = WEIGHT_MIN;
+    v = Math.max(WEIGHT_MIN, Math.min(WEIGHT_MAX, v));
+    currentDog.weight = v;
+    // Keep the number field and slider in sync (slider caps at 150 visually).
+    if (!fromInput) el('weight-input').value = v;
+    var slider = el('weight-slider');
+    slider.value = Math.min(v, +slider.max);
+  }
+  el('weight-slider').addEventListener('input', function (e) {
+    setWeight(e.target.value, false);
+  });
+  el('weight-input').addEventListener('input', function (e) {
+    // Allow free typing; clamp on change/blur so users can type "120".
+    var raw = e.target.value;
+    if (raw === '') { currentDog.weight = WEIGHT_MIN; return; }
+    setWeight(raw, true);
+  });
+  el('weight-input').addEventListener('blur', function () {
+    setWeight(el('weight-input').value, false);
+  });
+  el('weight-minus').addEventListener('click', function () {
+    setWeight((currentDog.weight || 45) - 1, false);
+  });
+  el('weight-plus').addEventListener('click', function () {
+    setWeight((currentDog.weight || 45) + 1, false);
+  });
+
+  document.querySelectorAll('[data-next]').forEach(btn =>
+    btn.addEventListener('click', () => goTo(btn.dataset.next)));
+  document.querySelectorAll('[data-back]').forEach(btn =>
+    btn.addEventListener('click', () => goTo(btn.dataset.back)));
+
+  // Activity: single-select
+  document.querySelectorAll('#activity-choices .choice').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('#activity-choices .choice').forEach(p => p.setAttribute('aria-pressed','false'));
+      pill.setAttribute('aria-pressed','true');
+      currentDog.activity = pill.dataset.value;
+    });
+  });
+
+  // Allergies: multi-select with "none" exclusivity
+  document.querySelectorAll('#allergy-choices .choice').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const isNone = pill.hasAttribute('data-none');
+      const pressed = pill.getAttribute('aria-pressed') === 'true';
+      if (isNone) {
+        document.querySelectorAll('#allergy-choices .choice').forEach(p => p.setAttribute('aria-pressed','false'));
+        pill.setAttribute('aria-pressed','true');
+        currentDog.allergies.clear();
+      } else {
+        const noneBtn = document.querySelector('#allergy-choices [data-none]');
+        noneBtn.setAttribute('aria-pressed','false');
+        pill.setAttribute('aria-pressed', String(!pressed));
+        if (!pressed) currentDog.allergies.add(pill.dataset.value);
+        else currentDog.allergies.delete(pill.dataset.value);
+        if (currentDog.allergies.size === 0) noneBtn.setAttribute('aria-pressed','true');
+      }
+    });
+  });
+
+  el('allergies-next').addEventListener('click', () => goTo('another'));
+
+  el('add-another').addEventListener('click', () => {
+    // Return to the name step for the next dog — name-next creates the dog record
+    el('dog-name-input').value = '';
+    el('name-label').textContent = `What's dog ${dogs.length + 1}'s name?`;
+    const nameStep = document.querySelector('[data-step="name"]');
+    nameStep.querySelector('h1').style.display = 'none';
+    nameStep.querySelector('.step-sub').style.display = 'none';
+    el('name-next').textContent = `Add dog ${dogs.length + 1} \u2192`;
+    goTo('name');
+    el('dog-name-input').focus();
+  });
+
+  el('finish-dogs').addEventListener('click', () => {
+    startCalculating();
+  });
+
+  // ─── CALCULATIONS (identical logic to main planner) ───────────────
+  function lookupOz(recipe, weight, activity) {
+    const chart = CHARTS[recipe];
+    if (chart.uses) return lookupOz(chart.uses, weight, activity);
+    if (chart.max_weight && weight > chart.max_weight) return null;
+    if (weight > 150) return null;
+    for (const [maxW, vals] of chart.brackets) {
+      if (weight <= maxW) return vals[activity];
+    }
+    return null;
+  }
+
+  function calcDog(dog) {
+    if (dog.weight > 150) return { tooHeavy: true };
+    const allowed = ['Original','Beef','Pork','Lamb'].filter(r => !dog.allergies.has(ALLERGENS[r]));
+    if (allowed.length === 0) return { allExcluded: true };
+
+    const allBreakdown = {};
+    for (const r of ['Original','Beef','Pork','Lamb']) {
+      const oz = lookupOz(r, dog.weight, dog.activity);
+      const lbsPerMonth = oz ? (oz * 30) / 16 : null;
+      allBreakdown[r] = { oz, lbsPerMonth, allowed: allowed.includes(r) };
+    }
+
+    const standardCandidates = ['Original','Beef','Pork'].filter(r => allowed.includes(r));
+    const mixCandidates = standardCandidates.length > 0 ? standardCandidates : allowed;
+    const usingLambOnly = mixCandidates.length === 1 && mixCandidates[0] === 'Lamb';
+
+    const share = 1 / mixCandidates.length;
+    let mixLbsPerMonth = 0;
+    for (const r of mixCandidates) {
+      if (allBreakdown[r].lbsPerMonth === null) return calcDogWithoutBeefLamb(dog);
+      mixLbsPerMonth += share * allBreakdown[r].lbsPerMonth;
+    }
+
+    const sizes = ['5lb','10lb','20lb','30lb'];
+    let bestBox = '30lb';
+    for (const s of sizes) { if (mixLbsPerMonth <= parseInt(s)) { bestBox = s; break; } }
+
+    const prices = usingLambOnly ? PRICES_LAMB : PRICES_STANDARD;
+    const costs = {};
+    for (const s of sizes) costs[s] = mixLbsPerMonth * prices[s].perLb;
+
+    return { tooHeavy:false, allExcluded:false, usingLambOnly, allowed, allBreakdown,
+      mixCandidates, mixLbsPerMonth, bestBox, costs, monthlyCost: costs[bestBox] };
+  }
+
+  function calcDogWithoutBeefLamb(dog) {
+    const allowed = ['Original','Pork'].filter(r => !dog.allergies.has(ALLERGENS[r]));
+    if (allowed.length === 0) return { allExcluded: true };
+    const allBreakdown = {};
+    for (const r of ['Original','Beef','Pork','Lamb']) {
+      const oz = lookupOz(r, dog.weight, dog.activity);
+      const lbsPerMonth = oz ? (oz * 30) / 16 : null;
+      allBreakdown[r] = { oz, lbsPerMonth, allowed: allowed.includes(r) };
+    }
+    const share = 1 / allowed.length;
+    let mixLbsPerMonth = 0;
+    for (const r of allowed) mixLbsPerMonth += share * allBreakdown[r].lbsPerMonth;
+    const sizes = ['5lb','10lb','20lb','30lb'];
+    let bestBox = '30lb';
+    for (const s of sizes) if (mixLbsPerMonth <= parseInt(s)) { bestBox = s; break; }
+    const costs = {};
+    for (const s of sizes) costs[s] = mixLbsPerMonth * PRICES_STANDARD[s].perLb;
+    return { tooHeavy:false, allExcluded:false, usingLambOnly:false, heavyDog:true,
+      allowed, allBreakdown, mixCandidates: allowed, mixLbsPerMonth, bestBox, costs,
+      monthlyCost: costs[bestBox] };
+  }
+
+  // ─── CALCULATING SCREEN ────────────────────────────────────────────
+  const CALC_MESSAGES = [
+    'Reading the feeding charts…',
+    'Balancing recipes for variety…',
+    'Sizing the right box…',
+    'Applying your $25 credit…'
+  ];
+
+  function startCalculating() {
+    results = dogs.map((d, i) => ({ dog: d, result: calcDog(d), num: i + 1 }));
+    validResults = results.filter(r => !r.result.tooHeavy && !r.result.allExcluded);
+    totalMonthly = validResults.reduce((sum, r) => sum + r.result.monthlyCost, 0);
+
+    goTo('calculating');
+    let i = 0;
+    el('calc-msg').textContent = CALC_MESSAGES[0];
+    const interval = setInterval(() => {
+      i++;
+      if (i < CALC_MESSAGES.length) el('calc-msg').textContent = CALC_MESSAGES[i];
+    }, 650);
+    setTimeout(() => {
+      clearInterval(interval);
+      if (validResults.length === 0) {
+        renderResults(true); // nothing to gate — show call-us notes directly
+        goTo('results');
+      } else {
+        renderGate();
+        goTo('gate');
+      }
+    }, CALC_MESSAGES.length * 650 + 250);
+  }
+
+  // ─── GATE ──────────────────────────────────────────────────────────
+  function renderGate() {
+    const first = validResults[0];
+    const firstName = first.dog.name || 'Your dog';
+    const dailyOz = first.result.mixCandidates.reduce(
+      (sum, r) => sum + (1 / first.result.mixCandidates.length) * first.result.allBreakdown[r].oz, 0);
+    const multi = validResults.length > 1;
+    const bulkEligible = totalMonthly >= BULK_THRESHOLD || dogs.length >= 2;
+
+    const teaserHeader = multi
+      ? `Plans are ready for all ${validResults.length} dogs`
+      : `${esc(firstName)}'s plan is ready`;
+
+    const gateTitle = bulkEligible
+      ? `Unlock your plan, your <span class="amt">$${CREDIT.amount} credit</span> + bulk pricing`
+      : `Unlock your plan + claim your <span class="amt">$${CREDIT.amount} credit</span>`;
+
+    const gateList = bulkEligible
+      ? `<li>$${CREDIT.amount} store credit loaded onto your account automatically</li>
+         <li>${multi ? 'Every dog\u2019s' : esc(firstName) + '\u2019s'} full plan emailed to you</li>
+         <li>Unpublished bulk pricing quote — texted within the hour</li>`
+      : `<li>$${CREDIT.amount} store credit loaded onto your account automatically</li>
+         <li>${esc(firstName)}\u2019s exact daily amount, recipe mix &amp; monthly cost</li>
+         <li>Full plan emailed to you \u2014 no screenshots needed</li>`;
+
+    el('gate-step').innerHTML = `
+      <div class="gate-teaser">
+        <div class="teaser-header">${teaserHeader}</div>
+        <div class="teaser-grid">
+          <div class="teaser-cell">
+            <div class="teaser-label">${esc(firstName)} needs</div>
+            <div class="teaser-value">${dailyOz.toFixed(1)} oz/day</div>
+          </div>
+          <div class="teaser-cell locked">
+            <div class="teaser-label">Monthly cost</div>
+            <div class="teaser-value">$248/mo</div>
+            <div class="lock-tag">🔒 Unlock</div>
+          </div>
+          <div class="teaser-cell locked">
+            <div class="teaser-label">Best box size</div>
+            <div class="teaser-value">30lb box</div>
+            <div class="lock-tag">🔒 Unlock</div>
+          </div>
+          <div class="teaser-cell locked">
+            <div class="teaser-label">Recipe mix</div>
+            <div class="teaser-value">Beef / Pork</div>
+            <div class="lock-tag">🔒 Unlock</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gate-card">
+        <div class="gate-eyebrow">★ $${CREDIT.amount} credit reserved</div>
+        <div class="gate-title">${gateTitle}</div>
+        <div class="gate-sub">Enter your info and we'll load the credit onto your Natural Hounds account — it applies automatically at checkout. Good for ${CREDIT.expiryDays} days.</div>
+        <ul class="gate-list">${gateList}</ul>
+        <form class="gate-form" id="gate-form">
+          <input class="gate-input" type="email" name="email" placeholder="Email (your plan + credit go here)" required autocomplete="email" inputmode="email">
+          <input class="gate-input" type="tel" name="phone" placeholder="Phone number" required autocomplete="tel" inputmode="tel">
+          <input class="gate-input" type="text" name="name" placeholder="Your name (optional)" autocomplete="name">
+          <button class="gate-submit" type="submit">Unlock my plan + $${CREDIT.amount} →</button>
+        </form>
+        <div class="gate-error" id="gate-error"></div>
+        <div class="gate-fine">By submitting, you agree to receive your plan by email and SMS messages from Natural Hounds with order updates and occasional offers. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help. View our <a href="https://shop.naturalhounds.com/policies/privacy-policy" target="_top">Privacy Policy</a>.</div>
+      </div>
+      <div class="gate-trust">Local fresh dog food · Made on Long Island · No spam, ever</div>
+    `;
+
+    firePixel('AddToWishlist', { content_name: 'feeding-plan-gate-view' });
+
+    el('gate-form').addEventListener('submit', onGateSubmit);
+  }
+
+  async function onGateSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value.trim();
+    const phone = form.phone.value.trim();
+    const name = form.name.value.trim();
+    const btn = form.querySelector('.gate-submit');
+    const errEl = el('gate-error');
+    errEl.classList.remove('show');
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      form.email.classList.add('invalid');
+      errEl.textContent = 'That email doesn\u2019t look right — your credit gets attached to it, so double-check.';
+      errEl.classList.add('show');
+      return;
+    }
+    form.email.classList.remove('invalid');
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length < 10) {
+      form.phone.classList.add('invalid');
+      errEl.textContent = 'Please enter a 10-digit phone number.';
+      errEl.classList.add('show');
+      return;
+    }
+    form.phone.classList.remove('invalid');
+
+    btn.disabled = true;
+    btn.textContent = 'Loading your credit…';
+
+    const bulkEligible = totalMonthly >= BULK_THRESHOLD || dogs.length >= 2;
+    const eventId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2));
+
+    try {
+      await submitLead({ email, phone, name, bulkEligible, eventId });
+      firePixel('Lead', {
+        content_name: 'feeding-plan-credit-claim',
+        value: CREDIT.amount,
+        currency: 'USD'
+      }, eventId);
+      renderResults(false, { email, bulkEligible });
+      goTo('results');
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = `Unlock my plan + $${CREDIT.amount} \u2192`;
+      errEl.textContent = 'Something went wrong on our end. Try again — your credit is still reserved.';
+      errEl.classList.add('show');
+    }
+  }
+
+  // ─── LEAD SUBMISSION ───────────────────────────────────────────────
+  function buildPlanSummary() {
+    const dogSummaries = validResults.map(({ dog, result, num }) => {
+      const recipeLabel = result.mixCandidates.length === 1
+        ? `${result.mixCandidates[0]} Recipe`
+        : `Variety mix (${result.mixCandidates.join('+')})`;
+      const dailyOz = result.mixCandidates.reduce(
+        (sum, r) => sum + (1 / result.mixCandidates.length) * result.allBreakdown[r].oz, 0);
+      return {
+        number: num,
+        name: dog.name || null,
+        weight: dog.weight,
+        activity: dog.activity,
+        allergies: Array.from(dog.allergies),
+        mix: result.mixCandidates,
+        recommendedBox: result.bestBox,
+        chosenLabel: recipeLabel,
+        chosenBox: result.bestBox,
+        chosenPrice: +result.costs[result.bestBox].toFixed(2),
+        lbsPerMonth: +result.mixLbsPerMonth.toFixed(1),
+        dailyOz: +dailyOz.toFixed(1)
+      };
+    });
+    const lines = dogSummaries.map(d => {
+      const allergies = d.allergies.length ? ` (excl. ${d.allergies.join(', ')})` : '';
+      const label = d.name ? d.name : `Dog ${d.number}`;
+      return `${label}: ${d.weight}lb ${d.activity}${allergies} \u2192 ${d.chosenLabel}, ${d.chosenBox} box \u00b7 $${d.chosenPrice} (need ~${d.lbsPerMonth}lb/mo)`;
+    });
+    return {
+      dogs: dogSummaries,
+      totalMonthlyCost: +totalMonthly.toFixed(2),
+      totalDogs: dogSummaries.length,
+      summaryText: lines.join('\n')
+    };
+  }
+
+  async function submitLead({ email, phone, name, bulkEligible, eventId }) {
+    const summary = buildPlanSummary();
+    const tags = ['planner-lead', 'meta-retarget', 'credit-25'];
+    if (bulkEligible) tags.push('bulk-eligible');
+    if (summary.totalDogs >= 2) tags.push('multi-dog');
+
+    // Build a FLAT set of fields so Zapier's Catch Hook exposes each one
+    // individually (nested objects arrive as one unusable blob).
+    const flat = {
+      email: email,
+      phone: phone,
+      full_name: name || '',
+      first_name: (name || '').split(/\s+/)[0] || '',
+      form_type: 'meta-credit',
+      reason: bulkEligible ? (dogs.length >= 2 ? 'multi-dog' : 'high-volume') : 'credit-claim',
+      credit_amount: CREDIT.amount,
+      credit_expiry_days: CREDIT.expiryDays,
+      bulk_eligible: bulkEligible ? 'yes' : 'no',
+      event_id: eventId,
+      tags: tags.join(','),
+      source: 'meta-feeding-planner',
+      source_url: window.location.href || 'https://shop.naturalhounds.com/pages/get-your-plan',
+      total_monthly: summary.totalMonthlyCost,
+      total_dogs: summary.totalDogs,
+      plan_summary: summary.summaryText
+    };
+    // Per-dog fields, flattened (dog1_*, dog2_*, ...).
+    summary.dogs.forEach((d, i) => {
+      const n = i + 1;
+      flat['dog' + n + '_name']       = d.name || ('Dog ' + n);
+      flat['dog' + n + '_weight']     = d.weight;
+      flat['dog' + n + '_activity']   = d.activity;
+      flat['dog' + n + '_allergies']  = (d.allergies || []).join(',');
+      flat['dog' + n + '_mix']        = (d.mix || []).join('+');
+      flat['dog' + n + '_box']        = d.chosenBox;
+      flat['dog' + n + '_price']      = d.chosenPrice;
+      flat['dog' + n + '_daily_oz']   = d.dailyOz;
+      flat['dog' + n + '_lbs_month']  = d.lbsPerMonth;
+    });
+
+    // Cross-site sends from github.io to zapier.com get blocked/preflighted
+    // by the browser when using fetch(). A classic HTML form POST is the ONE
+    // cross-origin send browsers never block and never preflight. We build a
+    // hidden form, submit it into a hidden iframe (so the page doesn't
+    // navigate away), and Zapier's Catch Hook receives each field separately.
+    return new Promise((resolve) => {
+      // Hidden iframe target so submitting the form doesn't navigate the page.
+      var frameName = 'nh_lead_sink_' + Date.now();
+      var iframe = document.createElement('iframe');
+      iframe.name = frameName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = LEAD_ENDPOINT;
+      form.target = frameName;
+      form.style.display = 'none';
+      // application/x-www-form-urlencoded is the browser default for forms and
+      // is a "simple" content-type, so no preflight is triggered.
+
+      Object.keys(flat).forEach(function (k) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = k;
+        input.value = (flat[k] == null ? '' : String(flat[k]));
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+
+      // We can't read the cross-origin response, so treat a successful submit
+      // as done. Clean up shortly after.
+      setTimeout(function () {
+        try { document.body.removeChild(form); } catch (e) {}
+        try { document.body.removeChild(iframe); } catch (e) {}
+        resolve({});
+      }, 1200);
+    });
+  }
+
+  // ─── PIXEL ─────────────────────────────────────────────────────────
+  function firePixel(event, params, eventId) {
+    try {
+      if (typeof fbq === 'function') {
+        if (eventId) fbq('track', event, params || {}, { eventID: eventId });
+        else fbq('track', event, params || {});
+      }
+    } catch(e){}
+    // Relay to parent page (Shopify embed carries the pixel)
+    try {
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'sage:pixel', event: event, params: params || {}, eventID: eventId || null }, '*');
+      }
+    } catch(e){}
+  }
+
+  // ─── RESULTS ───────────────────────────────────────────────────────
+  function renderDogResult(dog, result, num) {
+    const label = dog.name ? esc(dog.name) : `Dog ${num}`;
+    if (result.tooHeavy) {
+      return `<div class="dog-result">
+        <div class="dog-result-header">${label} (${dog.weight} lbs)</div>
+        <div class="note">${label}'s weight is above our chart range. Call us at <strong>${PHONE}</strong> and we'll work out a tailored plan.</div>
+      </div>`;
+    }
+    if (result.allExcluded) {
+      return `<div class="dog-result">
+        <div class="dog-result-header">${label} (${dog.weight} lbs)</div>
+        <div class="note">Every recipe contains a protein you've restricted. Call <strong>${PHONE}</strong> and we'll find an option that works.</div>
+      </div>`;
+    }
+
+    const dailyOz = result.mixCandidates.reduce(
+      (sum, r) => sum + (1/result.mixCandidates.length) * result.allBreakdown[r].oz, 0);
+    const sizes = ['5lb','10lb','20lb','30lb'];
+
+    let breakdownHTML = '';
+    for (const r of ['Original','Beef','Pork','Lamb']) {
+      const data = result.allBreakdown[r];
+      const inMix = result.mixCandidates.includes(r);
+      const ozLabel = data.oz === null ? '\u2014' : data.oz.toFixed(1) + ' oz';
+      const lbLabel = data.lbsPerMonth === null ? '\u2014' : data.lbsPerMonth.toFixed(1) + ' lb';
+      breakdownHTML += `
+        <div class="recipe-card ${inMix ? 'in-mix' : ''} ${!data.allowed ? 'dimmed' : ''}">
+          <div class="recipe-name">
+            <span>${r}</span>
+            ${inMix ? '<span class="recipe-badge">In mix</span>' : ''}
+            ${!data.allowed ? '<span class="recipe-badge excluded">Excluded</span>' : ''}
+          </div>
+          <div class="recipe-row"><span>Per day</span><span>${ozLabel}</span></div>
+          <div class="recipe-row"><span>Per month</span><span>${lbLabel}</span></div>
+        </div>`;
+    }
+
+    const prices = result.usingLambOnly ? PRICES_LAMB : PRICES_STANDARD;
+    let tierHTML = '';
+    for (const s of sizes) {
+      const isBest = s === result.bestBox;
+      tierHTML += `
+        <div class="tier-row ${isBest ? 'best' : ''}">
+          <span>${s} box ($${prices[s].perLb.toFixed(2)}/lb)</span>
+          <span>$${result.costs[s].toFixed(0)}/mo${isBest ? ' \u2190' : ''}</span>
+        </div>`;
+    }
+
+    const mixDescription = result.mixCandidates.join(' / ');
+    const onlyOriginal = result.mixCandidates.length === 1 && result.mixCandidates[0] === 'Original';
+
+    return `
+      <div class="dog-result">
+        <div class="dog-result-header">${label}</div>
+        <div class="dog-result-sub">${dog.weight} lbs \u00b7 ${dog.activity}</div>
+        <div class="summary-strip">
+          <div class="summary-card">
+            <div class="summary-label">Daily food</div>
+            <div class="summary-value">${dailyOz.toFixed(1)} oz</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Per month</div>
+            <div class="summary-value">${result.mixLbsPerMonth.toFixed(1)} lb</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Best fit</div>
+            <div class="summary-value">${result.bestBox} box</div>
+          </div>
+        </div>
+        <div class="mix-card">
+          <div class="mix-label">Recommended mix</div>
+          <div class="mix-title">${mixDescription}</div>
+          <div class="mix-detail">${
+            result.usingLambOnly
+              ? `With other proteins excluded, Lamb is the option. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> at <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
+              : `Even split across ${result.mixCandidates.length} recipe${result.mixCandidates.length > 1 ? 's' : ''} gives variety and balanced nutrition. About <strong>${result.mixLbsPerMonth.toFixed(1)} lbs/month</strong> total \u2014 <strong>${result.bestBox} box</strong> at about <strong>$${result.monthlyCost.toFixed(0)}/mo</strong>.`
+          }</div>
+        </div>
+        ${onlyOriginal ? `<div class="note disclaimer">Heads up: Original is our lowest-calorie recipe, so dogs need a bit more volume per day. If cost matters, mixing in Beef or Pork would lower the monthly cost \u2014 and dogs love the variety.</div>` : ''}
+        ${result.heavyDog ? `<div class="note disclaimer">For dogs over 120 lbs, our Beef and Lamb feeding charts cap out, so we've recommended Original and Pork. Call <strong>${PHONE}</strong> for a custom plan.</div>` : ''}
+        <div class="price-tiers">
+          <div class="tier-title">Cost by box size</div>
+          ${tierHTML}
+        </div>
+        <div class="recipe-grid">${breakdownHTML}</div>
+      </div>`;
+  }
+
+  function renderResults(skipCredit, meta) {
+    meta = meta || {};
+    const container = el('results-step');
+    document.querySelector('.container').classList.add('wide');
+    el('ribbon').style.display = 'none';
+    let html = '';
+
+    if (!skipCredit) {
+      const bulkNote = meta.bulkEligible
+        ? ` We're also putting together your bulk pricing quote \u2014 keep an eye on your texts within the hour.`
+        : '';
+      html += `<div class="credit-banner">
+        <div class="credit-banner-title">\u2713 $${CREDIT.amount} credit added to your account</div>
+        <div class="credit-banner-sub">It's attached to <strong>${esc(meta.email)}</strong> and applies automatically at checkout when you're logged in with that email. Valid for ${CREDIT.expiryDays} days. We've also emailed you the full plan.${bulkNote}</div>
+      </div>`;
+    }
+
+    if (dogs.length > 1 && validResults.length > 0) {
+      html += `<div class="combined-card">
+        <div class="combined-label">Combined monthly cost</div>
+        <div class="combined-value">$${totalMonthly.toFixed(0)}/mo across ${validResults.length} dog${validResults.length > 1 ? 's' : ''}</div>
+      </div>`;
+    }
+
+    for (const { dog, result, num } of results) {
+      html += renderDogResult(dog, result, num);
+    }
+
+    html += `<div class="note disclaimer">This is a starting point. Our recommendations tend to run a bit high, so your pup may need a few oz less per day. Monitor weight the first 1\u20132 weeks and adjust from there. These amounts assume Natural Hounds is the only food \u2014 and don't forget treats add up too.</div>`;
+
+    if (validResults.length > 0) {
+      const recommendedSizes = validResults.map(r => r.result.bestBox);
+      const sizeOrder = ['5lb','10lb','20lb','30lb'];
+      const largestRec = sizeOrder.filter(s => recommendedSizes.includes(s)).pop() || '10lb';
+      const handle = BOX_PRODUCT_HANDLES[largestRec];
+      html += `<div class="ctas">
+        <a class="cta primary" href="${SHOPIFY_BASE}/products/${handle}" target="_top">Use my $${CREDIT.amount} on the ${largestRec} box \u2192</a>
+        <a class="cta" href="${STARTER_PACK_URL}" target="_top">Or try the $12.99 starter pack \u2014 your credit covers it</a>
+      </div>`;
+    }
+
+    container.innerHTML = html;
+    reportHeight();
+  }
+
+  // ─── TOAST / HEIGHT ────────────────────────────────────────────────
+  function showToast(msg, ms=2200) {
+    const t = el('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  function reportHeight() {
+    if (window.parent === window) return;
+    setTimeout(() => {
+      const height = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
+      );
+      window.parent.postMessage({ type: 'sage:resize', height: height }, '*');
+    }, 50);
+  }
+  if (window.parent !== window) {
+    window.addEventListener('load', reportHeight);
+    const observer = new MutationObserver(reportHeight);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    window.addEventListener('resize', reportHeight);
+  }
+})();
+</script>
+</body>
+</html>
