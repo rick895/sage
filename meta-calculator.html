@@ -1250,18 +1250,22 @@
       flat['dog' + n + '_lbs_month']  = d.lbsPerMonth;
     });
 
-    // Send as form-encoded (application/x-www-form-urlencoded) so Zapier's
-    // Catch Hook parses each key into its own selectable field.
-    const form = new URLSearchParams();
-    Object.keys(flat).forEach(k => form.append(k, flat[k] == null ? '' : String(flat[k])));
-
-    const res = await fetch(LEAD_ENDPOINT, {
-      method: 'POST',
-      body: form
-    });
-    if (!res.ok) throw new Error('Lead submit failed: ' + res.status);
-    // Zapier hooks reply with JSON; guard in case the body isn't JSON.
-    try { return await res.json(); } catch (e) { return {}; }
+    // Send as a "simple request" that browsers do NOT preflight (no custom
+    // headers, text/plain body). Zapier's Catch Hook still parses the JSON
+    // body into individual selectable fields. Using no-cors as a belt-and-
+    // suspenders so the browser never blocks it; we can't read the response
+    // in that mode, so we treat a completed send as success.
+    try {
+      await fetch(LEAD_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify(flat)
+      });
+      return {};
+    } catch (e) {
+      throw new Error('Lead submit failed');
+    }
   }
 
   // ─── PIXEL ─────────────────────────────────────────────────────────
