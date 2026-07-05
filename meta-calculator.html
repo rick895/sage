@@ -1250,22 +1250,46 @@
       flat['dog' + n + '_lbs_month']  = d.lbsPerMonth;
     });
 
-    // Send as a "simple request" that browsers do NOT preflight (no custom
-    // headers, text/plain body). Zapier's Catch Hook still parses the JSON
-    // body into individual selectable fields. Using no-cors as a belt-and-
-    // suspenders so the browser never blocks it; we can't read the response
-    // in that mode, so we treat a completed send as success.
-    try {
-      await fetch(LEAD_ENDPOINT, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify(flat)
+    // Cross-site sends from github.io to zapier.com get blocked/preflighted
+    // by the browser when using fetch(). A classic HTML form POST is the ONE
+    // cross-origin send browsers never block and never preflight. We build a
+    // hidden form, submit it into a hidden iframe (so the page doesn't
+    // navigate away), and Zapier's Catch Hook receives each field separately.
+    return new Promise((resolve) => {
+      // Hidden iframe target so submitting the form doesn't navigate the page.
+      var frameName = 'nh_lead_sink_' + Date.now();
+      var iframe = document.createElement('iframe');
+      iframe.name = frameName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = LEAD_ENDPOINT;
+      form.target = frameName;
+      form.style.display = 'none';
+      // application/x-www-form-urlencoded is the browser default for forms and
+      // is a "simple" content-type, so no preflight is triggered.
+
+      Object.keys(flat).forEach(function (k) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = k;
+        input.value = (flat[k] == null ? '' : String(flat[k]));
+        form.appendChild(input);
       });
-      return {};
-    } catch (e) {
-      throw new Error('Lead submit failed');
-    }
+
+      document.body.appendChild(form);
+      form.submit();
+
+      // We can't read the cross-origin response, so treat a successful submit
+      // as done. Clean up shortly after.
+      setTimeout(function () {
+        try { document.body.removeChild(form); } catch (e) {}
+        try { document.body.removeChild(iframe); } catch (e) {}
+        resolve({});
+      }, 1200);
+    });
   }
 
   // ─── PIXEL ─────────────────────────────────────────────────────────
