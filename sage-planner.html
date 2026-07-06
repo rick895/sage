@@ -183,6 +183,31 @@
     text-align: right;
     color: var(--nh-black);
   }
+  .weight-row { gap: 10px; }
+  .wt-step {
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--nh-border);
+    background: white;
+    border-radius: 10px;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--nh-black);
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+  }
+  .wt-step:hover { border-color: var(--nh-slate); }
+  .wt-step:active { background: var(--nh-blue-soft); border-color: var(--nh-blue); }
+  .weight-row .weight-out { min-width: 62px; text-align: center; }
+
   .add-dog-btn {
     width: 100%;
     padding: 14px;
@@ -784,8 +809,10 @@
         <div class="field">
           <label class="field-label">Ideal weight</label>
           <div class="weight-row">
+            <button type="button" class="wt-step" data-step="-1" aria-label="Decrease weight by 1 pound">&minus;</button>
             <input type="range" min="3" max="150" value="45" step="1" data-input="weight">
             <span class="weight-out" data-out="weight">45 lbs</span>
+            <button type="button" class="wt-step" data-step="1" aria-label="Increase weight by 1 pound">+</button>
           </div>
           <div class="field-hint">Enter your dog's <strong>ideal</strong> weight, not their current weight. If they need to lose or gain, this targets where they should be — feeding the ideal amount is how they get there.</div>
         </div>
@@ -854,6 +881,18 @@
     block.querySelector('[data-input="weight"]').addEventListener('input', e => {
       dog.weight = +e.target.value;
       block.querySelector('[data-out="weight"]').textContent = dog.weight + ' lbs';
+    });
+
+    block.querySelectorAll('[data-step]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const range = block.querySelector('[data-input="weight"]');
+        const step = parseInt(btn.dataset.step, 10);
+        let v = (+range.value) + step;
+        v = Math.max(+range.min, Math.min(+range.max, v));
+        if (v === +range.value) return;
+        range.value = v;
+        range.dispatchEvent(new Event('input', { bubbles: true }));
+      });
     });
 
     block.querySelectorAll('.pills').forEach(group => {
