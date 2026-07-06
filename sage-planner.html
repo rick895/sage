@@ -1292,6 +1292,30 @@
     const results = dogs.map((d, i) => ({ dog: d, result: calcDog(d), num: i + 1 }));
     const validResults = results.filter(r => !r.result.tooHeavy && !r.result.allExcluded);
     const totalMonthly = validResults.reduce((sum, r) => sum + r.result.monthlyCost, 0);
+
+    /* ── Email me every plan (fire-and-forget; never blocks the calculator) ── */
+    try {
+      const _plan = buildPlanSummary(validResults);
+      const _rawDogs = dogs.map(function (d) {
+        return { weight: d.weight, activity: d.activity, allergies: Array.from(d.allergies || []) };
+      });
+      const _payload = JSON.stringify({
+        source: 'sage-feeding-planner',
+        sourceUrl: window.location.href,
+        ts: new Date().toISOString(),
+        totalDogs: dogs.length,
+        validDogs: validResults.length,
+        totalMonthly: +totalMonthly.toFixed(2),
+        rawDogs: _rawDogs,
+        plan: _plan
+      });
+      const _NOTIFY = 'https://calc-plan-notify.rick-026.workers.dev/';
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(_NOTIFY, new Blob([_payload], { type: 'text/plain' }));
+      } else {
+        fetch(_NOTIFY, { method: 'POST', body: _payload, keepalive: true }).catch(function () {});
+      }
+    } catch (_e) { /* notify must never break the plan */ }
     const showBulkTrigger = totalMonthly >= BULK_THRESHOLD || dogs.length >= 2;
     const allCanCheckout = results.every(r => !r.result.tooHeavy && !r.result.allExcluded);
 
